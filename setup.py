@@ -2,17 +2,17 @@ from setuptools import setup
 
 setup(
     name='mysqlstmt',
-    version='1.0.0',
+    version='1.0.1',
     url='https://github.com/lovette/mysqlstmt',
-	download_url = 'https://github.com/lovette/mysqlstmt/archive/master.tar.gz',
+    download_url='https://github.com/lovette/mysqlstmt/archive/master.tar.gz',
     license='BSD',
     author='Lance Lovette',
     author_email='lance.lovette@gmail.com',
     description='Python library to build SQL statements for MySQL.',
     long_description=open('README.md').read(),
-    packages=['mysqlstmt',],
+    packages=['mysqlstmt'],
     install_requires=[],
-    tests_require=['nose',],
+    tests_require=['nose'],
     zip_safe=False,
     platforms='any',
     classifiers=[

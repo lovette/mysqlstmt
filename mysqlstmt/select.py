@@ -148,6 +148,18 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
             >>> q = Select()
             >>> q.from_table('t1').columns(('t1c1','t1c2')).sql()
             ('SELECT `t1c1`, `t1c2` FROM t1', None)
+
+            >>> q = Select()
+            >>> q.from_table('t1').columns('`t1c1`').sql()
+            ('SELECT `t1c1` FROM t1', None)
+
+            >>> q = Select()
+            >>> q.from_table('t1').columns('DATE(`t1c1`)').sql()
+            ('SELECT DATE(`t1c1`) FROM t1', None)
+
+            >>> q = Select()
+            >>> q.from_table('t1').columns('`t1c1` AS `t1a1`').sql()
+            ('SELECT `t1c1` AS `t1a1` FROM t1', None)
         """
         assert value_params is None or isinstance(value_params, collections.Iterable)
 

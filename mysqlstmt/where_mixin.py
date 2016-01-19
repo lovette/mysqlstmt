@@ -128,6 +128,10 @@ class WhereMixin(object):
             >>> q = Select(placeholder=False)
             >>> q.from_table('t1').where_value('t1c1', 3).where_value('t1c2', "'string'").sql()
             "SELECT * FROM t1 WHERE (`t1c1` = 3 AND `t1c2` = 'string')"
+
+            >>> q = Select()
+            >>> q.from_table('t1').where_value('DATE(`t1c1`)', datetime.date(2014,3,2), '>').sql()
+            ('SELECT * FROM t1 WHERE DATE(`t1c1`) > ?', ['2014-03-02'])
         """
         self.get_where_cond().where_value(field_or_dict, value_or_tuple, operator)
         return self
@@ -176,6 +180,10 @@ class WhereMixin(object):
             >>> q = Select()
             >>> q.from_table('t1').where_raw_value('t1c1', 'PASSWORD(?)', value_params=('mypw',)).sql()
             ('SELECT * FROM t1 WHERE `t1c1` = PASSWORD(?)', ['mypw'])
+
+            >>> q = Select()
+            >>> q.from_table('t1').where_raw_value('DATE(`t1c1`)', 'NOW()', '>').sql()
+            ('SELECT * FROM t1 WHERE DATE(`t1c1`) > NOW()')
         """
         self.get_where_cond().where_raw_value(field_or_dict, value_or_tuple, operator, value_params)
         return self

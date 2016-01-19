@@ -75,8 +75,18 @@ class Stmt(object):
 
         Returns:
             string: Column reference quoted with backticks (``).
+
+        Notes:
+            Column reference will not be quoted if it contains a backtick, space or parenthesis.
         """
         if self.quote_all_col_refs:
+            if ' ' in col_ref:
+                return col_ref  # COLUMN AS ALIAS
+            if '(' in col_ref:
+                return col_ref  # FUNCTION(COLUMN)
+            if '`' in col_ref:
+                return col_ref  # already quoted
+
             col_ref_parts = col_ref.split('.')
             if len(col_ref_parts) > 1:
                 table, col = col_ref_parts

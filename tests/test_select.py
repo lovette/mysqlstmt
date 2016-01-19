@@ -73,6 +73,21 @@ class TestSelect(unittest.TestCase):
         sql_t = q.set_option('DISTINCT').columns('t1c1').sql()
         assert_equals(sql_t, ('SELECT DISTINCT `t1c1` FROM t1', None))
 
+    def test_select_quote_col_prequoted(self):
+        q = Select()
+        sql_t = q.from_table('t1').columns('`t1c1`').sql()
+        assert_equals(sql_t, ('SELECT `t1c1` FROM t1', None))
+
+    def test_select_quote_col_func(self):
+        q = Select()
+        sql_t = q.from_table('t1').columns('DATE(`t1c1`)').sql()
+        assert_equals(sql_t, ('SELECT DATE(`t1c1`) FROM t1', None))
+
+    def test_select_quote_col_as(self):
+        q = Select()
+        sql_t = q.from_table('t1').columns('t1c1 AS t1a1').sql()
+        assert_equals(sql_t, ('SELECT t1c1 AS t1a1 FROM t1', None))
+
     def test_join_field(self):
         # join(table, 'Field1')
         # JOIN table USING (Field1)
@@ -224,6 +239,11 @@ class TestSelect(unittest.TestCase):
         sql_t = q.from_table('t1').where_raw_value('t1c1', 'PASSWORD(?)', value_params=('mypw1',)).where_raw_value('t1c2', 'PASSWORD(?)', value_params=('mypw2',)).sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE (`t1c1` = PASSWORD(?) AND `t1c2` = PASSWORD(?))', ['mypw1', 'mypw2']))
 
+    def test_where_raw_value_func(self):
+        q = Select()
+        sql_t = q.from_table('t1').where_raw_value('DATE(t1c1)', 'NOW()', '>').sql()
+        assert_equals(sql_t, ('SELECT * FROM t1 WHERE DATE(t1c1) > NOW()', None))
+
     def test_where_value_true(self):
         q = Select()
         sql_t = q.from_table('t1').where_value('t1c1', True).sql()
@@ -248,6 +268,11 @@ class TestSelect(unittest.TestCase):
         q = Select()
         sql_t = q.from_table('t1').where_value('t1c1', datetime.time(12,01,02)).sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` = ?', ['12:01:02']))
+
+    def test_where_value_date_func(self):
+        q = Select()
+        sql_t = q.from_table('t1').where_value('DATE(`t1c1`)', datetime.date(2014,3,2), '>').sql()
+        assert_equals(sql_t, ('SELECT * FROM t1 WHERE DATE(`t1c1`) > ?', ['2014-03-02']))
 
     def test_where_value_object(self):
         class TestClass(object):

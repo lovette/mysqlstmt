@@ -197,8 +197,10 @@ class WhereCondition(object):
         Use :py:meth:`where_expr` if you want field names to be
         included in the SQL statement verbatim.
 
-        Value wills be included in the SQL statement verbatim.
+        Values will be included in the SQL statement verbatim.
         Use :py:meth:`where_value` if you want values to be pickled.
+
+        Parameterized values will be pickled by :py:meth:`mysqlstmt.stmt.Stmt.pickle`.
 
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
@@ -324,7 +326,9 @@ class WhereCondition(object):
                 val, op, val_params = value_op_tuple
 
             if val_params is not None and self._stmt.placeholder:
-                param_values.extend(val_params)
+                for param_val in val_params:
+                    pickled_val, can_paramize_val = self._stmt.pickle(param_val)
+                    param_values.append(pickled_val)
 
             sql.append(u'{field} {op} {val}'.format(field=self._stmt.quote_col_ref(field), op=op, val=val))
 

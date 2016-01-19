@@ -239,6 +239,12 @@ class TestSelect(unittest.TestCase):
         sql_t = q.from_table('t1').where_raw_value('t1c1', 'PASSWORD(?)', value_params=('mypw1',)).where_raw_value('t1c2', 'PASSWORD(?)', value_params=('mypw2',)).sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE (`t1c1` = PASSWORD(?) AND `t1c2` = PASSWORD(?))', ['mypw1', 'mypw2']))
 
+    def test_where_raw_value_with_param_between(self):
+        between_dates = (datetime.date(2014, 3, 2), datetime.date(2014, 3, 12))
+        q = Select()
+        sql_t = q.from_table('t1').where_raw_value('DATE(`t1c1`)', '? AND ?', 'BETWEEN', between_dates).sql()
+        assert_equals(sql_t, ('SELECT * FROM t1 WHERE DATE(`t1c1`) BETWEEN ? AND ?', ['2014-03-02', '2014-03-12']))
+
     def test_where_raw_value_func(self):
         q = Select()
         sql_t = q.from_table('t1').where_raw_value('DATE(t1c1)', 'NOW()', '>').sql()

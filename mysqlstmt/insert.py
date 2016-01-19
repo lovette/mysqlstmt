@@ -20,6 +20,10 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
         >>> q.set_value('t1c1', 1).sql()
         ('INSERT IGNORE INTO t1 (`t1c1`) VALUES (1)', None)
 
+        >>> q = Insert('t1')
+        >>> q.set_option('LOW_PRIORITY').set_value('t1c1', 1).sql()
+        ('INSERT LOW_PRIORITY INTO t1 (`t1c1`) VALUES (1)', None)
+
     See Also:
         :py:class:`mysqlstmt.replace.Replace`
     """
@@ -193,6 +197,9 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
         #     [ ON DUPLICATE KEY UPDATE col_name=expr [, col_name=expr] ... ]
 
         sql = ['REPLACE' if self._replace else 'INSERT']
+
+        if self.query_options:
+            sql.extend(self.query_options)
 
         if self.ignore_error:
             sql.append('IGNORE')

@@ -89,6 +89,10 @@ class Delete(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         >>> q = Delete(('t1', 't2'), allow_unqualified_delete=True)
         >>> q.join('t2', '.t1c1').join('t3', '..t1c1').sql()
         ('DELETE FROM t1, t2 USING t1 INNER JOIN t2 ON (t1.`t1c1` = t2.`t1c1`) INNER JOIN t3 ON (t2.`t1c1` = t3.`t1c1`)', None)
+
+        >>> q = Delete()
+        >>> q.set_option('LOW_PRIORITY').from_table('t1').where_value('t1c1', 1).sql()
+        ('DELETE LOW_PRIORITY FROM t1 WHERE `t1c1` = 1', None)
     """
 
     def __init__(self, table_name=None, ignore_error=False, allow_unqualified_delete=False, **kwargs):
@@ -197,6 +201,9 @@ class Delete(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         #     [WHERE where_condition]
 
         sql = ['DELETE']
+
+        if self.query_options:
+            sql.extend(self.query_options)
 
         if self.ignore_error:
             sql.append('IGNORE')

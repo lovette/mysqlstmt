@@ -154,6 +154,11 @@ class TestInsert(unittest.TestCase):
         sql = q.into_table('t1').set_value('t1c1',u'"äöü"').sql()
         assert_equals(sql, u'INSERT INTO t1 (`t1c1`) VALUES ("äöü")')
 
+    def test_set_value_int_option(self):
+        q = Insert()
+        sql_t = q.set_option('LOW_PRIORITY').into_table('t1').set_value('t1c1', 1).sql()
+        assert_equals(sql_t, ('INSERT LOW_PRIORITY INTO t1 (`t1c1`) VALUES (1)', None))
+
     @raises(ValueError)
     def test_fail_no_tables(self):
         q = Insert()

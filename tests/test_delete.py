@@ -105,6 +105,11 @@ class TestDelete(unittest.TestCase):
         sql_t = q.join('t2', '.t1c1').join('t3', '..t1c1').sql()
         assert_equals(sql_t, ('DELETE FROM t1, t2 USING t1 INNER JOIN t2 ON (t1.`t1c1` = t2.`t1c1`) INNER JOIN t3 ON (t2.`t1c1` = t3.`t1c1`)', None))
 
+    def test_delete_option(self):
+        q = Delete()
+        sql_t = q.set_option('LOW_PRIORITY').from_table('t1').where_value('t1c1', 1).sql()
+        assert_equals(sql_t, ('DELETE LOW_PRIORITY FROM t1 WHERE `t1c1` = 1', None))
+
     @raises(ValueError)
     def test_fail_no_table(self):
         q = Delete()

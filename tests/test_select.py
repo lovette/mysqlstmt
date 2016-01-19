@@ -68,6 +68,11 @@ class TestSelect(unittest.TestCase):
         sql_t = q.column_expr('PASSWORD(?)', data).sql()
         assert_equals(sql_t, ('SELECT PASSWORD(?)', data))
 
+    def test_select_distinct(self):
+        q = Select('t1')
+        sql_t = q.set_option('DISTINCT').columns('t1c1').sql()
+        assert_equals(sql_t, ('SELECT DISTINCT `t1c1` FROM t1', None))
+
     def test_join_field(self):
         # join(table, 'Field1')
         # JOIN table USING (Field1)

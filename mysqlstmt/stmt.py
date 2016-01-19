@@ -42,6 +42,9 @@ class Stmt(object):
         else:
             self.quote_all_col_refs = Config.quote_all_col_refs if quote_all_col_refs is None else quote_all_col_refs
 
+        # Public properties
+        self.query_options = []  # can append with ``set_option``
+
     def __call__(self, *args, **kwargs):
         """Returns SQL statement created by :py:meth:`sql`"""
         return self.sql()
@@ -171,3 +174,20 @@ class Stmt(object):
                 inline_values.append(self.quote(list_or_value))
             else:
                 inline_values.append(list_or_value)
+
+    def set_option(self, list_or_value):
+        """Sets query options (the keywords at the beginning of the SQL statement).
+
+        Arguments:
+            list_or_value (list or mixed): An option or list of options.
+
+        Returns:
+            object: self
+        """
+        if isinstance(list_or_value, collections.Iterable) and not isinstance(list_or_value, basestring):
+            for val in list_or_value:
+                self.set_option(val)
+        else:
+            self.query_options.append(list_or_value)
+
+        return self

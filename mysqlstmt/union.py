@@ -139,6 +139,9 @@ class Union(mysqlstmt.Stmt):
         # UNION [ALL | DISTINCT] SELECT ...
         # [UNION [ALL | DISTINCT] SELECT ...]
 
+        if self.query_options:
+            sql.extend(self.query_options)
+
         for stmt in self._selects:
             if isinstance(stmt, mysqlstmt.Select):
                 select_sql, select_params = stmt.sql()

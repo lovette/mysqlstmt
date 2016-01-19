@@ -130,6 +130,11 @@ class TestUpdate(unittest.TestCase):
         sql = q.table('t1').set_value('t1c1', u'"äöü"').sql()
         assert_equals(sql, u'UPDATE t1 SET `t1c1`="äöü"', None)
 
+    def test_set_value_int_options(self):
+        q = Update()
+        sql_t = q.set_option(['LOW_PRIORITY']).table('t1').set_value('t1c1', 1).sql()
+        assert_equals(sql_t, ('UPDATE LOW_PRIORITY t1 SET `t1c1`=1', None))
+
     @raises(ValueError)
     def test_fail_no_table(self):
         q = Update()

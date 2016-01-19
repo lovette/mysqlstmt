@@ -90,6 +90,10 @@ class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         >>> q = Update(placeholder=False)
         >>> q.table('t1').set_value('t1c1', 1).where_value('t1c2', 5).sql()
         UPDATE t1 SET `t1c1`=1 WHERE `t1c2` = 5
+
+        >>> q = Update()
+        >>> q.set_option('LOW_PRIORITY').table('t1').set_value('t1c1', 1).sql()
+        ('UPDATE LOW_PRIORITY t1 SET `t1c1`=1', None)
     """
 
     def __init__(self, table_name=None, ignore_error=False, **kwargs):
@@ -220,6 +224,9 @@ class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         #     [WHERE where_condition]
 
         sql = ['UPDATE']
+
+        if self.query_options:
+            sql.extend(self.query_options)
 
         if self.ignore_error:
             sql.append('IGNORE')

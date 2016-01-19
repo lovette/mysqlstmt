@@ -31,6 +31,10 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         >>> q = Select(cacheable=False)
         >>> sql_t = q.from_table('t1').columns('t1c1').sql()
         ('SELECT SQL_NO_CACHE `t1c1` FROM t1', None)
+
+        >>> q = Select('t1')
+        >>> q.set_option('DISTINCT').columns('t1c1').sql()
+        ('SELECT DISTINCT `t1c1` FROM t1', None)
     """
 
     def __init__(self, table_name=None, having_predicate='OR', cacheable=None, calc_found_rows=False, **kwargs):
@@ -571,6 +575,9 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         #     [FOR UPDATE | LOCK IN SHARE MODE]]
 
         sql = ['SELECT']
+
+        if self.query_options:
+            sql.extend(self.query_options)
 
         if self.cacheable is True:
             sql.append('SQL_CACHE')

@@ -5,6 +5,7 @@ from nose.tools import assert_equals, raises
 from mysqlstmt import Delete
 from collections import OrderedDict
 
+
 class TestDelete(unittest.TestCase):
     def test_constructor_table_name(self):
         q = Delete('t1')
@@ -34,19 +35,19 @@ class TestDelete(unittest.TestCase):
 
     def test_dict_ints(self):
         q = Delete()
-        values = OrderedDict([('t1c1',1), ('t1c2',2)])
+        values = OrderedDict([('t1c1', 1), ('t1c2', 2)])
         sql_t = q.from_table('t1').where_value(values).sql()
         assert_equals(sql_t, ('DELETE FROM t1 WHERE (`t1c1` = 1 AND `t1c2` = 2)', None))
 
     def test_dict_strings(self):
         q = Delete()
-        values = OrderedDict([('t1c1','a'), ('t1c2','b')])
+        values = OrderedDict([('t1c1', 'a'), ('t1c2', 'b')])
         sql_t = q.from_table('t1').where_value(values).sql()
-        assert_equals(sql_t, ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` = ?)", ['a','b']))
+        assert_equals(sql_t, ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` = ?)", ['a', 'b']))
 
     def test_null(self):
         q = Delete()
-        values = OrderedDict([('t1c1','a'), ('t1c2',None)])
+        values = OrderedDict([('t1c1', 'a'), ('t1c2', None)])
         sql_t = q.from_table('t1').where_value(values).sql()
         assert_equals(sql_t, ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` IS NULL)", ['a']))
 
@@ -62,7 +63,7 @@ class TestDelete(unittest.TestCase):
 
     def test_function_raw_value_dict(self):
         q = Delete()
-        sql_t = q.from_table('t1').where_raw_value({'t1c1':'NOW()'}).sql()
+        sql_t = q.from_table('t1').where_raw_value({'t1c1': 'NOW()'}).sql()
         assert_equals(sql_t, ('DELETE FROM t1 WHERE `t1c1` = NOW()', None))
 
     def test_order_by(self):
@@ -72,7 +73,7 @@ class TestDelete(unittest.TestCase):
 
     def test_order_bys(self):
         q = Delete()
-        sql_t = q.from_table('t1').where_value('t1c1', 1).order_by(['t1c1','t1c2']).sql()
+        sql_t = q.from_table('t1').where_value('t1c1', 1).order_by(['t1c1', 't1c2']).sql()
         assert_equals(sql_t, ('DELETE FROM t1 WHERE `t1c1` = 1 ORDER BY t1c1, t1c2', None))
 
     def test_limit(self):

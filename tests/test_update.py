@@ -5,6 +5,7 @@ from nose.tools import assert_equals, raises
 from mysqlstmt import Update
 from collections import OrderedDict
 
+
 class TestUpdate(unittest.TestCase):
     def test_constructor_table_name(self):
         q = Update('t1')
@@ -34,19 +35,19 @@ class TestUpdate(unittest.TestCase):
 
     def test_dict_ints(self):
         q = Update()
-        values = OrderedDict([('t1c1',1), ('t1c2',2)])
+        values = OrderedDict([('t1c1', 1), ('t1c2', 2)])
         sql_t = q.table('t1').set_value(values).sql()
         assert_equals(sql_t, ('UPDATE t1 SET `t1c1`=1, `t1c2`=2', None))
 
     def test_dict_strings(self):
         q = Update()
-        values = OrderedDict([('t1c1','a'), ('t1c2','b')])
+        values = OrderedDict([('t1c1', 'a'), ('t1c2', 'b')])
         sql_t = q.table('t1').set_value(values).sql()
-        assert_equals(sql_t, ("UPDATE t1 SET `t1c1`=?, `t1c2`=?", ['a','b']))
+        assert_equals(sql_t, ("UPDATE t1 SET `t1c1`=?, `t1c2`=?", ['a', 'b']))
 
     def test_null(self):
         q = Update()
-        values = OrderedDict([('t1c1','a'), ('t1c2',None)])
+        values = OrderedDict([('t1c1', 'a'), ('t1c2', None)])
         sql_t = q.table('t1').set_value(values).sql()
         assert_equals(sql_t, ("UPDATE t1 SET `t1c1`=?, `t1c2`=NULL", ['a']))
 
@@ -62,7 +63,7 @@ class TestUpdate(unittest.TestCase):
 
     def test_function_raw_value_dict(self):
         q = Update()
-        sql_t = q.table('t1').set_raw_value({'t1c1':'NOW()'}).sql()
+        sql_t = q.table('t1').set_raw_value({'t1c1': 'NOW()'}).sql()
         assert_equals(sql_t, ('UPDATE t1 SET `t1c1`=NOW()', None))
 
     def test_function_raw_value_with_valparams(self):
@@ -72,7 +73,7 @@ class TestUpdate(unittest.TestCase):
 
     def test_function_raw_value_dict_with_valparams(self):
         q = Update()
-        sql_t = q.table('t1').set_raw_value({'t1c1':('PASSWORD(?)', ('mypw',))}).sql()
+        sql_t = q.table('t1').set_raw_value({'t1c1': ('PASSWORD(?)', ('mypw',))}).sql()
         assert_equals(sql_t, ('UPDATE t1 SET `t1c1`=PASSWORD(?)', ['mypw']))
 
     def test_order_by(self):
@@ -82,7 +83,7 @@ class TestUpdate(unittest.TestCase):
 
     def test_order_bys(self):
         q = Update()
-        sql_t = q.table('t1').set_value('t1c1', 1).order_by(['t1c1','t1c2']).sql()
+        sql_t = q.table('t1').set_value('t1c1', 1).order_by(['t1c1', 't1c2']).sql()
         assert_equals(sql_t, ('UPDATE t1 SET `t1c1`=1 ORDER BY t1c1, t1c2', None))
 
     def test_limit(self):
@@ -107,7 +108,7 @@ class TestUpdate(unittest.TestCase):
 
     def test_join_2(self):
         q = Update()
-        sql_t = q.table(['t1','t2']).set_value('t1c1', 1).where_expr('(`t1c1` = `t2c1`)').sql()
+        sql_t = q.table(['t1', 't2']).set_value('t1c1', 1).where_expr('(`t1c1` = `t2c1`)').sql()
         assert_equals(sql_t, ('UPDATE t1, t2 SET `t1c1`=1 WHERE (`t1c1` = `t2c1`)', None))
 
     def test_noparam(self):

@@ -4,6 +4,7 @@ import unittest
 from nose.tools import assert_equals, raises
 from mysqlstmt import Lock
 
+
 class TestLock(unittest.TestCase):
     def test_unnamed_params(self):
         q = Lock('mylock', 5)

@@ -4,6 +4,7 @@ import unittest
 from nose.tools import assert_equals, raises
 from mysqlstmt import Union, Select
 
+
 class TestUnion(unittest.TestCase):
     def test_single(self):
         q = Union()

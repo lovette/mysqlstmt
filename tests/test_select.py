@@ -6,6 +6,7 @@ from mysqlstmt import Select
 from collections import OrderedDict
 import datetime
 
+
 class TestSelect(unittest.TestCase):
     def test_constructor_table_name(self):
         q = Select('t1')
@@ -28,7 +29,7 @@ class TestSelect(unittest.TestCase):
         assert_equals(sql_t, ('SELECT t1.`t1c1` FROM t1', None))
 
     def test_select_col_qualified_noquotes(self):
-        q = Select(quote_all_col_refs = False)
+        q = Select(quote_all_col_refs=False)
         sql_t = q.from_table('t1').columns('t1.t1c1').sql()
         assert_equals(sql_t, ('SELECT t1.t1c1 FROM t1', None))
 
@@ -49,12 +50,12 @@ class TestSelect(unittest.TestCase):
 
     def test_select_cols_list(self):
         q = Select()
-        sql_t = q.from_table('t1').columns(['t1c1','t1c2']).sql()
+        sql_t = q.from_table('t1').columns(['t1c1', 't1c2']).sql()
         assert_equals(sql_t, ('SELECT `t1c1`, `t1c2` FROM t1', None))
 
     def test_select_cols_tuple(self):
         q = Select()
-        sql_t = q.from_table('t1').columns(('t1c1','t1c2')).sql()
+        sql_t = q.from_table('t1').columns(('t1c1', 't1c2')).sql()
         assert_equals(sql_t, ('SELECT `t1c1`, `t1c2` FROM t1', None))
 
     def test_select_no_table(self):
@@ -106,14 +107,14 @@ class TestSelect(unittest.TestCase):
         # when join_cond is ('Field1', 'Field2', ...)
         # JOIN table USING (Field1, Field2, ...)
         q = Select()
-        sql_t = q.columns(['t1c1', 't2c1']).from_table('t1').left_join('t2', ('t1c1','t2c1')).sql()
+        sql_t = q.columns(['t1c1', 't2c1']).from_table('t1').left_join('t2', ('t1c1', 't2c1')).sql()
         assert_equals(sql_t, ('SELECT `t1c1`, `t2c1` FROM t1 LEFT JOIN t2 USING (`t1c1`, `t2c1`)', None))
 
     def test_join_fields(self):
         # join(table, (.Field1, .Field2))
         # JOIN table ON (root_table.Field1 = table.Field2)
         q = Select()
-        sql_t = q.columns(['t1c1', 't2c1']).from_table('t1').left_join('t2', ('.t1c1','.t2c1')).sql()
+        sql_t = q.columns(['t1c1', 't2c1']).from_table('t1').left_join('t2', ('.t1c1', '.t2c1')).sql()
         assert_equals(sql_t, ('SELECT `t1c1`, `t2c1` FROM t1 LEFT JOIN t2 ON (t1.`t1c1` = t2.`t2c1`)', None))
 
     def test_join_condition(self):
@@ -134,7 +135,7 @@ class TestSelect(unittest.TestCase):
         # join(table, (.Field1, .Field2))
         # JOIN table ON (root_table.Field1 = table.Field2)
         q = Select()
-        sql_t = q.columns(['t1.t1c1', 't2.t2c1']).from_table('t1').left_join('t2', ('.t1c1','.t2c1')).sql()
+        sql_t = q.columns(['t1.t1c1', 't2.t2c1']).from_table('t1').left_join('t2', ('.t1c1', '.t2c1')).sql()
         assert_equals(sql_t, ('SELECT t1.`t1c1`, t2.`t2c1` FROM t1 LEFT JOIN t2 ON (t1.`t1c1` = t2.`t2c1`)', None))
 
     def test_straight_join_field(self):
@@ -148,7 +149,7 @@ class TestSelect(unittest.TestCase):
         # join(table, (.Field1, .Field2))
         # JOIN table ON (root_table.Field1 = table.Field2)
         q = Select()
-        sql_t = q.columns(['t1a.c1', 't2a.c1']).from_table('t1 AS t1a').left_join('t2 AS t2a', ('.t1c1','.t2c1')).sql()
+        sql_t = q.columns(['t1a.c1', 't2a.c1']).from_table('t1 AS t1a').left_join('t2 AS t2a', ('.t1c1', '.t2c1')).sql()
         assert_equals(sql_t, ('SELECT t1a.`c1`, t2a.`c1` FROM t1 AS t1a LEFT JOIN t2 AS t2a ON (t1a.`t1c1` = t2a.`t2c1`)', None))
 
     def test_join_root_field_tableas(self):
@@ -169,7 +170,7 @@ class TestSelect(unittest.TestCase):
         # join(table, '.Field1')
         # JOIN table ON (root_table.Field1 = table.Field1)
         q = Select()
-        sql_t = q.columns(['t1c1', 't2c1', 't3c1']).from_table('t1').left_join(OrderedDict([('t2', '.t1c1'),('t3','.t1c1')])).sql()
+        sql_t = q.columns(['t1c1', 't2c1', 't3c1']).from_table('t1').left_join(OrderedDict([('t2', '.t1c1'), ('t3', '.t1c1')])).sql()
         assert_equals(sql_t, ('SELECT `t1c1`, `t2c1`, `t3c1` FROM t1 LEFT JOIN t2 ON (t1.`t1c1` = t2.`t1c1`) LEFT JOIN t3 ON (t1.`t1c1` = t3.`t1c1`)', None))
 
     def test_join_root_field_multi_dotdot(self):
@@ -262,22 +263,22 @@ class TestSelect(unittest.TestCase):
 
     def test_where_value_datetime(self):
         q = Select()
-        sql_t = q.from_table('t1').where_value('t1c1', datetime.datetime(2014,3,2,12,01,02)).sql()
+        sql_t = q.from_table('t1').where_value('t1c1', datetime.datetime(2014, 3, 2, 12, 1, 2)).sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` = ?', ['2014-03-02 12:01:02']))
 
     def test_where_value_date(self):
         q = Select()
-        sql_t = q.from_table('t1').where_value('t1c1', datetime.date(2014,3,2)).sql()
+        sql_t = q.from_table('t1').where_value('t1c1', datetime.date(2014, 3, 2)).sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` = ?', ['2014-03-02']))
 
     def test_where_value_time(self):
         q = Select()
-        sql_t = q.from_table('t1').where_value('t1c1', datetime.time(12,01,02)).sql()
+        sql_t = q.from_table('t1').where_value('t1c1', datetime.time(12, 1, 2)).sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` = ?', ['12:01:02']))
 
     def test_where_value_date_func(self):
         q = Select()
-        sql_t = q.from_table('t1').where_value('DATE(`t1c1`)', datetime.date(2014,3,2), '>').sql()
+        sql_t = q.from_table('t1').where_value('DATE(`t1c1`)', datetime.date(2014, 3, 2), '>').sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE DATE(`t1c1`) > ?', ['2014-03-02']))
 
     def test_where_value_object(self):
@@ -320,12 +321,12 @@ class TestSelect(unittest.TestCase):
 
     def test_where_value_in(self):
         q = Select()
-        sql_t = q.from_table('t1').where_value('t1c1', [1,2,3]).sql()
+        sql_t = q.from_table('t1').where_value('t1c1', [1, 2, 3]).sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` IN (1, 2, 3)', None))
 
     def test_where_value_notin(self):
         q = Select()
-        sql_t = q.from_table('t1').where_value('t1c1', [1,2,3], '<>').sql()
+        sql_t = q.from_table('t1').where_value('t1c1', [1, 2, 3], '<>').sql()
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` NOT IN (1, 2, 3)', None))
 
     def test_where_value_in_single(self):
@@ -485,7 +486,7 @@ class TestSelect(unittest.TestCase):
 
     def test_remove_col(self):
         q = Select()
-        sql_t = q.from_table('t1').columns(('t1c1','t2c1')).remove_column('t2c1').sql()
+        sql_t = q.from_table('t1').columns(('t1c1', 't2c1')).remove_column('t2c1').sql()
         assert_equals(sql_t, ('SELECT `t1c1` FROM t1', None))
 
     def test_remove_col_expr(self):

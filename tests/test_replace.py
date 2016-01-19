@@ -4,6 +4,7 @@ import unittest
 from mysqlstmt import Replace
 from nose.tools import assert_equals
 
+
 class TestReplace(unittest.TestCase):
     def test_set_value_int(self):
         q = Replace()

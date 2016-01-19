@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from nose.tools import assert_equals, raises
+from nose.tools import assert_equals
 from mysqlstmt import Select, WhereCondition
+
 
 class TestWhereCondition(unittest.TestCase):
     def test_empty(self):

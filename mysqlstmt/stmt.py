@@ -90,7 +90,7 @@ class Stmt(object):
             val (mixed): Value to pickle.
 
         Returns:
-            string: Pickled value as a string.
+            tuple: (string, bool) Pickled value as a string and True if value should be parameterized.
         """
         if val is None:
             return 'NULL', False

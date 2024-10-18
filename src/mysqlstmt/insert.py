@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import mysqlstmt
 from .set_values_mixin import SetValuesMixin
 

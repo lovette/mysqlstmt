@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class JoinMixin(object):
     """Provide join related functionality to statement classes.
 

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # mysqlstmt documentation build configuration file, created by
 # sphinx-quickstart on Thu Mar  6 23:50:34 2014.
 #

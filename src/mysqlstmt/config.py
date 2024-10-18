@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class Config(object):
     """Global configuration variables for all queries derived from ``mysqlstmt.Stmt``.
     Values set on these class attributes will affect all queries.

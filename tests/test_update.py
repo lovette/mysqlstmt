@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import unittest
 from nose.tools import assert_equals, raises
 from mysqlstmt import Update

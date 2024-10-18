@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import mysqlstmt
 from .join_mixin import JoinMixin
 from .where_mixin import WhereMixin

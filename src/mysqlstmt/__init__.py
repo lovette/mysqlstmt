@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from stmt import Stmt
 from config import Config
 from delete import Delete

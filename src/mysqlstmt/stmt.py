@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import datetime
 import collections
 from .config import Config

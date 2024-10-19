@@ -1,6 +1,8 @@
 import unittest
-from mysqlstmt import Replace
+
 from nose.tools import assert_equals
+
+from mysqlstmt import Replace
 
 
 class TestReplace(unittest.TestCase):

@@ -1,5 +1,6 @@
-import mysqlstmt
 import collections
+
+import mysqlstmt
 
 
 class WhereCondition:

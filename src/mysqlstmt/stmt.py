@@ -1,5 +1,6 @@
-import datetime
 import collections
+import datetime
+
 from .config import Config
 
 

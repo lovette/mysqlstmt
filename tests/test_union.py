@@ -1,6 +1,8 @@
 import unittest
+
 from nose.tools import assert_equals, raises
-from mysqlstmt import Union, Select
+
+from mysqlstmt import Select, Union
 
 
 class TestUnion(unittest.TestCase):

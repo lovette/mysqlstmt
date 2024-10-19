@@ -1,7 +1,8 @@
 import mysqlstmt
-from .where_mixin import WhereMixin
+
 from .join_mixin import JoinMixin
 from .set_values_mixin import SetValuesMixin
+from .where_mixin import WhereMixin
 
 
 class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):

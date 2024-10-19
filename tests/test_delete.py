@@ -1,7 +1,9 @@
 import unittest
-from nose.tools import assert_equals, raises
-from mysqlstmt import Delete
 from collections import OrderedDict
+
+from nose.tools import assert_equals, raises
+
+from mysqlstmt import Delete
 
 
 class TestDelete(unittest.TestCase):

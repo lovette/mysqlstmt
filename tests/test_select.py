@@ -1,8 +1,10 @@
-import unittest
-from nose.tools import assert_equals, raises
-from mysqlstmt import Select
-from collections import OrderedDict
 import datetime
+import unittest
+from collections import OrderedDict
+
+from nose.tools import assert_equals, raises
+
+from mysqlstmt import Select
 
 
 class TestSelect(unittest.TestCase):

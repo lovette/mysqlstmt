@@ -1,8 +1,10 @@
-import mysqlstmt
-from .where_mixin import WhereMixin
-from .join_mixin import JoinMixin
-from .config import Config
 import collections
+
+import mysqlstmt
+
+from .config import Config
+from .join_mixin import JoinMixin
+from .where_mixin import WhereMixin
 
 
 class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):

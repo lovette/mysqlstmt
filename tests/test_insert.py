@@ -1,7 +1,9 @@
 import unittest
-from nose.tools import assert_equals, raises
-from mysqlstmt import Insert, Select
 from collections import OrderedDict
+
+from nose.tools import assert_equals, raises
+
+from mysqlstmt import Insert, Select
 
 
 class TestInsert(unittest.TestCase):

@@ -1,7 +1,9 @@
 import unittest
-from nose.tools import assert_equals, raises
-from mysqlstmt import Update
 from collections import OrderedDict
+
+from nose.tools import assert_equals, raises
+
+from mysqlstmt import Update
 
 
 class TestUpdate(unittest.TestCase):

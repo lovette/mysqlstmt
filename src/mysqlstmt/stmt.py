@@ -164,7 +164,7 @@ class Stmt:
             param_values (list or None): List to append parameterized values to;
                 set to None to force everything not to be inlined.
         """
-        if isinstance(list_or_value, collections.Iterable) and not isinstance(list_or_value, basestring):
+        if isinstance(list_or_value, collections.abc.Iterable) and not isinstance(list_or_value, str):
             for val in list_or_value:
                 self._parameterize_values(val, inline_values, param_values)
         else:
@@ -192,7 +192,7 @@ class Stmt:
         Returns:
             object: self
         """
-        if isinstance(list_or_value, collections.Iterable) and not isinstance(list_or_value, basestring):
+        if isinstance(list_or_value, collections.abc.Iterable) and not isinstance(list_or_value, str):
             for val in list_or_value:
                 self.set_option(val)
         else:

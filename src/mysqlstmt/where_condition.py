@@ -214,7 +214,7 @@ class WhereCondition:
         assert isinstance(field_or_dict, str) or isinstance(field_or_dict, dict)
         assert value_or_tuple is None or isinstance(value_or_tuple, str) or isinstance(value_or_tuple, tuple)
         assert isinstance(operator, str)
-        assert value_params is None or isinstance(value_params, collections.Iterable)
+        assert value_params is None or isinstance(value_params, collections.abc.Iterable)
 
         if not isinstance(field_or_dict, str):
             for f, v in field_or_dict.iteritems():
@@ -246,7 +246,7 @@ class WhereCondition:
             object: self
         """
         assert isinstance(expr_or_list, str) or isinstance(expr_or_list, list) or isinstance(expr_or_list, tuple)
-        assert expr_params is None or isinstance(expr_params, collections.Iterable)
+        assert expr_params is None or isinstance(expr_params, collections.abc.Iterable)
 
         if not isinstance(expr_or_list, str) and not isinstance(expr_or_list, tuple):
             for expr in expr_or_list:
@@ -289,7 +289,7 @@ class WhereCondition:
 
             self._stmt._parameterize_values(val, inline_values, param_values)
 
-            if isinstance(val, collections.Iterable) and not isinstance(val, str):
+            if isinstance(val, collections.abc.Iterable) and not isinstance(val, str):
                 # Force lists and tuples to be an IN statement
                 if len(val) > 1:
                     val = f"({', '.join(inline_values)})"

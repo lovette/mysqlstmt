@@ -469,18 +469,18 @@ class TestSelect(unittest.TestCase):
 
     def test_where_value_utf_param(self):
         q = Select()
-        sql_t = q.from_table('t1').where_value('t1c1', u"äöü").sql()
-        assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` = ?', [u"äöü"]))
+        sql_t = q.from_table('t1').where_value('t1c1', "äöü").sql()
+        assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` = ?', ["äöü"]))
 
     def test_where_value_utf_inline(self):
         q = Select()
-        sql_t = q.from_table('t1').where_expr(u'`t1c1` = "äöü"').sql()
-        assert_equals(sql_t, (u'SELECT * FROM t1 WHERE `t1c1` = "äöü"', None))
+        sql_t = q.from_table('t1').where_expr('`t1c1` = "äöü"').sql()
+        assert_equals(sql_t, ('SELECT * FROM t1 WHERE `t1c1` = "äöü"', None))
 
     def test_where_value_utf_noparam(self):
         q = Select(placeholder=False)
-        sql = q.from_table('t1').where_value('t1c1', u'"äöü"').sql()
-        assert_equals(sql, u'SELECT * FROM t1 WHERE `t1c1` = "äöü"')
+        sql = q.from_table('t1').where_value('t1c1', '"äöü"').sql()
+        assert_equals(sql, 'SELECT * FROM t1 WHERE `t1c1` = "äöü"')
 
     def test_remove_col(self):
         q = Select()

@@ -133,25 +133,25 @@ class TestInsert(unittest.TestCase):
 
     def test_dict_strings_utf_param(self):
         q = Insert()
-        values = OrderedDict([('t1c1', u'äöü')])
+        values = OrderedDict([('t1c1', 'äöü')])
         sql_t = q.into_table('t1').set_value(values).sql()
-        assert_equals(sql_t, ("INSERT INTO t1 (`t1c1`) VALUES (?)", [u'äöü']))
+        assert_equals(sql_t, ("INSERT INTO t1 (`t1c1`) VALUES (?)", ['äöü']))
 
     def test_dict_strings_utf_raw(self):
         q = Insert()
-        sql_t = q.into_table('t1').set_raw_value('t1c1', u'"äöü"').sql()
-        assert_equals(sql_t, (u'INSERT INTO t1 (`t1c1`) VALUES ("äöü")', None))
+        sql_t = q.into_table('t1').set_raw_value('t1c1', '"äöü"').sql()
+        assert_equals(sql_t, ('INSERT INTO t1 (`t1c1`) VALUES ("äöü")', None))
 
     def test_dict_strings_utf_batch(self):
         q = Insert()
-        data = [[u'äöü']]
+        data = [['äöü']]
         sql_t = q.into_table('t1').columns('t1c1').set_batch_value(data).sql()
         assert_equals(sql_t, ('INSERT INTO t1 (`t1c1`) VALUES (?)', data))
 
     def test_dict_strings_utf_noparam(self):
         q = Insert(placeholder=False)
-        sql = q.into_table('t1').set_value('t1c1', u'"äöü"').sql()
-        assert_equals(sql, u'INSERT INTO t1 (`t1c1`) VALUES ("äöü")')
+        sql = q.into_table('t1').set_value('t1c1', '"äöü"').sql()
+        assert_equals(sql, 'INSERT INTO t1 (`t1c1`) VALUES ("äöü")')
 
     def test_set_value_int_option(self):
         q = Insert()

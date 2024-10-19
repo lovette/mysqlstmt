@@ -292,7 +292,7 @@ class WhereCondition(object):
             if isinstance(val, collections.Iterable) and not isinstance(val, basestring):
                 # Force lists and tuples to be an IN statement
                 if len(val) > 1:
-                    val = u'({0})'.format(', '.join(inline_values))
+                    val = '({0})'.format(', '.join(inline_values))
                     if op == '=':
                         op = 'IN'
                     elif op == '<>':
@@ -313,7 +313,7 @@ class WhereCondition(object):
                 elif op == '<>':
                     op = 'IS NOT'
 
-            sql.append(u'{field} {op} {val}'.format(field=field, op=op, val=val))
+            sql.append('{field} {op} {val}'.format(field=field, op=op, val=val))
 
         for field_or_tuple in self._values_raw:
             if isinstance(self._values_raw, dict):
@@ -328,7 +328,7 @@ class WhereCondition(object):
                     pickled_val, can_paramize_val = self._stmt.pickle(param_val)
                     param_values.append(pickled_val)
 
-            sql.append(u'{field} {op} {val}'.format(field=self._stmt.quote_col_ref(field), op=op, val=val))
+            sql.append('{field} {op} {val}'.format(field=self._stmt.quote_col_ref(field), op=op, val=val))
 
         for expr_tuple in self._raw_exprs:
             expr, expr_params = expr_tuple
@@ -339,5 +339,5 @@ class WhereCondition(object):
         if not sql:
             return None
         if self.expr_count > 1:
-            return u'({0})'.format(self._predicate.join(sql))
-        return u'{0}'.format(self._predicate.join(sql))
+            return '({0})'.format(self._predicate.join(sql))
+        return '{0}'.format(self._predicate.join(sql))

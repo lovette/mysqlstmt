@@ -157,7 +157,7 @@ class JoinMixin(object):
             elif not isinstance(join_cond, basestring):
                 # list [condition,...]
                 # JOIN table ON (condition [AND condition [AND ...]])
-                join_clause = u'{join_type} {join_table_factor} ON ({conditions})'.format(
+                join_clause = '{join_type} {join_table_factor} ON ({conditions})'.format(
                     conditions=' AND '.join(join_cond), **format_args)
 
             elif join_cond.startswith('..'):

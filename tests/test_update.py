@@ -116,18 +116,18 @@ class TestUpdate(unittest.TestCase):
 
     def test_set_value_utf_param(self):
         q = Update()
-        sql_t = q.table('t1').set_value('t1c1', u'äöü').sql()
-        assert_equals(sql_t, ('UPDATE t1 SET `t1c1`=?', [u'äöü']))
+        sql_t = q.table('t1').set_value('t1c1', 'äöü').sql()
+        assert_equals(sql_t, ('UPDATE t1 SET `t1c1`=?', ['äöü']))
 
     def test_set_value_raw_utf(self):
         q = Update()
-        sql_t = q.table('t1').set_raw_value('t1c1', u'"äöü"').sql()
-        assert_equals(sql_t, (u'UPDATE t1 SET `t1c1`="äöü"', None))
+        sql_t = q.table('t1').set_raw_value('t1c1', '"äöü"').sql()
+        assert_equals(sql_t, ('UPDATE t1 SET `t1c1`="äöü"', None))
 
     def test_set_value_utf_noparam(self):
         q = Update(placeholder=False)
-        sql = q.table('t1').set_value('t1c1', u'"äöü"').sql()
-        assert_equals(sql, u'UPDATE t1 SET `t1c1`="äöü"', None)
+        sql = q.table('t1').set_value('t1c1', '"äöü"').sql()
+        assert_equals(sql, 'UPDATE t1 SET `t1c1`="äöü"', None)
 
     def test_set_value_int_options(self):
         q = Update()

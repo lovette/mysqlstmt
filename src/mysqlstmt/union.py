@@ -155,7 +155,7 @@ class Union(mysqlstmt.Stmt):
                 else:
                     sql.append('UNION')
 
-            sql.append(u'({0})'.format(stmtsql))
+            sql.append('({0})'.format(stmtsql))
 
         if self._orderby_conds:
             sql.append('ORDER BY')

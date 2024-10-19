@@ -231,7 +231,7 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
             assert len(col_names) == len(inline_values)
 
             sql.append('({0})'.format(', '.join([self.quote_col_ref(col) for col in col_names])))
-            sql.append(u'VALUES ({0})'.format(', '.join(inline_values)))
+            sql.append('VALUES ({0})'.format(', '.join(inline_values)))
 
         elif self._batch_values:
             if not col_names:
@@ -247,14 +247,14 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
                 for row in self._batch_values:
                     row_values = []
                     self._parameterize_values(row, row_values, None)
-                    inline_values.append(u'({0})'.format(', '.join(row_values)))
+                    inline_values.append('({0})'.format(', '.join(row_values)))
 
-                sql.append(u'VALUES {0}'.format(', '.join(inline_values)))
+                sql.append('VALUES {0}'.format(', '.join(inline_values)))
             else:
                 # ALL columns are parameterized
                 inline_values = [self.placeholder for _ in range(len(col_names))]
                 assert len(col_names) == len(inline_values)
-                sql.append(u'VALUES ({0})'.format(', '.join(inline_values)))
+                sql.append('VALUES ({0})'.format(', '.join(inline_values)))
 
                 for row in self._batch_values:
                     row_param_value = []

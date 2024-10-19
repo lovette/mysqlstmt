@@ -203,7 +203,7 @@ class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
 
         assert len(col_names) == len(inline_values)
         for col, val in zip(col_names, inline_values):
-            set_values.append(u'{0}={1}'.format(self.quote_col_ref(col), val))
+            set_values.append('{0}={1}'.format(self.quote_col_ref(col), val))
 
         # MySQL UPDATE syntax as of 5.7:
         #

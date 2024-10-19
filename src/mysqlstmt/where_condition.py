@@ -173,10 +173,10 @@ class WhereCondition:
         Returns:
             object: self
         """
-        assert isinstance(field_or_dict, basestring) or isinstance(field_or_dict, dict)
-        assert isinstance(operator, basestring)
+        assert isinstance(field_or_dict, str) or isinstance(field_or_dict, dict)
+        assert isinstance(operator, str)
 
-        if not isinstance(field_or_dict, basestring):
+        if not isinstance(field_or_dict, str):
             for f, v in field_or_dict.iteritems():
                 self.where_value(f, v, operator)
         elif not isinstance(value_or_tuple, tuple):
@@ -211,12 +211,12 @@ class WhereCondition:
         Returns:
             object: self
         """
-        assert isinstance(field_or_dict, basestring) or isinstance(field_or_dict, dict)
-        assert value_or_tuple is None or isinstance(value_or_tuple, basestring) or isinstance(value_or_tuple, tuple)
-        assert isinstance(operator, basestring)
+        assert isinstance(field_or_dict, str) or isinstance(field_or_dict, dict)
+        assert value_or_tuple is None or isinstance(value_or_tuple, str) or isinstance(value_or_tuple, tuple)
+        assert isinstance(operator, str)
         assert value_params is None or isinstance(value_params, collections.Iterable)
 
-        if not isinstance(field_or_dict, basestring):
+        if not isinstance(field_or_dict, str):
             for f, v in field_or_dict.iteritems():
                 self.where_raw_value(f, v)
         elif not isinstance(value_or_tuple, tuple):
@@ -245,10 +245,10 @@ class WhereCondition:
         Returns:
             object: self
         """
-        assert isinstance(expr_or_list, basestring) or isinstance(expr_or_list, list) or isinstance(expr_or_list, tuple)
+        assert isinstance(expr_or_list, str) or isinstance(expr_or_list, list) or isinstance(expr_or_list, tuple)
         assert expr_params is None or isinstance(expr_params, collections.Iterable)
 
-        if not isinstance(expr_or_list, basestring) and not isinstance(expr_or_list, tuple):
+        if not isinstance(expr_or_list, str) and not isinstance(expr_or_list, tuple):
             for expr in expr_or_list:
                 self.where_expr(expr)
         elif not isinstance(expr_or_list, tuple):
@@ -289,7 +289,7 @@ class WhereCondition:
 
             self._stmt._parameterize_values(val, inline_values, param_values)
 
-            if isinstance(val, collections.Iterable) and not isinstance(val, basestring):
+            if isinstance(val, collections.Iterable) and not isinstance(val, str):
                 # Force lists and tuples to be an IN statement
                 if len(val) > 1:
                     val = f"({', '.join(inline_values)})"

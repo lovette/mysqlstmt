@@ -109,7 +109,7 @@ class Stmt:
             return '1', False
         elif val is False:
             return '0', False
-        elif isinstance(val, basestring):
+        elif isinstance(val, str):
             return val, True
         elif isinstance(val, (int, long, float)):
             return str(val), False

@@ -91,7 +91,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').sql()
             ('SELECT * FROM t1', None)
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.from_table(c)
         else:
@@ -161,7 +161,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         """
         assert value_params is None or isinstance(value_params, collections.Iterable)
 
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.column(c, raw, value_params)
         elif raw is True:
@@ -224,7 +224,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').columns('t1c1').column_expr('1+1 AS t2c1').remove_column('t2c1').sql()
             ('SELECT `t1c1` FROM t1', None)
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.remove_column(c)
         else:
@@ -283,7 +283,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').order_by('t1c1').sql()
             ('SELECT * FROM t1 ORDER BY t1c1', None)
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.order_by(c)
         else:
@@ -310,7 +310,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').group_by(['t1c1', 't1c2']).sql()
             ('SELECT * FROM t1 GROUP BY t1c1, t1c2', None)
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.group_by(c)
         else:

@@ -63,7 +63,7 @@ class Union(mysqlstmt.Stmt):
             >>> sql_t = q.union(s1).union(s2).sql()
             ('(SELECT `t1c1` FROM t1) UNION (SELECT `t2c1` FROM t2)', None)
         """
-        if not isinstance(list_or_stmt, basestring) and not isinstance(list_or_stmt, mysqlstmt.Select):
+        if not isinstance(list_or_stmt, str) and not isinstance(list_or_stmt, mysqlstmt.Select):
             for c in list_or_stmt:
                 self.union(c)
         else:
@@ -88,7 +88,7 @@ class Union(mysqlstmt.Stmt):
             >>> sql_t = q.union('SELECT `t1c1` AS sort_col FROM t1').select('SELECT `t2c1` FROM t2').order_by('sort_col, DESC').sql()
             ('(SELECT `t1c1` AS sort_col FROM t1) UNION (SELECT `t2c1` FROM t2) ORDER BY sort_col, DESC', None)
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.order_by(c)
         else:

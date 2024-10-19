@@ -61,7 +61,7 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
         Raises:
             ValueError: More than one table was specified.
         """
-        if not isinstance(table_name, basestring):
+        if not isinstance(table_name, str):
             raise ValueError('Only one table can be specified')
 
         self._table_name = table_name
@@ -76,7 +76,7 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
         Returns:
             object: self
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.column(c)
         else:

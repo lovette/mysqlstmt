@@ -56,7 +56,7 @@ class JoinMixin:
         if 'JOIN' not in join_type:
             join_type += ' JOIN'
 
-        if not isinstance(dict_or_table_factor, basestring):
+        if not isinstance(dict_or_table_factor, str):
             for table_factor, cond in dict_or_table_factor.iteritems():
                 self.join(table_factor, cond, join_type)
         else:
@@ -154,7 +154,7 @@ class JoinMixin:
                 join_clause = '{join_type} {join_table_factor} USING ({column_list})'.format(
                     column_list=', '.join([self.quote_col_ref(col) for col in join_cond]), **format_args)
 
-            elif not isinstance(join_cond, basestring):
+            elif not isinstance(join_cond, str):
                 # list [condition,...]
                 # JOIN table ON (condition [AND condition [AND ...]])
                 join_clause = '{join_type} {join_table_factor} ON ({conditions})'.format(

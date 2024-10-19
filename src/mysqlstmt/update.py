@@ -125,7 +125,7 @@ class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         Returns:
             object: self
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.table(c)
         else:
@@ -145,7 +145,7 @@ class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         Returns:
             object: self
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.order_by(c)
         else:

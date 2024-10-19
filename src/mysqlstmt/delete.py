@@ -128,7 +128,7 @@ class Delete(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         Raises:
             ValueError: More than one table was specified.
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             self._table_names.extend(list_or_name)
         else:
             self._table_names.append(list_or_name)
@@ -144,7 +144,7 @@ class Delete(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         Returns:
             object: self
         """
-        if not isinstance(list_or_name, basestring):
+        if not isinstance(list_or_name, str):
             for c in list_or_name:
                 self.order_by(c)
         else:

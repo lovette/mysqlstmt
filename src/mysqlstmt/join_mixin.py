@@ -1,4 +1,4 @@
-class JoinMixin(object):
+class JoinMixin:
     """Provide join related functionality to statement classes.
 
     Note:

@@ -3,7 +3,7 @@ import collections
 from .config import Config
 
 
-class Stmt(object):
+class Stmt:
     """Base class for all statement classes.
     """
 

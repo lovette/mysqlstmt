@@ -2,7 +2,7 @@ import mysqlstmt
 import collections
 
 
-class WhereCondition(object):
+class WhereCondition:
     """Condition statements that can be used for WHERE and HAVING clauses.
 
     ``WhereCondition`` objects are created automatically by the ``where`` and ``having`` functions

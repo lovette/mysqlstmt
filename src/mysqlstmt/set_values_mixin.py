@@ -1,7 +1,7 @@
 import collections
 
 
-class SetValuesMixin(object):
+class SetValuesMixin:
     """Provide set_value related functionality to statement classes.
 
     Note:

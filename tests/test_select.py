@@ -280,7 +280,7 @@ class TestSelect(unittest.TestCase):
         assert_equals(sql_t, ('SELECT * FROM t1 WHERE DATE(`t1c1`) > ?', ['2014-03-02']))
 
     def test_where_value_object(self):
-        class TestClass(object):
+        class TestClass:
             def __str__(self):
                 return "object as a string"
         q = Select()

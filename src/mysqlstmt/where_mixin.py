@@ -1,7 +1,7 @@
 import mysqlstmt
 
 
-class WhereMixin(object):
+class WhereMixin:
     """Provide where_value related functionality to statement classes.
 
     Note:

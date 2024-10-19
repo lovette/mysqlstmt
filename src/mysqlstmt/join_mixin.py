@@ -11,7 +11,7 @@ class JoinMixin(object):
         Keyword Arguments:
             **kwargs: Base class arguments.
         """
-        super(JoinMixin, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self._join_refs = []
 

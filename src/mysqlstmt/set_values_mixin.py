@@ -14,7 +14,7 @@ class SetValuesMixin(object):
         Keyword Arguments:
             **kwargs: Base class arguments.
         """
-        super(SetValuesMixin, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self._values = collections.OrderedDict()
         self._values_raw = collections.OrderedDict()

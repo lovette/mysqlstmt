@@ -15,7 +15,7 @@ class WhereMixin(object):
             where_predicate (string, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.
             **kwargs: Base class arguments.
         """
-        super(WhereMixin, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         assert where_predicate == 'AND' or where_predicate == 'OR'
 

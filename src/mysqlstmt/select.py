@@ -47,7 +47,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
             calc_found_rows (bool, optional): Whether MySQL should calculate number of found rows. Default is False.
             **kwargs: Base class arguments.
         """
-        super(Select, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         assert having_predicate == 'AND' or having_predicate == 'OR'
 

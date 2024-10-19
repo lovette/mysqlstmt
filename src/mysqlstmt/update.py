@@ -103,7 +103,7 @@ class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
             where_predicate (string, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.
             **kwargs: Base class arguments.
         """
-        super(Update, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # Public flags
         self.ignore_error = ignore_error

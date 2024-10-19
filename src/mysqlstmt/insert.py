@@ -34,7 +34,7 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
             ignore_error (bool, optional): Include IGNORE flag in statement.
             **kwargs: Base class arguments.
         """
-        super(Insert, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # Public flags
         self.ignore_error = ignore_error

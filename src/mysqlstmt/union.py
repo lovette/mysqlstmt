@@ -31,7 +31,7 @@ class Union(mysqlstmt.Stmt):
             distinct (bool, optional): Include DISTINCT or ALL option in statement.
             **kwargs: Base class arguments.
         """
-        super(Union, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self._selects = []
         self._distinct = distinct

@@ -18,7 +18,7 @@ class WhereCondition(object):
             where_predicate (string, optional): The predicate for this condition, either 'AND' or 'OR'.
             **kwargs: Base class arguments.
         """
-        super(WhereCondition, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         assert isinstance(stmt, mysqlstmt.Stmt)
         self._stmt = stmt

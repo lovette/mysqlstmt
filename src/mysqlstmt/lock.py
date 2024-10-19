@@ -13,7 +13,7 @@ class Lock(mysqlstmt.Stmt):
             timeout (int): Lock timeout, in seconds.
             **kwargs: Base class arguments.
         """
-        super(Lock, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self._name = name
         self._timeout = timeout

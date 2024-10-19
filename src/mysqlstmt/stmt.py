@@ -23,7 +23,7 @@ class Stmt(object):
             Default settings for ``placeholder``, ``quote_all_col_refs`` and ``quote_all_values``
             are set through :py:class:`mysqlstmt.config.Config`
         """
-        super(Stmt, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         if placeholder is False or Config.placeholder is False:
             self.placeholder = False

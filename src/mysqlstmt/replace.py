@@ -17,6 +17,6 @@ class Replace(mysqlstmt.Insert):
         Keyword Arguments:
             **kwargs: Base class arguments.
         """
-        super(Replace, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self._replace = True

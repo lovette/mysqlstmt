@@ -137,7 +137,7 @@ class Stmt:
             to use this functionality. Whenever possible you should use parameterization,
             or escape values before they get to creating SQL statments.
         """
-        return "'{0}'".format(val.replace("'", "\\'"))
+        return "'{}'".format(val.replace("'", "\\'"))
 
     @staticmethod
     def table_alias(table_factor):

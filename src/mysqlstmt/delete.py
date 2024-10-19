@@ -221,7 +221,7 @@ class Delete(mysqlstmt.Stmt, WhereMixin, JoinMixin):
                 sql.append(', '.join(self._orderby_conds))
 
             if self._limit:
-                sql.append('LIMIT {0}'.format(self._limit))
+                sql.append(f'LIMIT {self._limit}')
         else:
             sql.append('FROM')
             sql.append(', '.join(self._table_names))

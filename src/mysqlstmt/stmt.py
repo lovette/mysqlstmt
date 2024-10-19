@@ -88,9 +88,9 @@ class Stmt:
             col_ref_parts = col_ref.split('.')
             if len(col_ref_parts) > 1:
                 table, col = col_ref_parts
-                return '{0}.`{1}`'.format(table, col)
+                return f'{table}.`{col}`'
             else:
-                return '`{0}`'.format(col_ref)
+                return f'`{col_ref}`'
 
         return col_ref
 

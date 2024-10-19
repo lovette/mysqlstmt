@@ -203,7 +203,7 @@ class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
 
         assert len(col_names) == len(inline_values)
         for col, val in zip(col_names, inline_values):
-            set_values.append('{0}={1}'.format(self.quote_col_ref(col), val))
+            set_values.append(f'{self.quote_col_ref(col)}={val}')
 
         # MySQL UPDATE syntax as of 5.7:
         #
@@ -249,7 +249,7 @@ class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
             if len(self._table_names) + len(self._join_refs) > 1:
                 raise ValueError('Multiple-table UPDATE does not support LIMIT')
 
-            sql.append('LIMIT {0}'.format(self._limit))
+            sql.append(f'LIMIT {self._limit}')
 
         if self.placeholder:
             return ' '.join(sql), param_values if param_values else None

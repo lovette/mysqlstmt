@@ -230,8 +230,8 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
 
             assert len(col_names) == len(inline_values)
 
-            sql.append('({0})'.format(', '.join([self.quote_col_ref(col) for col in col_names])))
-            sql.append('VALUES ({0})'.format(', '.join(inline_values)))
+            sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
+            sql.append(f"VALUES ({', '.join(inline_values)})")
 
         elif self._batch_values:
             if not col_names:
@@ -239,7 +239,7 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
             if self._select:
                 raise ValueError('set_batch_value is incompatible with INSERT...SELECT')
 
-            sql.append('({0})'.format(', '.join([self.quote_col_ref(col) for col in col_names])))
+            sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
 
             if not self.placeholder:
                 inline_values = []
@@ -247,14 +247,14 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
                 for row in self._batch_values:
                     row_values = []
                     self._parameterize_values(row, row_values, None)
-                    inline_values.append('({0})'.format(', '.join(row_values)))
+                    inline_values.append(f"({', '.join(row_values)})")
 
-                sql.append('VALUES {0}'.format(', '.join(inline_values)))
+                sql.append(f"VALUES {', '.join(inline_values)}")
             else:
                 # ALL columns are parameterized
                 inline_values = [self.placeholder for _ in range(len(col_names))]
                 assert len(col_names) == len(inline_values)
-                sql.append('VALUES ({0})'.format(', '.join(inline_values)))
+                sql.append(f"VALUES ({', '.join(inline_values)})")
 
                 for row in self._batch_values:
                     row_param_value = []
@@ -265,7 +265,7 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
             if not col_names:
                 raise ValueError('No columns are specified')
 
-            sql.append('({0})'.format(', '.join([self.quote_col_ref(col) for col in col_names])))
+            sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
 
             if isinstance(self._select, mysqlstmt.Select):
                 select_sql, select_params = self._select.sql()

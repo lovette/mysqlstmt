@@ -155,7 +155,7 @@ class Union(mysqlstmt.Stmt):
                 else:
                     sql.append('UNION')
 
-            sql.append('({0})'.format(stmtsql))
+            sql.append(f'({stmtsql})')
 
         if self._orderby_conds:
             sql.append('ORDER BY')
@@ -164,9 +164,9 @@ class Union(mysqlstmt.Stmt):
         if self._limit is not None:
             row_count, offset = self._limit
             if offset > 0:
-                sql.append('LIMIT {0},{1}'.format(offset, row_count))
+                sql.append(f'LIMIT {offset},{row_count}')
             else:
-                sql.append('LIMIT {0}'.format(row_count))
+                sql.append(f'LIMIT {row_count}')
 
         if self.placeholder:
             return ' '.join(sql), param_values if param_values else None

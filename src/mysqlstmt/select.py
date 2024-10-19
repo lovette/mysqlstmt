@@ -228,7 +228,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
             for c in list_or_name:
                 self.remove_column(c)
         else:
-            expr_alias = ' AS {0}'.format(list_or_name)
+            expr_alias = f' AS {list_or_name}'
             self._select_col = [c for c in self._select_col if c != list_or_name]
             self._select_expr = [c for c in self._select_expr if not c[0].endswith(expr_alias)]
 
@@ -264,7 +264,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         for i, col in enumerate(self._select_col):
             if qualify_cols is None or col in qualify_cols:
                 if '.' not in col:
-                    self._select_col[i] = '{0}.{1}'.format(table_name, col)
+                    self._select_col[i] = f'{table_name}.{col}'
 
         return self
 
@@ -622,9 +622,9 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         if self._limit is not None:
             row_count, offset = self._limit
             if offset > 0:
-                sql.append('LIMIT {0},{1}'.format(offset, row_count))
+                sql.append(f'LIMIT {offset},{row_count}')
             else:
-                sql.append('LIMIT {0}'.format(row_count))
+                sql.append(f'LIMIT {row_count}')
 
         if self.placeholder:
             return ' '.join(sql), param_values if param_values else None

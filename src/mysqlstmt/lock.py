@@ -43,7 +43,7 @@ class Lock(mysqlstmt.Stmt):
         if not self._timeout:
             raise ValueError('Lock timeout is required')
 
-        sql = ['SELECT', 'GET_LOCK({0}, {1})'.format(self.quote(self._name), self._timeout)]
+        sql = ['SELECT', f'GET_LOCK({self.quote(self._name)}, {self._timeout})']
 
         if self.placeholder:
             return ' '.join(sql), None
@@ -68,7 +68,7 @@ class Lock(mysqlstmt.Stmt):
         if not self._name:
             raise ValueError('Lock name is required')
 
-        sql = ['SELECT', 'RELEASE_LOCK({0})'.format(self.quote(self._name))]
+        sql = ['SELECT', f'RELEASE_LOCK({self.quote(self._name)})']
 
         if self.placeholder:
             return ' '.join(sql), None
@@ -93,7 +93,7 @@ class Lock(mysqlstmt.Stmt):
         if not self._name:
             raise ValueError('Lock name is required')
 
-        sql = ['SELECT', 'IS_FREE_LOCK({0})'.format(self.quote(self._name))]
+        sql = ['SELECT', f'IS_FREE_LOCK({self.quote(self._name)})']
 
         if self.placeholder:
             return ' '.join(sql), None

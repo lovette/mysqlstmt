@@ -2,13 +2,13 @@ from mysqlstmt import Select, WhereCondition
 
 
 class TestWhereCondition:
-    def test_empty(self):
+    def test_empty(self) -> None:
         c = WhereCondition(Select())
         params = []
         sql = c.sql(params)
         assert sql is None
 
-    def test_nesting(self):
+    def test_nesting(self) -> None:
         c1 = WhereCondition(Select())
         c2 = WhereCondition(Select())
         c3 = WhereCondition(Select())
@@ -18,7 +18,7 @@ class TestWhereCondition:
         assert c2.nesting_level == 1
         assert c3.nesting_level == 2
 
-    def test_nesting2(self):
+    def test_nesting2(self) -> None:
         c1 = WhereCondition(Select())
         c2 = WhereCondition(Select())
         c3 = WhereCondition(Select())
@@ -28,7 +28,7 @@ class TestWhereCondition:
         assert c2.nesting_level == 1
         assert c3.nesting_level == 2
 
-    def test_where_nesting_empty(self):
+    def test_where_nesting_empty(self) -> None:
         c1 = WhereCondition(Select())
         c2 = WhereCondition(Select())
         c1.add_cond(c2)
@@ -36,13 +36,13 @@ class TestWhereCondition:
         sql = c1.sql(params)
         assert sql is None
 
-    def test_where_cond(self):
+    def test_where_cond(self) -> None:
         c = WhereCondition(Select())
         params = []
         sql = c.where_value("t1c1", 3).sql(params)
         assert sql == "`t1c1` = 3"
 
-    def test_where_conds(self):
+    def test_where_conds(self) -> None:
         c1 = WhereCondition(Select())
         c2 = WhereCondition(Select())
         c1.add_cond(c2)

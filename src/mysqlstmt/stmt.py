@@ -118,7 +118,7 @@ class Stmt:
             return '0', False
         elif isinstance(val, str):
             return val, True
-        elif isinstance(val, (int, long, float)):
+        elif isinstance(val, (int, float)):
             return str(val), False
         elif isinstance(val, datetime.datetime):
             return val.strftime('%Y-%m-%d %H:%M:%S'), True

@@ -126,7 +126,7 @@ class Stmt:
             return val.strftime('%Y-%m-%d'), True
         elif isinstance(val, datetime.time):
             return val.strftime('%H:%M:%S'), True
-        return unicode(val), True
+        return str(val), True
 
     @staticmethod
     def quote(val):

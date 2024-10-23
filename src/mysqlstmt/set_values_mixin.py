@@ -79,7 +79,7 @@ class SetValuesMixin:
             ('INSERT INTO t1 (`t1c1`) VALUES (?)', ['NOW()'])
         """
         if not isinstance(field_or_dict, str):
-            for f, v in field_or_dict.iteritems():
+            for f, v in field_or_dict.items():
                 self.set_value(f, v)
         else:
             self._values[field_or_dict] = value
@@ -125,7 +125,7 @@ class SetValuesMixin:
         assert value_params is None or isinstance(value_params, collections.abc.Iterable)
 
         if not isinstance(field_or_dict, str):
-            for f, v in field_or_dict.iteritems():
+            for f, v in field_or_dict.items():
                 self.set_raw_value(f, v)
         elif not isinstance(value_or_tuple, tuple):
             self.set_raw_value(field_or_dict, (value_or_tuple, value_params))

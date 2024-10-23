@@ -63,7 +63,7 @@ class JoinMixin:
             join_type += ' JOIN'
 
         if not isinstance(dict_or_table_factor, str):
-            for table_factor, cond in dict_or_table_factor.iteritems():
+            for table_factor, cond in dict_or_table_factor.items():
                 self.join(table_factor, cond, join_type)
         else:
             self._join_refs.append((join_type, dict_or_table_factor, join_cond))

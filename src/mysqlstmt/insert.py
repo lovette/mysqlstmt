@@ -224,7 +224,7 @@ class Insert(Stmt, SetValuesMixin):
             inline_values = []
 
             if self._values:
-                for col, val in self._values.iteritems():
+                for col, val in self._values.items():
                     col_names.append(col)
                     self._parameterize_values(val, inline_values, param_values)
 

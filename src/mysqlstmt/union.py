@@ -34,7 +34,8 @@ class Union(Stmt):
         """Constructor
 
         Keyword Arguments:
-            list_or_stmt(string or list, optional): A single, or list of, 'SELECT...' SQL or :py:class:`mysqlstmt.select.Select` statements to execute.
+            list_or_stmt(string or list, optional): A single, or list of, 'SELECT...' SQL
+                or :py:class:`mysqlstmt.select.Select` statements to execute.
             distinct (bool, optional): Include DISTINCT or ALL option in statement.
             **kwargs: Base class arguments.
         """
@@ -52,7 +53,8 @@ class Union(Stmt):
         """Add SELECT statement to union.
 
         Arguments:
-            list_or_stmt (string or mysqlstmt.Select): A single, or list of, 'SELECT...' SQL or :py:class:`mysqlstmt.select.Select` statements to execute.
+            list_or_stmt (string or mysqlstmt.Select): A single, or list of, 'SELECT...' SQL
+                or :py:class:`mysqlstmt.select.Select` statements to execute.
 
         Returns:
             object: self
@@ -133,7 +135,7 @@ class Union(Stmt):
             ValueError: The statement cannot be created with the given attributes.
         """
         if not self._selects:
-            raise ValueError('No SELECT statements are specified')
+            raise ValueError("No SELECT statements are specified")
 
         sql = []
         param_values = []
@@ -158,24 +160,24 @@ class Union(Stmt):
 
             if sql:
                 if self._distinct is False:
-                    sql.append('UNION ALL')
+                    sql.append("UNION ALL")
                 else:
-                    sql.append('UNION')
+                    sql.append("UNION")
 
-            sql.append(f'({stmtsql})')
+            sql.append(f"({stmtsql})")
 
         if self._orderby_conds:
-            sql.append('ORDER BY')
-            sql.append(', '.join(self._orderby_conds))
+            sql.append("ORDER BY")
+            sql.append(", ".join(self._orderby_conds))
 
         if self._limit is not None:
             row_count, offset = self._limit
             if offset > 0:
-                sql.append(f'LIMIT {offset},{row_count}')
+                sql.append(f"LIMIT {offset},{row_count}")
             else:
-                sql.append(f'LIMIT {row_count}')
+                sql.append(f"LIMIT {row_count}")
 
         if self.placeholder:
-            return ' '.join(sql), param_values if param_values else None
+            return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return ' '.join(sql)
+        return " ".join(sql)

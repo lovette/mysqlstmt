@@ -8,8 +8,7 @@ from .stmt import Stmt
 
 
 class Lock(Stmt):
-    """SELECT GET_LOCK statement.
-    """
+    """SELECT GET_LOCK statement."""
 
     def __init__(self, name=None, timeout=None, **kwargs):
         """Constructor
@@ -45,15 +44,15 @@ class Lock(Stmt):
             ("SELECT GET_LOCK('mylock', 5)", None)
         """
         if not self._name:
-            raise ValueError('Lock name is required')
+            raise ValueError("Lock name is required")
         if not self._timeout:
-            raise ValueError('Lock timeout is required')
+            raise ValueError("Lock timeout is required")
 
-        sql = ['SELECT', f'GET_LOCK({self.quote(self._name)}, {self._timeout})']
+        sql = ["SELECT", f"GET_LOCK({self.quote(self._name)}, {self._timeout})"]
 
         if self.placeholder:
-            return ' '.join(sql), None
-        return ' '.join(sql)
+            return " ".join(sql), None
+        return " ".join(sql)
 
     def release_lock(self):
         """Build SELECT RELEASE_LOCK SQL statement.
@@ -72,13 +71,13 @@ class Lock(Stmt):
             ("SELECT RELEASE_LOCK('mylock')", None)
         """
         if not self._name:
-            raise ValueError('Lock name is required')
+            raise ValueError("Lock name is required")
 
-        sql = ['SELECT', f'RELEASE_LOCK({self.quote(self._name)})']
+        sql = ["SELECT", f"RELEASE_LOCK({self.quote(self._name)})"]
 
         if self.placeholder:
-            return ' '.join(sql), None
-        return ' '.join(sql)
+            return " ".join(sql), None
+        return " ".join(sql)
 
     def is_free_lock(self):
         """Build SELECT IS_FREE_LOCK SQL statement.
@@ -97,13 +96,13 @@ class Lock(Stmt):
             ("SELECT IS_FREE_LOCK('mylock')", None)
         """
         if not self._name:
-            raise ValueError('Lock name is required')
+            raise ValueError("Lock name is required")
 
-        sql = ['SELECT', f'IS_FREE_LOCK({self.quote(self._name)})']
+        sql = ["SELECT", f"IS_FREE_LOCK({self.quote(self._name)})"]
 
         if self.placeholder:
-            return ' '.join(sql), None
-        return ' '.join(sql)
+            return " ".join(sql), None
+        return " ".join(sql)
 
     sql = get_lock
     """Alias for :py:meth:`get_lock`."""

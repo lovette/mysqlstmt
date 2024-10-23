@@ -30,13 +30,13 @@ class WhereCondition:
         assert isinstance(stmt, mysqlstmt.Stmt)
         self._stmt = stmt
 
-        if where_predicate is None or where_predicate == 'AND':
+        if where_predicate is None or where_predicate == "AND":
             # With 'AND', it makes sense to only set one value per field
             # so we use a dict: field=(value, operator, value_params)
             self._values = collections.OrderedDict()
             self._values_raw = collections.OrderedDict()
-            where_predicate = 'AND'
-        elif where_predicate == 'OR':
+            where_predicate = "AND"
+        elif where_predicate == "OR":
             # With 'OR', you can reference the same field multiple times
             # so we use a list of tuples: (field, (value, operator, value_params))
             self._values = []
@@ -46,7 +46,7 @@ class WhereCondition:
 
         self._conds = []
         self._raw_exprs = []
-        self._predicate = f' {where_predicate} '
+        self._predicate = f" {where_predicate} "
         self._nesting_level = 0
 
     @property
@@ -146,7 +146,7 @@ class WhereCondition:
         See Also:
             :py:class:`mysqlstmt.where_condition.WhereCondition` :py:meth:`add_cond` :py:meth:`where_or`
         """
-        return self.add_cond(where_predicate='AND')
+        return self.add_cond(where_predicate="AND")
 
     def where_or(self):
         """Activates a new ``WhereCondition`` with an 'OR' predicate.
@@ -157,9 +157,9 @@ class WhereCondition:
         See Also:
             :py:class:`mysqlstmt.where_condition.WhereCondition` :py:meth:`where_cond` :py:meth:`where_and`
         """
-        return self.add_cond(where_predicate='OR')
+        return self.add_cond(where_predicate="OR")
 
-    def where_value(self, field_or_dict, value_or_tuple=None, operator='='):
+    def where_value(self, field_or_dict, value_or_tuple=None, operator="="):
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -195,7 +195,7 @@ class WhereCondition:
 
         return self
 
-    def where_raw_value(self, field_or_dict, value_or_tuple=None, operator='=', value_params=None):
+    def where_raw_value(self, field_or_dict, value_or_tuple=None, operator="=", value_params=None):
         """Compare field to a an unmanipulated value.
 
         Field names may be escaped with backticks.
@@ -300,27 +300,27 @@ class WhereCondition:
                 # Force lists and tuples to be an IN statement
                 if len(val) > 1:
                     val = f"({', '.join(inline_values)})"
-                    if op == '=':
-                        op = 'IN'
-                    elif op == '<>':
-                        op = 'NOT IN'
+                    if op == "=":
+                        op = "IN"
+                    elif op == "<>":
+                        op = "NOT IN"
                 else:
                     # Simplify 'FIELD IN (VALUE)' to 'FIELD = VALUE'
                     val = inline_values[0]
-                    if op == 'IN':
-                        op = '='
-                    elif op == 'NOT IN':
-                        op = '<>'
+                    if op == "IN":
+                        op = "="
+                    elif op == "NOT IN":
+                        op = "<>"
             else:
                 val = inline_values[0]
 
-            if val == 'NULL' or val == 'NOT NULL':
-                if op == '=':
-                    op = 'IS'
-                elif op == '<>':
-                    op = 'IS NOT'
+            if val == "NULL" or val == "NOT NULL":
+                if op == "=":
+                    op = "IS"
+                elif op == "<>":
+                    op = "IS NOT"
 
-            sql.append(f'{field} {op} {val}')
+            sql.append(f"{field} {op} {val}")
 
         for field_or_tuple in self._values_raw:
             if isinstance(self._values_raw, dict):
@@ -335,7 +335,7 @@ class WhereCondition:
                     pickled_val, can_paramize_val = self._stmt.pickle(param_val)
                     param_values.append(pickled_val)
 
-            sql.append(f'{self._stmt.quote_col_ref(field)} {op} {val}')
+            sql.append(f"{self._stmt.quote_col_ref(field)} {op} {val}")
 
         for expr_tuple in self._raw_exprs:
             expr, expr_params = expr_tuple
@@ -346,5 +346,5 @@ class WhereCondition:
         if not sql:
             return None
         if self.expr_count > 1:
-            return f'({self._predicate.join(sql)})'
-        return f'{self._predicate.join(sql)}'
+            return f"({self._predicate.join(sql)})"
+        return f"{self._predicate.join(sql)}"

@@ -181,13 +181,12 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         Raises:
             ValueError: The statement cannot be created with the given attributes.
         """
-
         if not self._table_names:
-            raise ValueError('UPDATE requires at least one table')
+            raise ValueError("UPDATE requires at least one table")
         if not self._values and not self._values_raw:
-            raise ValueError('UPDATE requires at least one value')
+            raise ValueError("UPDATE requires at least one value")
 
-        table_refs = [', '.join(self._table_names)]
+        table_refs = [", ".join(self._table_names)]
         param_values = []
         col_names = []
         inline_values = []
@@ -209,7 +208,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
 
         assert len(col_names) == len(inline_values)
         for col, val in zip(col_names, inline_values):
-            set_values.append(f'{self.quote_col_ref(col)}={val}')
+            set_values.append(f"{self.quote_col_ref(col)}={val}")
 
         # MySQL UPDATE syntax as of 5.7:
         #
@@ -227,37 +226,37 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         #     SET col_name1={expr1|DEFAULT} [, col_name2={expr2|DEFAULT}] ...
         #     [WHERE where_condition]
 
-        sql = ['UPDATE']
+        sql = ["UPDATE"]
 
         if self.query_options:
             sql.extend(self.query_options)
 
         if self.ignore_error:
-            sql.append('IGNORE')
+            sql.append("IGNORE")
 
-        sql.append(' '.join(table_refs))
+        sql.append(" ".join(table_refs))
 
-        sql.append('SET')
-        sql.append(', '.join(set_values))
+        sql.append("SET")
+        sql.append(", ".join(set_values))
 
         if self._where_cond_root.has_conds:
-            sql.append('WHERE')
+            sql.append("WHERE")
             sql.append(self._where_cond_root.sql(param_values))
 
         if self._orderby_conds:
             if len(self._table_names) + len(self._join_refs) > 1:
-                raise ValueError('Multiple-table UPDATE does not support ORDER BY')
+                raise ValueError("Multiple-table UPDATE does not support ORDER BY")
 
-            sql.append('ORDER BY')
-            sql.append(', '.join(self._orderby_conds))
+            sql.append("ORDER BY")
+            sql.append(", ".join(self._orderby_conds))
 
         if self._limit:
             if len(self._table_names) + len(self._join_refs) > 1:
-                raise ValueError('Multiple-table UPDATE does not support LIMIT')
+                raise ValueError("Multiple-table UPDATE does not support LIMIT")
 
-            sql.append(f'LIMIT {self._limit}')
+            sql.append(f"LIMIT {self._limit}")
 
         if self.placeholder:
-            return ' '.join(sql), param_values if param_values else None
+            return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return ' '.join(sql)
+        return " ".join(sql)

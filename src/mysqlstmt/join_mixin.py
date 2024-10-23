@@ -4,6 +4,7 @@ This module provides:
 - JoinMixin
 """
 
+
 class JoinMixin:
     """Provide join related functionality to statement classes.
 
@@ -21,7 +22,7 @@ class JoinMixin:
 
         self._join_refs = []
 
-    def join(self, dict_or_table_factor, join_cond=None, join_type='INNER'):
+    def join(self, dict_or_table_factor, join_cond=None, join_type="INNER"):
         """Join a table with a JOIN condition.
 
         Arguments:
@@ -57,10 +58,9 @@ class JoinMixin:
             >>> q.columns(['t1c1', 't2c1']).from_table('t1').join('t2', 't1c1', 'STRAIGHT_JOIN').sql()
             ('SELECT `t1c1`, `t2c1` FROM t1 STRAIGHT_JOIN t2 USING (`t1c1`)', None)
         """
-
         # Turn 'INNER' into 'INNER JOIN' but ignore 'STRAIGHT_JOIN'
-        if 'JOIN' not in join_type:
-            join_type += ' JOIN'
+        if "JOIN" not in join_type:
+            join_type += " JOIN"
 
         if not isinstance(dict_or_table_factor, str):
             for table_factor, cond in dict_or_table_factor.items():
@@ -123,7 +123,7 @@ class JoinMixin:
             >>> q.columns(['t1c1', 't2c1', 't3c1']).from_table('t1').left_join('t2', '..t1c1').left_join('t3', '..t2c1').sql()
             ('SELECT `t1c1`, `t2c1`, `t3c1` FROM t1 LEFT JOIN t2 ON (t1.`t1c1` = t2.`t1c1`) LEFT JOIN t3 ON (t2.`t2c1` = t3.`t2c1`)', None)
         """
-        return self.join(table_or_dict, join_cond, 'LEFT')
+        return self.join(table_or_dict, join_cond, "LEFT")
 
     def _append_join_table_refs(self, root_table_factor, table_refs):
         """
@@ -139,50 +139,57 @@ class JoinMixin:
             join_table = self.table_alias(join_table_factor)
 
             format_args = {
-                'join_table': join_table,
-                'join_table_factor': join_table_factor,  # join_table [AS alias]
-                'join_type': join_type,
-                'root_table_alias': root_table_alias,
-                'prev_join_table': prev_join_table,
+                "join_table": join_table,
+                "join_table_factor": join_table_factor,  # join_table [AS alias]
+                "join_type": join_type,
+                "root_table_alias": root_table_alias,
+                "prev_join_table": prev_join_table,
             }
 
-            if isinstance(join_cond, tuple) and join_cond[0].startswith('.'):
+            if isinstance(join_cond, tuple) and join_cond[0].startswith("."):
                 # tuple ('.Field1', '.Field2')
                 # JOIN table ON (root_table_alias.Field1 = table.Field2)
                 assert len(join_cond) == 2
                 field1, field2 = join_cond
-                join_clause = '{join_type} {join_table_factor} ON ({root_table_alias}.{field1} = {join_table}.{field2})'.format(
-                    field1=self.quote_col_ref(field1[1:]), field2=self.quote_col_ref(field2[1:]), **format_args)
+                join_clause = "{join_type} {join_table_factor} ON ({root_table_alias}.{field1} = {join_table}.{field2})".format(
+                    field1=self.quote_col_ref(field1[1:]),
+                    field2=self.quote_col_ref(field2[1:]),
+                    **format_args,
+                )
 
             elif isinstance(join_cond, tuple):
                 # tuple ('Field1', 'Field2', ...)
                 # JOIN table USING (Field1, Field2, ...)
-                join_clause = '{join_type} {join_table_factor} USING ({column_list})'.format(
-                    column_list=', '.join([self.quote_col_ref(col) for col in join_cond]), **format_args)
+                join_clause = "{join_type} {join_table_factor} USING ({column_list})".format(
+                    column_list=", ".join([self.quote_col_ref(col) for col in join_cond]),
+                    **format_args,
+                )
 
             elif not isinstance(join_cond, str):
                 # list [condition,...]
                 # JOIN table ON (condition [AND condition [AND ...]])
-                join_clause = '{join_type} {join_table_factor} ON ({conditions})'.format(
-                    conditions=' AND '.join(join_cond), **format_args)
+                join_clause = "{join_type} {join_table_factor} ON ({conditions})".format(conditions=" AND ".join(join_cond), **format_args)
 
-            elif join_cond.startswith('..'):
+            elif join_cond.startswith(".."):
                 # '..Field1'
                 # JOIN table ON (prev_join_table.Field1 = table.Field1)
-                join_clause = '{join_type} {join_table_factor} ON ({prev_join_table}.{field} = {join_table}.{field})'.format(
-                    field=self.quote_col_ref(join_cond[2:]), **format_args)
+                join_clause = "{join_type} {join_table_factor} ON ({prev_join_table}.{field} = {join_table}.{field})".format(
+                    field=self.quote_col_ref(join_cond[2:]),
+                    **format_args,
+                )
 
-            elif join_cond.startswith('.'):
+            elif join_cond.startswith("."):
                 # '.Field1'
                 # JOIN table ON (root_table_alias.Field1 = table.Field1)
-                join_clause = '{join_type} {join_table_factor} ON ({root_table_alias}.{field} = {join_table}.{field})'.format(
-                    field=self.quote_col_ref(join_cond[1:]), **format_args)
+                join_clause = "{join_type} {join_table_factor} ON ({root_table_alias}.{field} = {join_table}.{field})".format(
+                    field=self.quote_col_ref(join_cond[1:]),
+                    **format_args,
+                )
 
             else:
                 # 'Field1'
                 # JOIN table USING (Field1)
-                join_clause = '{join_type} {join_table_factor} USING ({field})'.format(
-                    field=self.quote_col_ref(join_cond), **format_args)
+                join_clause = "{join_type} {join_table_factor} USING ({field})".format(field=self.quote_col_ref(join_cond), **format_args)
 
             table_refs.append(join_clause)
 

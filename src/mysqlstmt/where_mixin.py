@@ -14,7 +14,7 @@ class WhereMixin:
         This class is not to be instantiated directly.
     """
 
-    def __init__(self, where_predicate='OR', **kwargs):
+    def __init__(self, where_predicate="OR", **kwargs):
         """Constructor
 
         Keyword Arguments:
@@ -23,14 +23,14 @@ class WhereMixin:
         """
         super().__init__(**kwargs)
 
-        assert where_predicate == 'AND' or where_predicate == 'OR'
+        assert where_predicate == "AND" or where_predicate == "OR"
 
         self._where_cond_root = WhereCondition(self, where_predicate=where_predicate)
 
         # Default first condition is 'AND'; will be ignored if where_or is called first
-        self.where_cond(where_predicate='AND')
+        self.where_cond(where_predicate="AND")
 
-    def where_value(self, field_or_dict, value_or_tuple=None, operator='='):
+    def where_value(self, field_or_dict, value_or_tuple=None, operator="="):
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -142,7 +142,7 @@ class WhereMixin:
 
     where_values = where_value
 
-    def where_raw_value(self, field_or_dict, value_or_tuple=None, operator='=', value_params=None):
+    def where_raw_value(self, field_or_dict, value_or_tuple=None, operator="=", value_params=None):
         """Compare field to a an unmanipulated value.
 
         Field names may be escaped with backticks.
@@ -282,15 +282,18 @@ class WhereMixin:
         Examples: ::
 
             >>> q = Select()
-            >>> q.from_table('t1').where_value('t1c1', 1).where_and().where_value('t1c2', 5).where_and().where_value('t1c1', 6).sql()
+            >>> q.from_table('t1').where_value('t1c1', 1).where_and().where_value(
+                't1c2', 5).where_and().where_value('t1c1', 6).sql()
             ('SELECT * FROM t1 WHERE (`t1c1` = 1 OR `t1c2` = 5 OR `t1c1` = 6)', None)
 
             >>> q = Select()
-            >>> q.from_table('t1').where_value('t1c1', 1).where_value('t1c2', 5).where_and().where_value('t1c1', 6).where_value('t1c2', 10).sql()
+            >>> q.from_table('t1').where_value('t1c1', 1).where_value(
+                't1c2', 5).where_and().where_value('t1c1', 6).where_value('t1c2', 10).sql()
             ('SELECT * FROM t1 WHERE ((`t1c1` = 1 AND `t1c2` = 5) OR (`t1c1` = 6 AND `t1c2` = 10))', None)
 
             >>> q = Select()
-            >>> q.from_table('t1').where_and().where_value('t1c1', 1).where_value('t1c2', 5).where_and().where_value('t1c1', 6).where_value('t1c2', 10).sql()
+            >>> q.from_table('t1').where_and().where_value('t1c1', 1)
+                .where_value('t1c2', 5).where_and().where_value('t1c1', 6).where_value('t1c2', 10).sql()
             ('SELECT * FROM t1 WHERE ((`t1c1` = 1 AND `t1c2` = 5) OR (`t1c1` = 6 AND `t1c2` = 10))', None)
         """
         self._where_cond_root.where_and()
@@ -312,7 +315,8 @@ class WhereMixin:
             ('SELECT * FROM t1 WHERE (`t1c1` = 3 OR `t1c1` = 5)', None)
 
             >>> q = Select(where_predicate='AND')
-            >>> q.from_table('t1').where_or().where_value('t1c1', 1).where_value('t1c1', 5).where_or().where_value('t1c1', 6).where_value('t1c1', 10).sql()
+            >>> q.from_table('t1').where_or().where_value('t1c1', 1).where_value(
+                't1c1', 5).where_or().where_value('t1c1', 6).where_value('t1c1', 10).sql()
             ('SELECT * FROM t1 WHERE ((`t1c1` = 1 OR `t1c1` = 5) AND (`t1c1` = 6 OR `t1c1` = 10))', None)
         """
         self._where_cond_root.where_or()

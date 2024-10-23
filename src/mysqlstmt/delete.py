@@ -180,9 +180,8 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         Raises:
             ValueError: The statement cannot be created with the given attributes.
         """
-
         if not self._table_names:
-            raise ValueError('DELETE requires at least one table')
+            raise ValueError("DELETE requires at least one table")
 
         param_values = []
         multi_table = len(self._table_names) > 1 or len(self._join_refs) > 0
@@ -204,52 +203,52 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         #     USING table_references
         #     [WHERE where_condition]
 
-        sql = ['DELETE']
+        sql = ["DELETE"]
 
         if self.query_options:
             sql.extend(self.query_options)
 
         if self.ignore_error:
-            sql.append('IGNORE')
+            sql.append("IGNORE")
 
         if not multi_table:
-            sql.append('FROM')
+            sql.append("FROM")
             sql.append(self._table_names[0])
 
             if self._where_cond_root.has_conds:
-                sql.append('WHERE')
+                sql.append("WHERE")
                 sql.append(self._where_cond_root.sql(param_values))
             elif not self.allow_unqualified_delete:
-                raise ValueError('DANGER! Unqualified deletes can ruin your day!')
+                raise ValueError("DANGER! Unqualified deletes can ruin your day!")
 
             if self._orderby_conds:
-                sql.append('ORDER BY')
-                sql.append(', '.join(self._orderby_conds))
+                sql.append("ORDER BY")
+                sql.append(", ".join(self._orderby_conds))
 
             if self._limit:
-                sql.append(f'LIMIT {self._limit}')
+                sql.append(f"LIMIT {self._limit}")
         else:
-            sql.append('FROM')
-            sql.append(', '.join(self._table_names))
+            sql.append("FROM")
+            sql.append(", ".join(self._table_names))
 
             if self._join_refs:
-                sql.append('USING')
+                sql.append("USING")
                 table_refs = [self._table_names[0]]
                 self._append_join_table_refs(self._table_names[0], table_refs)
-                sql.append(' '.join(table_refs))
+                sql.append(" ".join(table_refs))
 
             if self._where_cond_root.has_conds:
-                sql.append('WHERE')
+                sql.append("WHERE")
                 sql.append(self._where_cond_root.sql(param_values))
             elif not self.allow_unqualified_delete:
-                raise ValueError('DANGER! Unqualified deletes can ruin your day!')
+                raise ValueError("DANGER! Unqualified deletes can ruin your day!")
 
             if self._orderby_conds:
-                raise ValueError('ORDER BY not supported when DELETE FROM multiple tables')
+                raise ValueError("ORDER BY not supported when DELETE FROM multiple tables")
             if self._limit:
-                raise ValueError('LIMIT not supported when DELETE FROM multiple tables')
+                raise ValueError("LIMIT not supported when DELETE FROM multiple tables")
 
         if self.placeholder:
-            return ' '.join(sql), param_values if param_values else None
+            return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return ' '.join(sql)
+        return " ".join(sql)

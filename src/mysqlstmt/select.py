@@ -43,7 +43,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         ('SELECT DISTINCT `t1c1` FROM t1', None)
     """
 
-    def __init__(self, table_name=None, having_predicate='OR', cacheable=None, calc_found_rows=False, **kwargs):
+    def __init__(self, table_name=None, having_predicate="OR", cacheable=None, calc_found_rows=False, **kwargs):
         """Constructor
 
         Keyword Arguments:
@@ -57,7 +57,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         """
         super().__init__(**kwargs)
 
-        assert having_predicate == 'AND' or having_predicate == 'OR'
+        assert having_predicate == "AND" or having_predicate == "OR"
 
         self._table_factors = []
         self._select_col = []
@@ -75,7 +75,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self.calc_found_rows = calc_found_rows
 
         # Default first condition is 'AND'; will be ignored if having_or is called first
-        self.having_cond(where_predicate='AND')
+        self.having_cond(where_predicate="AND")
 
         if table_name:
             self.from_table(table_name)
@@ -236,7 +236,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             for c in list_or_name:
                 self.remove_column(c)
         else:
-            expr_alias = f' AS {list_or_name}'
+            expr_alias = f" AS {list_or_name}"
             self._select_col = [c for c in self._select_col if c != list_or_name]
             self._select_expr = [c for c in self._select_expr if not c[0].endswith(expr_alias)]
 
@@ -271,8 +271,8 @@ class Select(Stmt, WhereMixin, JoinMixin):
         """
         for i, col in enumerate(self._select_col):
             if qualify_cols is None or col in qualify_cols:
-                if '.' not in col:
-                    self._select_col[i] = f'{table_name}.{col}'
+                if "." not in col:
+                    self._select_col[i] = f"{table_name}.{col}"
 
         return self
 
@@ -345,7 +345,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._limit = (row_count, offset)
         return self
 
-    def having_value(self, field_or_dict, value_or_tuple=None, operator='='):
+    def having_value(self, field_or_dict, value_or_tuple=None, operator="="):
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -390,7 +390,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     having_values = having_value
     """Alias for :py:meth:`having_value`"""
 
-    def having_raw_value(self, field_or_dict, value_or_tuple=None, operator='=', value_params=None):
+    def having_raw_value(self, field_or_dict, value_or_tuple=None, operator="=", value_params=None):
         """Compare field to a an unmanipulated value.
 
         Field names may be escaped with backticks.
@@ -548,7 +548,6 @@ class Select(Stmt, WhereMixin, JoinMixin):
         Raises:
             ValueError: The statement cannot be created with the given attributes.
         """
-
         table_refs = []
         param_values = []
 
@@ -561,11 +560,11 @@ class Select(Stmt, WhereMixin, JoinMixin):
                 param_values.extend(val_params)
 
         if self._table_factors:
-            table_refs.append(', '.join(self._table_factors))
+            table_refs.append(", ".join(self._table_factors))
 
         if self._join_refs:
             if not table_refs:
-                raise ValueError('A root table must be specified when using joins')
+                raise ValueError("A root table must be specified when using joins")
 
             self._append_join_table_refs(self._table_factors[0], table_refs)
 
@@ -592,49 +591,49 @@ class Select(Stmt, WhereMixin, JoinMixin):
         #       | INTO var_name [, var_name]]
         #     [FOR UPDATE | LOCK IN SHARE MODE]]
 
-        sql = ['SELECT']
+        sql = ["SELECT"]
 
         if self.query_options:
             sql.extend(self.query_options)
 
         if self.cacheable is True:
-            sql.append('SQL_CACHE')
+            sql.append("SQL_CACHE")
         elif self.cacheable is False:
-            sql.append('SQL_NO_CACHE')
+            sql.append("SQL_NO_CACHE")
 
         if self.calc_found_rows is True:
-            sql.append('SQL_CALC_FOUND_ROWS')
+            sql.append("SQL_CALC_FOUND_ROWS")
 
-        sql.append(', '.join(cols) if cols else '*')
+        sql.append(", ".join(cols) if cols else "*")
 
         if table_refs:
-            sql.append('FROM')
-            sql.append(' '.join(table_refs))
+            sql.append("FROM")
+            sql.append(" ".join(table_refs))
 
         if self._where_cond_root.has_conds:
-            sql.append('WHERE')
+            sql.append("WHERE")
             sql.append(self._where_cond_root.sql(param_values))
 
         if self._groupby_conds:
-            sql.append('GROUP BY')
-            sql.append(', '.join(self._groupby_conds))
+            sql.append("GROUP BY")
+            sql.append(", ".join(self._groupby_conds))
 
         if self._having_cond_root.has_conds:
-            sql.append('HAVING')
+            sql.append("HAVING")
             sql.append(self._having_cond_root.sql(param_values))
 
         if self._orderby_conds:
-            sql.append('ORDER BY')
-            sql.append(', '.join(self._orderby_conds))
+            sql.append("ORDER BY")
+            sql.append(", ".join(self._orderby_conds))
 
         if self._limit is not None:
             row_count, offset = self._limit
             if offset > 0:
-                sql.append(f'LIMIT {offset},{row_count}')
+                sql.append(f"LIMIT {offset},{row_count}")
             else:
-                sql.append(f'LIMIT {row_count}')
+                sql.append(f"LIMIT {row_count}")
 
         if self.placeholder:
-            return ' '.join(sql), param_values if param_values else None
+            return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return ' '.join(sql)
+        return " ".join(sql)

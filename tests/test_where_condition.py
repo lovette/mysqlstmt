@@ -39,13 +39,13 @@ class TestWhereCondition:
     def test_where_cond(self):
         c = WhereCondition(Select())
         params = []
-        sql = c.where_value('t1c1', 3).sql(params)
-        assert sql == '`t1c1` = 3'
+        sql = c.where_value("t1c1", 3).sql(params)
+        assert sql == "`t1c1` = 3"
 
     def test_where_conds(self):
         c1 = WhereCondition(Select())
         c2 = WhereCondition(Select())
         c1.add_cond(c2)
         params = []
-        sql = c1.where_value('t1c1', 3).sql(params)
-        assert sql == '`t1c1` = 3'
+        sql = c1.where_value("t1c1", 3).sql(params)
+        assert sql == "`t1c1` = 3"

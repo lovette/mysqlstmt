@@ -11,8 +11,7 @@ from .config import Config
 
 
 class Stmt:
-    """Base class for all statement classes.
-    """
+    """Base class for all statement classes."""
 
     def __init__(self, placeholder=None, quote_all_col_refs=None, quote_all_values=None, **kwargs):
         """Constructor
@@ -85,19 +84,19 @@ class Stmt:
             Column reference will not be quoted if it contains a backtick, space or parenthesis.
         """
         if self.quote_all_col_refs:
-            if ' ' in col_ref:
+            if " " in col_ref:
                 return col_ref  # COLUMN AS ALIAS
-            if '(' in col_ref:
+            if "(" in col_ref:
                 return col_ref  # FUNCTION(COLUMN)
-            if '`' in col_ref:
+            if "`" in col_ref:
                 return col_ref  # already quoted
 
-            col_ref_parts = col_ref.split('.')
+            col_ref_parts = col_ref.split(".")
             if len(col_ref_parts) > 1:
                 table, col = col_ref_parts
-                return f'{table}.`{col}`'
+                return f"{table}.`{col}`"
             else:
-                return f'`{col_ref}`'
+                return f"`{col_ref}`"
 
         return col_ref
 
@@ -111,21 +110,21 @@ class Stmt:
             tuple: (string, bool) Pickled value as a string and True if value should be parameterized.
         """
         if val is None:
-            return 'NULL', False
+            return "NULL", False
         elif val is True:
-            return '1', False
+            return "1", False
         elif val is False:
-            return '0', False
+            return "0", False
         elif isinstance(val, str):
             return val, True
         elif isinstance(val, (int, float)):
             return str(val), False
         elif isinstance(val, datetime.datetime):
-            return val.strftime('%Y-%m-%d %H:%M:%S'), True
+            return val.strftime("%Y-%m-%d %H:%M:%S"), True
         elif isinstance(val, datetime.date):
-            return val.strftime('%Y-%m-%d'), True
+            return val.strftime("%Y-%m-%d"), True
         elif isinstance(val, datetime.time):
-            return val.strftime('%H:%M:%S'), True
+            return val.strftime("%H:%M:%S"), True
         return str(val), True
 
     @staticmethod
@@ -155,7 +154,7 @@ class Stmt:
         Returns:
             string
         """
-        table_parts = table_factor.split('AS')
+        table_parts = table_factor.split("AS")
         return table_factor if len(table_parts) == 1 else table_parts[1].strip()
 
     def _parameterize_values(self, list_or_value, inline_values, param_values):

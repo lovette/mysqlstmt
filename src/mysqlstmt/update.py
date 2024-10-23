@@ -4,10 +4,17 @@ This module provides:
 - Update
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .join_mixin import JoinMixin
 from .set_values_mixin import SetValuesMixin
 from .stmt import Stmt
 from .where_mixin import WhereMixin
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
@@ -100,7 +107,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         ('UPDATE LOW_PRIORITY t1 SET `t1c1`=1', None)
     """
 
-    def __init__(self, table_name=None, ignore_error=False, **kwargs):
+    def __init__(self, table_name: str | None = None, ignore_error: bool = False, **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -122,7 +129,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         if table_name:
             self.table(table_name)
 
-    def table(self, list_or_name):
+    def table(self, list_or_name: str | Sequence) -> Update:
         """Add tables to update.
 
         Arguments:
@@ -142,7 +149,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
     from_tables = table
     """Alias for :py:meth:`from_table`"""
 
-    def order_by(self, list_or_name):
+    def order_by(self, list_or_name: str | Sequence) -> Update:
         """Add expressions to order by.
 
         Arguments:
@@ -159,7 +166,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
 
         return self
 
-    def limit(self, row_count):
+    def limit(self, row_count: int) -> Update:
         """Add limit clause expression.
 
         Arguments:
@@ -171,7 +178,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         self._limit = row_count
         return self
 
-    def sql(self):
+    def sql(self) -> str:
         """Build UPDATE SQL statement.
 
         Returns:

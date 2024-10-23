@@ -17,7 +17,7 @@ class Replace(Insert):
         ('REPLACE INTO t (`c1`) VALUES (1)', None)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Constructor for Replace
 
         Keyword Arguments:

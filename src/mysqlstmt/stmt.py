@@ -4,16 +4,30 @@ This module provides:
 - Stmt
 """
 
+from __future__ import annotations
+
 import collections
 import datetime
+from typing import TYPE_CHECKING
 
 from .config import Config
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from .stmt import Stmt
 
 
 class Stmt:
     """Base class for all statement classes."""
 
-    def __init__(self, placeholder=None, quote_all_col_refs=None, quote_all_values=None, **kwargs):
+    def __init__(
+        self,
+        placeholder: str | None = None,
+        quote_all_col_refs: bool | None = None,
+        quote_all_values: bool | None = None,
+        **kwargs,
+    ) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -49,16 +63,16 @@ class Stmt:
         # Public properties
         self.query_options = []  # can append with ``set_option``
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> str:
         """Returns SQL statement created by :py:meth:`sql`"""
         return self.sql()
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns SQL statement created by :py:meth:`sql`"""
         sql_t = self.sql()
         return sql_t[0] if self.placeholder else sql_t
 
-    def sql(self):
+    def sql(self) -> str:
         """Derived classes must override and build appropriate SQL statement.
 
         Returns:
@@ -71,7 +85,7 @@ class Stmt:
         """
         raise NotImplementedError
 
-    def quote_col_ref(self, col_ref):
+    def quote_col_ref(self, col_ref: str) -> str:
         """Quote column reference with backticks.
 
         Arguments:
@@ -100,7 +114,7 @@ class Stmt:
 
         return col_ref
 
-    def pickle(self, val):
+    def pickle(self, val: str | bool | float | datetime.datetime | datetime.date | datetime.time | object | None) -> tuple[str, bool]:
         """Convert variable value into a value that can be included in a SQL statement.
 
         Arguments:
@@ -128,7 +142,7 @@ class Stmt:
         return str(val), True
 
     @staticmethod
-    def quote(val):
+    def quote(val: str) -> str:
         """Quotes a string with single quotemarks and adds backslashes to escape embedded single quotes.
 
         Arguments:
@@ -145,7 +159,7 @@ class Stmt:
         return "'{}'".format(val.replace("'", "\\'"))
 
     @staticmethod
-    def table_alias(table_factor):
+    def table_alias(table_factor: str) -> str:
         """Returns the table alias from a table factor.
 
         Arguments:
@@ -157,7 +171,7 @@ class Stmt:
         table_parts = table_factor.split("AS")
         return table_factor if len(table_parts) == 1 else table_parts[1].strip()
 
-    def _parameterize_values(self, list_or_value, inline_values, param_values):
+    def _parameterize_values(self, list_or_value: str | Sequence, inline_values: Sequence | None, param_values: Sequence | None) -> None:
         """Parameterizes a value or list of values.
 
         Evaluates or iterates through ``list_or_value`` and if the value can be parameterized
@@ -189,7 +203,7 @@ class Stmt:
             else:
                 inline_values.append(list_or_value)
 
-    def set_option(self, list_or_value):
+    def set_option(self, list_or_value: str | Sequence) -> Stmt:
         """Sets query options (the keywords at the beginning of the SQL statement).
 
         Arguments:

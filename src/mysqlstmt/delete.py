@@ -4,9 +4,16 @@ This module provides:
 - Delete
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .join_mixin import JoinMixin
 from .stmt import Stmt
 from .where_mixin import WhereMixin
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class Delete(Stmt, WhereMixin, JoinMixin):
@@ -99,7 +106,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         ('DELETE LOW_PRIORITY FROM t1 WHERE `t1c1` = 1', None)
     """
 
-    def __init__(self, table_name=None, ignore_error=False, allow_unqualified_delete=False, **kwargs):
+    def __init__(self, table_name: str | None = None, ignore_error: bool = False, allow_unqualified_delete: bool = False, **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -122,7 +129,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         if table_name:
             self.from_table(table_name)
 
-    def from_table(self, list_or_name):
+    def from_table(self, list_or_name: str | Sequence) -> Delete:
         """Add table(s) to delete from.
 
         Arguments:
@@ -141,7 +148,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def order_by(self, list_or_name):
+    def order_by(self, list_or_name: str | Sequence) -> Delete:
         """Add expressions to order by.
 
         Arguments:
@@ -158,7 +165,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def limit(self, row_count):
+    def limit(self, row_count: int) -> Delete:
         """Add limit clause expression.
 
         Arguments:
@@ -170,7 +177,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         self._limit = row_count
         return self
 
-    def sql(self):
+    def sql(self) -> str:
         """Build DELETE SQL statement.
 
         Returns:

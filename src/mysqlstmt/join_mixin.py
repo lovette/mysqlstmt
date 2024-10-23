@@ -4,6 +4,15 @@ This module provides:
 - JoinMixin
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from .stmt import Stmt
+
 
 class JoinMixin:
     """Provide join related functionality to statement classes.
@@ -12,7 +21,7 @@ class JoinMixin:
         This class is not to be instantiated directly.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -22,7 +31,7 @@ class JoinMixin:
 
         self._join_refs = []
 
-    def join(self, dict_or_table_factor, join_cond=None, join_type="INNER"):
+    def join(self, dict_or_table_factor: str | dict, join_cond: str | Sequence | None = None, join_type: str = "INNER") -> Stmt:
         """Join a table with a JOIN condition.
 
         Arguments:
@@ -70,7 +79,7 @@ class JoinMixin:
 
         return self
 
-    def left_join(self, table_or_dict, join_cond=None):
+    def left_join(self, table_or_dict: str | dict, join_cond: str | Sequence | None = None) -> Stmt:
         """Convenience function to create a LEFT JOIN. See :py:meth:`join` for details.
 
         Examples: ::
@@ -125,7 +134,7 @@ class JoinMixin:
         """
         return self.join(table_or_dict, join_cond, "LEFT")
 
-    def _append_join_table_refs(self, root_table_factor, table_refs):
+    def _append_join_table_refs(self, root_table_factor: str, table_refs: list) -> None:
         """
 
         :param root_table_factor:

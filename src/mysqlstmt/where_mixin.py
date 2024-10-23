@@ -4,7 +4,16 @@ This module provides:
 - WhereMixin
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .where_condition import WhereCondition
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from .stmt import Stmt
 
 
 class WhereMixin:
@@ -14,7 +23,7 @@ class WhereMixin:
         This class is not to be instantiated directly.
     """
 
-    def __init__(self, where_predicate="OR", **kwargs):
+    def __init__(self, where_predicate: str = "OR", **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -30,7 +39,7 @@ class WhereMixin:
         # Default first condition is 'AND'; will be ignored if where_or is called first
         self.where_cond(where_predicate="AND")
 
-    def where_value(self, field_or_dict, value_or_tuple=None, operator="="):
+    def where_value(self, field_or_dict: str | dict, value_or_tuple: str | Sequence | None = None, operator: str = "=") -> Stmt:
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -142,7 +151,13 @@ class WhereMixin:
 
     where_values = where_value
 
-    def where_raw_value(self, field_or_dict, value_or_tuple=None, operator="=", value_params=None):
+    def where_raw_value(
+        self,
+        field_or_dict: str | dict,
+        value_or_tuple: str | Sequence | None = None,
+        operator: str = "=",
+        value_params: Sequence | None = None,
+    ) -> Stmt:
         """Compare field to a an unmanipulated value.
 
         Field names may be escaped with backticks.
@@ -194,7 +209,7 @@ class WhereMixin:
 
     where_raw_values = where_raw_value
 
-    def where_expr(self, list_or_expr, expr_params=None):
+    def where_expr(self, list_or_expr: str | Sequence, expr_params: Sequence | None = None) -> Stmt:
         """Include a complex expression in conditional statement.
 
         Expressions will be included in the SQL statement verbatim.
@@ -232,7 +247,7 @@ class WhereMixin:
 
     where_exprs = where_expr
 
-    def get_where_cond(self, index=-1):
+    def get_where_cond(self, index: int = -1) -> WhereCondition:
         """Returns a ``WhereCondition`` object from the list of conditions.
 
         Arguments:
@@ -250,7 +265,7 @@ class WhereMixin:
         """
         return self._where_cond_root.get_where_cond(index)
 
-    def where_cond(self, cond=None, where_predicate=None):
+    def where_cond(self, cond: WhereCondition | None = None, where_predicate: str | None = None) -> Stmt:
         """Activates a new ``WhereCondition``.
 
         Arguments:
@@ -270,7 +285,7 @@ class WhereMixin:
         self._where_cond_root.add_cond(cond, where_predicate)
         return self
 
-    def where_and(self):
+    def where_and(self) -> Stmt:
         """Activates a new ``WhereCondition`` with an 'AND' predicate.
 
         Returns:
@@ -299,7 +314,7 @@ class WhereMixin:
         self._where_cond_root.where_and()
         return self
 
-    def where_or(self):
+    def where_or(self) -> Stmt:
         """Activates a new ``WhereCondition`` with an 'OR' predicate.
 
         Returns:

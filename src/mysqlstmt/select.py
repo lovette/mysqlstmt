@@ -4,13 +4,19 @@ This module provides:
 - Select
 """
 
+from __future__ import annotations
+
 import collections
+from typing import TYPE_CHECKING
 
 from .config import Config
 from .join_mixin import JoinMixin
 from .stmt import Stmt
 from .where_condition import WhereCondition
 from .where_mixin import WhereMixin
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class Select(Stmt, WhereMixin, JoinMixin):
@@ -43,7 +49,14 @@ class Select(Stmt, WhereMixin, JoinMixin):
         ('SELECT DISTINCT `t1c1` FROM t1', None)
     """
 
-    def __init__(self, table_name=None, having_predicate="OR", cacheable=None, calc_found_rows=False, **kwargs):
+    def __init__(
+        self,
+        table_name: str | None = None,
+        having_predicate: str = "OR",
+        cacheable: bool | None = None,
+        calc_found_rows: bool = False,
+        **kwargs,
+    ) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -80,7 +93,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         if table_name:
             self.from_table(table_name)
 
-    def from_table(self, list_or_name):
+    def from_table(self, list_or_name: str | Sequence) -> Select:
         """Add tables to select from.
 
         Arguments:
@@ -110,7 +123,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     from_tables = from_table
     """Alias for :py:meth:`from_table`"""
 
-    def column(self, list_or_name, raw=False, value_params=None):
+    def column(self, list_or_name: str | Sequence, raw: bool = False, value_params: Sequence | None = None) -> Select:
         """Add column names to select.
 
         Arguments:
@@ -185,7 +198,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     columns = column
     """Alias for :py:meth:`column`"""
 
-    def column_expr(self, list_or_expr, value_params=None):
+    def column_expr(self, list_or_expr: str | Sequence, value_params: Sequence | None = None) -> Select:
         """Add expressions to select.
 
         Arguments:
@@ -213,7 +226,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     columns_expr = column_expr
     """Alias for :py:meth:`column_expr`"""
 
-    def remove_column(self, list_or_name):
+    def remove_column(self, list_or_name: str | Sequence) -> Select:
         """Remove column names to select.
 
         Arguments:
@@ -242,7 +255,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def qualify_columns(self, table_name, qualify_cols=None):
+    def qualify_columns(self, table_name: str, qualify_cols: Sequence | None = None) -> Select:
         """Qualify column names with a table name.
 
         Arguments:
@@ -276,7 +289,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def order_by(self, list_or_name):
+    def order_by(self, list_or_name: str | Sequence) -> Select:
         """Add expressions to order by.
 
         Arguments:
@@ -299,7 +312,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def group_by(self, list_or_name):
+    def group_by(self, list_or_name: str | Sequence) -> Select:
         """Add expressions to group by.
 
         Arguments:
@@ -326,7 +339,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def limit(self, row_count, offset=0):
+    def limit(self, row_count: int, offset: int = 0) -> Select:
         """Add limit clause expression.
 
         Arguments:
@@ -345,7 +358,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._limit = (row_count, offset)
         return self
 
-    def having_value(self, field_or_dict, value_or_tuple=None, operator="="):
+    def having_value(self, field_or_dict: str | dict, value_or_tuple: str | Sequence | None = None, operator: str = "=") -> Select:
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -390,7 +403,13 @@ class Select(Stmt, WhereMixin, JoinMixin):
     having_values = having_value
     """Alias for :py:meth:`having_value`"""
 
-    def having_raw_value(self, field_or_dict, value_or_tuple=None, operator="=", value_params=None):
+    def having_raw_value(
+        self,
+        field_or_dict: str | dict,
+        value_or_tuple: str | Sequence | None = None,
+        operator: str = "=",
+        value_params: Sequence | None = None,
+    ) -> Select:
         """Compare field to a an unmanipulated value.
 
         Field names may be escaped with backticks.
@@ -427,7 +446,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     having_raw_values = having_raw_value
     """Alias for :py:meth:`having_raw_value`"""
 
-    def having_expr(self, list_or_expr, expr_params=None):
+    def having_expr(self, list_or_expr: str | Sequence, expr_params: Sequence | None = None) -> Select:
         """Include a complex expression in conditional statement.
 
         Expressions will be included in the SQL statement verbatim.
@@ -458,7 +477,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     having_exprs = having_expr
     """Alias for :py:meth:`having_expr`"""
 
-    def get_having_cond(self, index=-1):
+    def get_having_cond(self, index: int = -1) -> Select:
         """Returns a ``WhereCondition`` object from the list of conditions.
 
         Arguments:
@@ -476,7 +495,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         """
         return self._having_cond_root.get_where_cond(index)
 
-    def having_cond(self, cond=None, where_predicate=None):
+    def having_cond(self, cond: WhereCondition | None = None, where_predicate: str | None = None) -> Select:
         """Activates a new ``WhereCondition``.
 
         Arguments:
@@ -496,7 +515,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._having_cond_root.add_cond(cond, where_predicate)
         return self
 
-    def having_and(self):
+    def having_and(self) -> Select:
         """Activates a new ``WhereCondition`` with an 'AND' predicate.
 
         Returns:
@@ -515,7 +534,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._having_cond_root.where_and()
         return self
 
-    def having_or(self):
+    def having_or(self) -> Select:
         """Activates a new ``WhereCondition`` with an 'OR' predicate.
 
         Returns:
@@ -538,7 +557,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._having_cond_root.where_or()
         return self
 
-    def sql(self):
+    def sql(self) -> str:
         """Build SELECT SQL statement.
 
         Returns:

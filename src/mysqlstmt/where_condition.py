@@ -1,3 +1,9 @@
+"""mysqlstmt where_condition class module.
+
+This module provides:
+- WhereCondition
+"""
+
 import collections
 
 import mysqlstmt

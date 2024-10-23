@@ -1,3 +1,9 @@
+"""mysqlstmt select class module.
+
+This module provides:
+- Select
+"""
+
 import collections
 
 import mysqlstmt

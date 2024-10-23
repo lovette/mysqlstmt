@@ -1,3 +1,9 @@
+"""mysqlstmt union class module.
+
+This module provides:
+- Union
+"""
+
 import mysqlstmt
 
 

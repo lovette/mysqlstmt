@@ -1,3 +1,9 @@
+"""mysqlstmt delete class module.
+
+This module provides:
+- Delete
+"""
+
 import mysqlstmt
 
 from .join_mixin import JoinMixin

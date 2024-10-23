@@ -1,3 +1,9 @@
+"""mysqlstmt where_mixin class module.
+
+This module provides:
+- WhereMixin
+"""
+
 import mysqlstmt
 
 

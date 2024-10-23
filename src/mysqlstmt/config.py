@@ -1,3 +1,9 @@
+"""mysqlstmt config class module.
+
+This module provides:
+- Config
+"""
+
 class Config:
     """Global configuration variables for all queries derived from ``mysqlstmt.Stmt``.
     Values set on these class attributes will affect all queries.

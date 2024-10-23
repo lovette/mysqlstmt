@@ -1,3 +1,9 @@
+"""mysqlstmt stmt class module.
+
+This module provides:
+- Stmt
+"""
+
 import collections
 import datetime
 

@@ -1,3 +1,9 @@
+"""mysqlstmt replace class module.
+
+This module provides:
+- Replace
+"""
+
 import mysqlstmt
 
 

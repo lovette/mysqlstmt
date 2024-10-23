@@ -1,3 +1,9 @@
+"""mysqlstmt insert class module.
+
+This module provides:
+- Insert
+"""
+
 import mysqlstmt
 
 from .set_values_mixin import SetValuesMixin

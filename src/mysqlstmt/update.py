@@ -1,3 +1,9 @@
+"""mysqlstmt update class module.
+
+This module provides:
+- Update
+"""
+
 import mysqlstmt
 
 from .join_mixin import JoinMixin

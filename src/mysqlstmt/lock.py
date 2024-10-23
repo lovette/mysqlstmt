@@ -1,3 +1,8 @@
+"""mysqlstmt lock class module.
+
+This module provides:
+- Lock
+"""
 import mysqlstmt
 
 

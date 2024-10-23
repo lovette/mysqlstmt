@@ -1,3 +1,9 @@
+"""mysqlstmt set_values_mixin class module.
+
+This module provides:
+- SetValuesMixin
+"""
+
 import collections
 
 

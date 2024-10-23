@@ -1,3 +1,9 @@
+"""mysqlstmt join_mixin class module.
+
+This module provides:
+- JoinMixin
+"""
+
 class JoinMixin:
     """Provide join related functionality to statement classes.
 

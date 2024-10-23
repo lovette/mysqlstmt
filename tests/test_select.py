@@ -89,78 +89,78 @@ class TestSelect:
         assert sql_t == ("SELECT t1c1 AS t1a1 FROM t1", None)
 
     def test_join_field(self) -> None:
-        # join(table, 'Field1')
-        # JOIN table USING (Field1)
+        # > join(table, 'Field1')
+        # > JOIN table USING (Field1)
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1"]).from_table("t1").left_join("t2", "t1c1").sql()
         assert sql_t == ("SELECT `t1c1`, `t2c1` FROM t1 LEFT JOIN t2 USING (`t1c1`)", None)
 
     def test_join_root_field(self) -> None:
-        # join(table, '.Field1')
-        # JOIN table ON (root_table.Field1 = table.Field1)
+        # > join(table, '.Field1')
+        # > JOIN table ON (root_table.Field1 = table.Field1)
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1"]).from_table("t1").left_join("t2", ".t1c1").sql()
         assert sql_t == ("SELECT `t1c1`, `t2c1` FROM t1 LEFT JOIN t2 ON (t1.`t1c1` = t2.`t1c1`)", None)
 
     def test_join_field_list(self) -> None:
-        # when join_cond is ('Field1', 'Field2', ...)
-        # JOIN table USING (Field1, Field2, ...)
+        # > when join_cond is ('Field1', 'Field2', ...)
+        # > JOIN table USING (Field1, Field2, ...)
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1"]).from_table("t1").left_join("t2", ("t1c1", "t2c1")).sql()
         assert sql_t == ("SELECT `t1c1`, `t2c1` FROM t1 LEFT JOIN t2 USING (`t1c1`, `t2c1`)", None)
 
     def test_join_fields(self) -> None:
-        # join(table, (.Field1, .Field2))
-        # JOIN table ON (root_table.Field1 = table.Field2)
+        # > join(table, (.Field1, .Field2))
+        # > JOIN table ON (root_table.Field1 = table.Field2)
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1"]).from_table("t1").left_join("t2", (".t1c1", ".t2c1")).sql()
         assert sql_t == ("SELECT `t1c1`, `t2c1` FROM t1 LEFT JOIN t2 ON (t1.`t1c1` = t2.`t2c1`)", None)
 
     def test_join_condition(self) -> None:
-        # join(table, [condition,...])
-        # JOIN table ON (condition [AND condition [AND ...]])
+        # > join(table, [condition,...])
+        # > JOIN table ON (condition [AND condition [AND ...]])
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1"]).from_table("t1").left_join("t2", ["t1c1 = t2c1"]).sql()
         assert sql_t == ("SELECT `t1c1`, `t2c1` FROM t1 LEFT JOIN t2 ON (t1c1 = t2c1)", None)
 
     def test_join_conditions(self) -> None:
-        # join(table, [condition,...])
-        # JOIN table ON (condition [AND condition [AND ...]])
+        # > join(table, [condition,...])
+        # > JOIN table ON (condition [AND condition [AND ...]])
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1"]).from_table("t1").left_join("t2", ["t1c1 = t2c1"]).sql()
         assert sql_t == ("SELECT `t1c1`, `t2c1` FROM t1 LEFT JOIN t2 ON (t1c1 = t2c1)", None)
 
     def test_join_fields_qualified(self) -> None:
-        # join(table, (.Field1, .Field2))
-        # JOIN table ON (root_table.Field1 = table.Field2)
+        # > join(table, (.Field1, .Field2))
+        # > JOIN table ON (root_table.Field1 = table.Field2)
         q = Select()
         sql_t = q.columns(["t1.t1c1", "t2.t2c1"]).from_table("t1").left_join("t2", (".t1c1", ".t2c1")).sql()
         assert sql_t == ("SELECT t1.`t1c1`, t2.`t2c1` FROM t1 LEFT JOIN t2 ON (t1.`t1c1` = t2.`t2c1`)", None)
 
     def test_straight_join_field(self) -> None:
-        # join(table, 'Field1')
-        # JOIN table USING (Field1)
+        # > join(table, 'Field1')
+        # > JOIN table USING (Field1)
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1"]).from_table("t1").join("t2", "t1c1", "STRAIGHT_JOIN").sql()
         assert sql_t == ("SELECT `t1c1`, `t2c1` FROM t1 STRAIGHT_JOIN t2 USING (`t1c1`)", None)
 
     def test_join_fields_tableas(self) -> None:
-        # join(table, (.Field1, .Field2))
-        # JOIN table ON (root_table.Field1 = table.Field2)
+        # > join(table, (.Field1, .Field2))
+        # > JOIN table ON (root_table.Field1 = table.Field2)
         q = Select()
         sql_t = q.columns(["t1a.c1", "t2a.c1"]).from_table("t1 AS t1a").left_join("t2 AS t2a", (".t1c1", ".t2c1")).sql()
         assert sql_t == ("SELECT t1a.`c1`, t2a.`c1` FROM t1 AS t1a LEFT JOIN t2 AS t2a ON (t1a.`t1c1` = t2a.`t2c1`)", None)
 
     def test_join_root_field_tableas(self) -> None:
-        # join(table, '.Field1')
-        # JOIN table ON (root_table.Field1 = table.Field1)
+        # > join(table, '.Field1')
+        # > JOIN table ON (root_table.Field1 = table.Field1)
         q = Select()
         sql_t = q.columns(["t1a.c1", "t2a.c1"]).from_table("t1 AS t1a").left_join("t2 AS t2a", ".t1c1").sql()
         assert sql_t == ("SELECT t1a.`c1`, t2a.`c1` FROM t1 AS t1a LEFT JOIN t2 AS t2a ON (t1a.`t1c1` = t2a.`t1c1`)", None)
 
     def test_join_root_field_multi(self) -> None:
-        # join(table, '.Field1')
-        # JOIN table ON (root_table.Field1 = table.Field1)
+        # > join(table, '.Field1')
+        # > JOIN table ON (root_table.Field1 = table.Field1)
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1", "t3c1"]).from_table("t1").left_join("t2", ".t1c1").left_join("t3", ".t1c1").sql()
         assert sql_t == (
@@ -169,8 +169,8 @@ class TestSelect:
         )
 
     def test_join_root_field_multi_dict(self) -> None:
-        # join(table, '.Field1')
-        # JOIN table ON (root_table.Field1 = table.Field1)
+        # > join(table, '.Field1')
+        # > JOIN table ON (root_table.Field1 = table.Field1)
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1", "t3c1"]).from_table("t1").left_join(OrderedDict([("t2", ".t1c1"), ("t3", ".t1c1")])).sql()
         assert sql_t == (
@@ -179,8 +179,8 @@ class TestSelect:
         )
 
     def test_join_root_field_multi_dotdot(self) -> None:
-        # join(table, '..Field1')
-        # JOIN table ON (previous_join_table.Field1 = table.Field1)
+        # > join(table, '..Field1')
+        # > JOIN table ON (previous_join_table.Field1 = table.Field1)
         q = Select()
         sql_t = q.columns(["t1c1", "t2c1", "t3c1"]).from_table("t1").left_join("t2", "..t1c1").left_join("t3", "..t2c1").sql()
         assert sql_t == (

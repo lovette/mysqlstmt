@@ -4,10 +4,11 @@ This module provides:
 - Union
 """
 
-import mysqlstmt
+from .select import Select
+from .stmt import Stmt
 
 
-class Union(mysqlstmt.Stmt):
+class Union(Stmt):
     """SELECT... UNION statement.
 
     Examples: ::
@@ -69,7 +70,7 @@ class Union(mysqlstmt.Stmt):
             >>> sql_t = q.union(s1).union(s2).sql()
             ('(SELECT `t1c1` FROM t1) UNION (SELECT `t2c1` FROM t2)', None)
         """
-        if not isinstance(list_or_stmt, str) and not isinstance(list_or_stmt, mysqlstmt.Select):
+        if not isinstance(list_or_stmt, str) and not isinstance(list_or_stmt, Select):
             for c in list_or_stmt:
                 self.union(c)
         else:
@@ -147,7 +148,7 @@ class Union(mysqlstmt.Stmt):
             sql.extend(self.query_options)
 
         for stmt in self._selects:
-            if isinstance(stmt, mysqlstmt.Select):
+            if isinstance(stmt, Select):
                 select_sql, select_params = stmt.sql()
                 stmtsql = select_sql
                 if select_params is not None:

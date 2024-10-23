@@ -4,12 +4,12 @@ This module provides:
 - Insert
 """
 
-import mysqlstmt
-
+from .select import Select
 from .set_values_mixin import SetValuesMixin
+from .stmt import Stmt
 
 
-class Insert(mysqlstmt.Stmt, SetValuesMixin):
+class Insert(Stmt, SetValuesMixin):
     """INSERT statement.
 
     Attributes:
@@ -274,7 +274,7 @@ class Insert(mysqlstmt.Stmt, SetValuesMixin):
 
             sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
 
-            if isinstance(self._select, mysqlstmt.Select):
+            if isinstance(self._select, Select):
                 select_sql, select_params = self._select.sql()
                 if select_params is not None:
                     raise ValueError('INSERT...SELECT cannot use parameterized SELECT')

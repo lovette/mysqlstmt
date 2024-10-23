@@ -4,7 +4,7 @@ This module provides:
 - WhereMixin
 """
 
-import mysqlstmt
+from .where_condition import WhereCondition
 
 
 class WhereMixin:
@@ -25,7 +25,7 @@ class WhereMixin:
 
         assert where_predicate == 'AND' or where_predicate == 'OR'
 
-        self._where_cond_root = mysqlstmt.WhereCondition(self, where_predicate=where_predicate)
+        self._where_cond_root = WhereCondition(self, where_predicate=where_predicate)
 
         # Default first condition is 'AND'; will be ignored if where_or is called first
         self.where_cond(where_predicate='AND')

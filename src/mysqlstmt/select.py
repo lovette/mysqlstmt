@@ -6,14 +6,14 @@ This module provides:
 
 import collections
 
-import mysqlstmt
-
 from .config import Config
 from .join_mixin import JoinMixin
+from .stmt import Stmt
+from .where_condition import WhereCondition
 from .where_mixin import WhereMixin
 
 
-class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
+class Select(Stmt, WhereMixin, JoinMixin):
     """SELECT statement.
 
     Attributes:
@@ -65,7 +65,7 @@ class Select(mysqlstmt.Stmt, WhereMixin, JoinMixin):
         self._orderby_conds = []
         self._groupby_conds = []
         self._limit = None
-        self._having_cond_root = mysqlstmt.WhereCondition(self, where_predicate=having_predicate)
+        self._having_cond_root = WhereCondition(self, where_predicate=having_predicate)
 
         if cacheable is False or Config.select_cacheable is False:
             self.cacheable = False

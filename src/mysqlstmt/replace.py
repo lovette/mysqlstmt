@@ -4,10 +4,10 @@ This module provides:
 - Replace
 """
 
-import mysqlstmt
+from .insert import Insert
 
 
-class Replace(mysqlstmt.Insert):
+class Replace(Insert):
     """REPLACE statement.
 
     Examples: ::

@@ -4,13 +4,12 @@ This module provides:
 - Delete
 """
 
-import mysqlstmt
-
 from .join_mixin import JoinMixin
+from .stmt import Stmt
 from .where_mixin import WhereMixin
 
 
-class Delete(mysqlstmt.Stmt, WhereMixin, JoinMixin):
+class Delete(Stmt, WhereMixin, JoinMixin):
     """DELETE statement.
 
     Examples: ::

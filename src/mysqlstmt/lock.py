@@ -3,10 +3,11 @@
 This module provides:
 - Lock
 """
-import mysqlstmt
+
+from .stmt import Stmt
 
 
-class Lock(mysqlstmt.Stmt):
+class Lock(Stmt):
     """SELECT GET_LOCK statement.
     """
 

@@ -4,14 +4,13 @@ This module provides:
 - Update
 """
 
-import mysqlstmt
-
 from .join_mixin import JoinMixin
 from .set_values_mixin import SetValuesMixin
+from .stmt import Stmt
 from .where_mixin import WhereMixin
 
 
-class Update(mysqlstmt.Stmt, WhereMixin, JoinMixin, SetValuesMixin):
+class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
     """UPDATE statement
 
     Examples: ::

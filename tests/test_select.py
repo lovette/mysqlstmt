@@ -294,7 +294,7 @@ class TestSelect:
 
     def test_where_value_datetime(self) -> None:
         q = Select()
-        sql_t = q.from_table("t1").where_value("t1c1", datetime.datetime(2014, 3, 2, 12, 1, 2)).sql()
+        sql_t = q.from_table("t1").where_value("t1c1", datetime.datetime(2014, 3, 2, 12, 1, 2, tzinfo=datetime.timezone.utc)).sql()
         assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ["2014-03-02 12:01:02"])
 
     def test_where_value_date(self) -> None:

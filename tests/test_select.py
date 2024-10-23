@@ -561,5 +561,5 @@ class TestSelect:
 
     def test_join_no_root(self) -> None:
         q = Select()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.columns(["t1c1", "t2c1"]).left_join("t2", "t1c1").sql()

@@ -137,20 +137,20 @@ class TestUpdate:
 
     def test_fail_no_table(self) -> None:
         q = Update()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.set_value("t1c1", 1).sql()
 
     def test_fail_no_value(self) -> None:
         q = Update()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.table("t1").sql()
 
     def test_fail_order_by(self) -> None:
         q = Update()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.table("t1").set_value("t1c1", 1).join("t2", "t1c1").where_value("t2c1", None).order_by("t1c1").sql()
 
     def test_fail_limit(self) -> None:
         q = Update()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.table("t1").set_value("t1c1", 1).join("t2", "t1c1").where_value("t2c1", None).limit(5).sql()

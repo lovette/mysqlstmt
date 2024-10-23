@@ -26,10 +26,10 @@ class TestLock:
 
     def test_fail_no_name(self) -> None:
         q = Lock()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.sql()
 
     def test_fail_no_timeout(self) -> None:
         q = Lock("mylock")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.sql()

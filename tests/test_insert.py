@@ -161,53 +161,53 @@ class TestInsert:
 
     def test_fail_no_tables(self) -> None:
         q = Insert()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.set_value("t1c1", 1).sql()
 
     def test_fail_multi_tables(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             Insert(["t1", "t2"])
 
     def test_fail_no_values(self) -> None:
         q = Insert("t1")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.sql()
 
     def test_fail_set_columns(self) -> None:
         q = Insert()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.into_table("t1").columns("t1c1").set_value("t1c1", 1).sql()
 
     def test_fail_select_with_set_value(self) -> None:
         q = Insert()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.into_table("t1").set_value("t1c1", 1).select("SELECT * FROM t2").sql()
 
     def test_fail_select_no_columns(self) -> None:
         q = Insert()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.into_table("t1").select("SELECT * FROM t2").sql()
 
     def test_fail_batch_values(self) -> None:
         q = Insert()
         data = [["v1"]]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.into_table("t1").set_value("t1c1", 1).set_batch_value(data).sql()
 
     def test_fail_batch_no_columns(self) -> None:
         q = Insert()
         data = [["v1"]]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.into_table("t1").set_batch_value(data).sql()
 
     def test_fail_batch_select(self) -> None:
         q = Insert()
         data = [["v1"]]
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.into_table("t1").columns("t1c1").set_batch_value(data).select("SELECT * FROM t2").sql()
 
     def test_fail_select_with_params(self) -> None:
         q = Insert()
         qselect = Select("t2").columns(["t2c1"]).where_value("t2c1", "t2v1")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.into_table("t1").columns(["t1c1"]).select(qselect).sql()

@@ -63,5 +63,5 @@ class TestUnion:
 
     def test_fail_no_stmts(self) -> None:
         q = Union()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.sql()

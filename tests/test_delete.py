@@ -112,10 +112,10 @@ class TestDelete:
 
     def test_fail_no_table(self) -> None:
         q = Delete()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.where_value("t1c1", 1).sql()
 
     def test_fail_unqualified(self) -> None:
         q = Delete()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             q.from_table("t1").sql()

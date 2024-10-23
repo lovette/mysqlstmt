@@ -4,9 +4,17 @@ This module provides:
 - WhereCondition
 """
 
+from __future__ import annotations
+
 import collections
+from typing import TYPE_CHECKING
 
 import mysqlstmt
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from .stmt import Stmt
 
 
 class WhereCondition:
@@ -17,7 +25,7 @@ class WhereCondition:
     ``WhereCondition`` objects.
     """
 
-    def __init__(self, stmt, where_predicate=None, **kwargs):
+    def __init__(self, stmt: Stmt, where_predicate: str | None = None, **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -50,7 +58,7 @@ class WhereCondition:
         self._nesting_level = 0
 
     @property
-    def expr_count(self):
+    def expr_count(self) -> int:
         """Count the number of expressions in this condition.
 
         Returns:
@@ -63,7 +71,7 @@ class WhereCondition:
         return c
 
     @property
-    def has_conds(self):
+    def has_conds(self) -> bool:
         """Check if this condition will result in an expression.
 
         Returns:
@@ -79,7 +87,7 @@ class WhereCondition:
         return False
 
     @property
-    def nesting_level(self):
+    def nesting_level(self) -> int:
         """The nesting_level of this condition.
 
         Note:
@@ -88,14 +96,14 @@ class WhereCondition:
         return self._nesting_level
 
     @nesting_level.setter
-    def nesting_level(self, value):
+    def nesting_level(self, value: int) -> None:
         self._nesting_level = value
 
         # Set nesting level for subconditions
         for cond in self._conds:
             cond.nesting_level = self._nesting_level + 1
 
-    def get_where_cond(self, index=-1):
+    def get_where_cond(self, index: int = -1) -> WhereCondition:
         """Returns a ``WhereCondition`` object from the list of conditions.
 
         Arguments:
@@ -113,7 +121,7 @@ class WhereCondition:
         """
         return self._conds[index]
 
-    def add_cond(self, cond=None, where_predicate=None):
+    def add_cond(self, cond: WhereCondition | None = None, where_predicate: str | None = None) -> WhereCondition:
         """Activates a new ``WhereCondition``.
 
         Arguments:
@@ -137,7 +145,7 @@ class WhereCondition:
         self._conds.append(cond)
         return self
 
-    def where_and(self):
+    def where_and(self) -> WhereCondition:
         """Activates a new ``WhereCondition`` with an 'AND' predicate.
 
         Returns:
@@ -148,7 +156,7 @@ class WhereCondition:
         """
         return self.add_cond(where_predicate="AND")
 
-    def where_or(self):
+    def where_or(self) -> WhereCondition:
         """Activates a new ``WhereCondition`` with an 'OR' predicate.
 
         Returns:
@@ -159,7 +167,7 @@ class WhereCondition:
         """
         return self.add_cond(where_predicate="OR")
 
-    def where_value(self, field_or_dict, value_or_tuple=None, operator="="):
+    def where_value(self, field_or_dict: str | dict, value_or_tuple: str | Sequence | None = None, operator: str = "=") -> WhereCondition:
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -195,7 +203,13 @@ class WhereCondition:
 
         return self
 
-    def where_raw_value(self, field_or_dict, value_or_tuple=None, operator="=", value_params=None):
+    def where_raw_value(
+        self,
+        field_or_dict: str | dict,
+        value_or_tuple: str | Sequence | None = None,
+        operator: str = "=",
+        value_params: Sequence | None = None,
+    ) -> WhereCondition:
         """Compare field to a an unmanipulated value.
 
         Field names may be escaped with backticks.
@@ -237,7 +251,7 @@ class WhereCondition:
 
         return self
 
-    def where_expr(self, expr_or_list, expr_params=None):
+    def where_expr(self, expr_or_list: str | Sequence, expr_params: Sequence | None = None) -> WhereCondition:
         """Include a complex expression in conditional statement.
 
         Expressions will be included in the SQL statement verbatim.
@@ -266,7 +280,7 @@ class WhereCondition:
 
         return self
 
-    def sql(self, param_values):
+    def sql(self, param_values: Sequence[str]) -> str:
         """Build SQL snippet to include in a WHERE or HAVING clause.
 
         Returns:

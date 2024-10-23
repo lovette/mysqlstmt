@@ -4,7 +4,15 @@ This module provides:
 - SetValuesMixin
 """
 
+from __future__ import annotations
+
 import collections
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from .stmt import Stmt
 
 
 class SetValuesMixin:
@@ -14,7 +22,7 @@ class SetValuesMixin:
         This class is not to be instantiated directly.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -25,7 +33,7 @@ class SetValuesMixin:
         self._values = collections.OrderedDict()
         self._values_raw = collections.OrderedDict()
 
-    def set_value(self, field_or_dict, value=None):
+    def set_value(self, field_or_dict: str | dict, value: str | None = None) -> Stmt:
         """Set value that may be translated, escaped or parameterized.
 
         Field names may be escaped with backticks.
@@ -89,7 +97,7 @@ class SetValuesMixin:
     set_values = set_value
     """Alias for :py:meth:`set_value`"""
 
-    def set_raw_value(self, field_or_dict, value_or_tuple=None, value_params=None):
+    def set_raw_value(self, field_or_dict: str | dict, value_or_tuple: str | Sequence | None = None, value_params: Sequence | None = None) -> Stmt:
         """Set value to be included directly in the SQL.
 
         Field names may be escaped with backticks.

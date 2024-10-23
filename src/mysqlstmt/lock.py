@@ -4,13 +4,15 @@ This module provides:
 - Lock
 """
 
+from __future__ import annotations
+
 from .stmt import Stmt
 
 
 class Lock(Stmt):
     """SELECT GET_LOCK statement."""
 
-    def __init__(self, name=None, timeout=None, **kwargs):
+    def __init__(self, name: str | None = None, timeout: int | None = None, **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -23,7 +25,7 @@ class Lock(Stmt):
         self._name = name
         self._timeout = timeout
 
-    def get_lock(self):
+    def get_lock(self) -> str:
         """Build SELECT GET_LOCK SQL statement.
 
         Returns:
@@ -54,7 +56,7 @@ class Lock(Stmt):
             return " ".join(sql), None
         return " ".join(sql)
 
-    def release_lock(self):
+    def release_lock(self) -> str:
         """Build SELECT RELEASE_LOCK SQL statement.
 
         Returns:
@@ -79,7 +81,7 @@ class Lock(Stmt):
             return " ".join(sql), None
         return " ".join(sql)
 
-    def is_free_lock(self):
+    def is_free_lock(self) -> str:
         """Build SELECT IS_FREE_LOCK SQL statement.
 
         Returns:

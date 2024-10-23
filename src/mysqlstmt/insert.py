@@ -4,9 +4,16 @@ This module provides:
 - Insert
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .select import Select
 from .set_values_mixin import SetValuesMixin
 from .stmt import Stmt
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class Insert(Stmt, SetValuesMixin):
@@ -33,7 +40,7 @@ class Insert(Stmt, SetValuesMixin):
         :py:class:`mysqlstmt.replace.Replace`
     """
 
-    def __init__(self, table_name=None, ignore_error=False, **kwargs):
+    def __init__(self, table_name: str | None = None, ignore_error: bool = False, **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -56,7 +63,7 @@ class Insert(Stmt, SetValuesMixin):
         if table_name:
             self.into_table(table_name)
 
-    def into_table(self, table_name):
+    def into_table(self, table_name: str) -> Insert:
         """Set table to insert into.
 
         Arguments:
@@ -74,7 +81,7 @@ class Insert(Stmt, SetValuesMixin):
         self._table_name = table_name
         return self
 
-    def column(self, list_or_name):
+    def column(self, list_or_name: str | Sequence) -> Insert:
         """Add column names to insert into.
 
         Arguments:
@@ -93,7 +100,7 @@ class Insert(Stmt, SetValuesMixin):
     columns = column
     """Alias for :py:meth:`column`"""
 
-    def select(self, stmt):
+    def select(self, stmt: Stmt) -> Insert:
         """Insert rows resulting from a SELECT statement.
 
         Arguments:
@@ -120,7 +127,7 @@ class Insert(Stmt, SetValuesMixin):
         self._select = stmt
         return self
 
-    def set_batch_value(self, values):
+    def set_batch_value(self, values: Sequence) -> Insert:
         """Set batch values.
 
         Sets values for multiple rows at once.
@@ -169,7 +176,7 @@ class Insert(Stmt, SetValuesMixin):
     set_batch_values = set_batch_value
     """Alias for :py:meth:`set_batch_value`"""
 
-    def sql(self):
+    def sql(self) -> str:
         """Build INSERT SQL statement.
 
         Returns:

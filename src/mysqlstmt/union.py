@@ -4,8 +4,15 @@ This module provides:
 - Union
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .select import Select
 from .stmt import Stmt
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class Union(Stmt):
@@ -30,7 +37,7 @@ class Union(Stmt):
         ('(SELECT `t1c1` FROM t1) UNION (SELECT `t2c1` FROM t2)', None)
     """
 
-    def __init__(self, list_or_stmt=None, distinct=None, **kwargs):
+    def __init__(self, list_or_stmt: str | Sequence | None = None, distinct: bool | None = None, **kwargs) -> None:
         """Constructor
 
         Keyword Arguments:
@@ -49,7 +56,7 @@ class Union(Stmt):
         if list_or_stmt is not None:
             self.union(list_or_stmt)
 
-    def union(self, list_or_stmt):
+    def union(self, list_or_stmt: str | Sequence) -> Union:
         """Add SELECT statement to union.
 
         Arguments:
@@ -82,7 +89,7 @@ class Union(Stmt):
     select = union
     """Alias for :py:meth:`union`."""
 
-    def order_by(self, list_or_name):
+    def order_by(self, list_or_name: str | Sequence) -> Union:
         """Add expressions to order by.
 
         Arguments:
@@ -105,7 +112,7 @@ class Union(Stmt):
 
         return self
 
-    def limit(self, row_count, offset=0):
+    def limit(self, row_count: int, offset: int = 0) -> Union:
         """Add limit clause expression.
 
         Arguments:
@@ -124,7 +131,7 @@ class Union(Stmt):
         self._limit = (row_count, offset)
         return self
 
-    def sql(self):
+    def sql(self) -> str:
         """Build SELECT... UNION SQL statement.
 
         Returns:

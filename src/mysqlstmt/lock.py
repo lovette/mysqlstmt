@@ -13,7 +13,7 @@ class Lock(Stmt):
     """SELECT GET_LOCK statement."""
 
     def __init__(self, name: str | None = None, timeout: int | None = None, **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             name (string): Name of lock.

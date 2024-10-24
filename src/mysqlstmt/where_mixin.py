@@ -24,7 +24,7 @@ class WhereMixin:
     """
 
     def __init__(self, where_predicate: str = "OR", **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             where_predicate (string, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.

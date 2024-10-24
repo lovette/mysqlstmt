@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
-    """UPDATE statement
+    """UPDATE statement.
 
     Examples: ::
 
@@ -108,7 +108,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
     """
 
     def __init__(self, table_name: str | None = None, ignore_error: bool = False, **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             table_name (string, optional): Table or tables to update.

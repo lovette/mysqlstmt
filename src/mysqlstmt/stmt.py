@@ -28,7 +28,7 @@ class Stmt:
         quote_all_values: bool | None = None,
         **kwargs,
     ) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             placeholder (string, optional): Placeholder character to use when parameterization is enabled.
@@ -64,11 +64,11 @@ class Stmt:
         self.query_options = []  # can append with ``set_option``
 
     def __call__(self, *args, **kwargs) -> str:  # noqa: ARG002
-        """Returns SQL statement created by :py:meth:`sql`"""
+        """Returns SQL statement created by :py:meth:`sql`."""
         return self.sql()
 
     def __str__(self) -> str:
-        """Returns SQL statement created by :py:meth:`sql`"""
+        """Returns SQL statement created by :py:meth:`sql`."""
         sql_t = self.sql()
         return sql_t[0] if self.placeholder else sql_t
 

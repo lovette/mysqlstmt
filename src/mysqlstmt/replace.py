@@ -18,7 +18,7 @@ class Replace(Insert):
     """
 
     def __init__(self, **kwargs) -> None:
-        """Constructor for Replace
+        """Constructor.
 
         Keyword Arguments:
             **kwargs: Base class arguments.

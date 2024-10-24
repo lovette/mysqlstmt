@@ -57,7 +57,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         calc_found_rows: bool = False,
         **kwargs,
     ) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             table_name (string, optional): Table or tables to select from.

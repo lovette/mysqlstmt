@@ -77,7 +77,7 @@ class Insert(Stmt, SetValuesMixin):
         """
         if not isinstance(table_name, str):
             msg = "Only one table can be specified"
-            raise ValueError(msg)
+            raise ValueError(msg)  # noqa: TRY004
 
         self._table_name = table_name
         return self

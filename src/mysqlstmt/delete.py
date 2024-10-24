@@ -188,7 +188,8 @@ class Delete(Stmt, WhereMixin, JoinMixin):
             ValueError: The statement cannot be created with the given attributes.
         """
         if not self._table_names:
-            raise ValueError("DELETE requires at least one table")
+            msg = "DELETE requires at least one table"
+            raise ValueError(msg)
 
         param_values = []
         multi_table = len(self._table_names) > 1 or len(self._join_refs) > 0
@@ -226,7 +227,8 @@ class Delete(Stmt, WhereMixin, JoinMixin):
                 sql.append("WHERE")
                 sql.append(self._where_cond_root.sql(param_values))
             elif not self.allow_unqualified_delete:
-                raise ValueError("DANGER! Unqualified deletes can ruin your day!")
+                msg = "DANGER! Unqualified deletes can ruin your day!"
+                raise ValueError(msg)
 
             if self._orderby_conds:
                 sql.append("ORDER BY")
@@ -248,12 +250,15 @@ class Delete(Stmt, WhereMixin, JoinMixin):
                 sql.append("WHERE")
                 sql.append(self._where_cond_root.sql(param_values))
             elif not self.allow_unqualified_delete:
-                raise ValueError("DANGER! Unqualified deletes can ruin your day!")
+                msg = "DANGER! Unqualified deletes can ruin your day!"
+                raise ValueError(msg)
 
             if self._orderby_conds:
-                raise ValueError("ORDER BY not supported when DELETE FROM multiple tables")
+                msg = "ORDER BY not supported when DELETE FROM multiple tables"
+                raise ValueError(msg)
             if self._limit:
-                raise ValueError("LIMIT not supported when DELETE FROM multiple tables")
+                msg = "LIMIT not supported when DELETE FROM multiple tables"
+                raise ValueError(msg)
 
         if self.placeholder:
             return " ".join(sql), param_values if param_values else None

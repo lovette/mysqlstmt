@@ -583,7 +583,8 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         if self._join_refs:
             if not table_refs:
-                raise ValueError("A root table must be specified when using joins")
+                msg = "A root table must be specified when using joins"
+                raise ValueError(msg)
 
             self._append_join_table_refs(self._table_factors[0], table_refs)
 

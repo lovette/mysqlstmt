@@ -142,7 +142,8 @@ class Union(Stmt):
             ValueError: The statement cannot be created with the given attributes.
         """
         if not self._selects:
-            raise ValueError("No SELECT statements are specified")
+            msg = "No SELECT statements are specified"
+            raise ValueError(msg)
 
         sql = []
         param_values = []

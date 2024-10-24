@@ -158,7 +158,7 @@ class JoinMixin:
             if isinstance(join_cond, tuple) and join_cond[0].startswith("."):
                 # > tuple ('.Field1', '.Field2')
                 # > JOIN table ON (root_table_alias.Field1 = table.Field2)
-                assert len(join_cond) == 2
+                assert len(join_cond) == 2  # noqa: PLR2004
                 field1, field2 = join_cond
                 join_clause = "{join_type} {join_table_factor} ON ({root_table_alias}.{field1} = {join_table}.{field2})".format(
                     field1=self.quote_col_ref(field1[1:]),

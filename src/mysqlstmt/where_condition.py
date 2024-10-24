@@ -9,12 +9,12 @@ from __future__ import annotations
 import collections
 from typing import TYPE_CHECKING
 
-import mysqlstmt
+from .stmt import Stmt
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from .stmt import Stmt
+    from .where_condition import WhereCondition
 
 
 class WhereCondition:
@@ -35,7 +35,7 @@ class WhereCondition:
         """
         super().__init__(**kwargs)
 
-        assert isinstance(stmt, mysqlstmt.Stmt)
+        assert isinstance(stmt, Stmt)
         self._stmt = stmt
 
         if where_predicate is None or where_predicate == "AND":
@@ -140,8 +140,8 @@ class WhereCondition:
             :py:class:`mysqlstmt.where_condition.WhereCondition` :py:meth:`where_and` :py:meth:`where_or`
         """
         if cond is None:
-            cond = mysqlstmt.WhereCondition(self._stmt, where_predicate=where_predicate)
-        assert isinstance(cond, mysqlstmt.WhereCondition)
+            cond = WhereCondition(self._stmt, where_predicate=where_predicate)
+        assert isinstance(cond, WhereCondition)
         cond.nesting_level = self.nesting_level + 1
         self._conds.append(cond)
         return self

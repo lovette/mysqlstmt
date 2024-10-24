@@ -291,11 +291,7 @@ class WhereCondition:
             You won't need to use this function unless you're just curious about the SQL
             it creates.
         """
-        sql = []
-
-        for cond in self._conds:
-            if cond.has_conds:
-                sql.append(cond.sql(param_values))
+        sql = [cond.sql(param_values) for cond in self._conds if cond.has_conds]
 
         for field_or_tuple in self._values:
             if isinstance(self._values, dict):

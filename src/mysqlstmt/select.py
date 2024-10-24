@@ -218,7 +218,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.column_expr('PASSWORD(?)', ['mypw']).sql()
             ('SELECT PASSWORD(?)', ['mypw'])
         """
-        return self.column(list_or_expr, True, value_params)
+        return self.column(list_or_expr, raw=True, value_params=value_params)
 
     select_expr = column_expr
     """Alias for :py:meth:`column_expr`"""

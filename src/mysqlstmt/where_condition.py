@@ -280,7 +280,7 @@ class WhereCondition:
 
         return self
 
-    def sql(self, param_values: Sequence[str]) -> str:
+    def sql(self, param_values: Sequence[str]) -> str:  # noqa: C901, PLR0912
         """Build SQL snippet to include in a WHERE or HAVING clause.
 
         Returns:

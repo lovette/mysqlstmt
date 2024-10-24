@@ -131,7 +131,7 @@ class Union(Stmt):
         self._limit = (row_count, offset)
         return self
 
-    def sql(self) -> str:
+    def sql(self) -> str:  # noqa: C901, PLR0912
         """Build SELECT... UNION SQL statement.
 
         Returns:

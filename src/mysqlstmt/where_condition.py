@@ -189,7 +189,7 @@ class WhereCondition:
         Returns:
             object: self
         """
-        assert isinstance(field_or_dict, str) or isinstance(field_or_dict, dict)
+        assert isinstance(field_or_dict, (str, dict))
         assert isinstance(operator, str)
 
         if not isinstance(field_or_dict, str):
@@ -233,8 +233,8 @@ class WhereCondition:
         Returns:
             object: self
         """
-        assert isinstance(field_or_dict, str) or isinstance(field_or_dict, dict)
-        assert value_or_tuple is None or isinstance(value_or_tuple, str) or isinstance(value_or_tuple, tuple)
+        assert isinstance(field_or_dict, (str, dict))
+        assert value_or_tuple is None or isinstance(value_or_tuple, (str, tuple))
         assert isinstance(operator, str)
         assert value_params is None or isinstance(value_params, collections.abc.Iterable)
 
@@ -267,7 +267,7 @@ class WhereCondition:
         Returns:
             object: self
         """
-        assert isinstance(expr_or_list, str) or isinstance(expr_or_list, list) or isinstance(expr_or_list, tuple)
+        assert isinstance(expr_or_list, (str, list, tuple))
         assert expr_params is None or isinstance(expr_params, collections.abc.Iterable)
 
         if not isinstance(expr_or_list, str) and not isinstance(expr_or_list, tuple):

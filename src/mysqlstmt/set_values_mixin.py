@@ -128,8 +128,8 @@ class SetValuesMixin:
             >>> q.into_table('t1').set_raw_value('t1c1', 'PASSWORD(?)', value_params=('mypw',)).sql()
             ('INSERT INTO t1 (`t1c1`) VALUES (PASSWORD(?))', ['mypw'])
         """
-        assert isinstance(field_or_dict, str) or isinstance(field_or_dict, dict)
-        assert value_or_tuple is None or isinstance(value_or_tuple, str) or isinstance(value_or_tuple, tuple)
+        assert isinstance(field_or_dict, (str, dict))
+        assert value_or_tuple is None or isinstance(value_or_tuple, (str, tuple))
         assert value_params is None or isinstance(value_params, collections.abc.Iterable)
 
         if not isinstance(field_or_dict, str):

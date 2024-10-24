@@ -238,7 +238,7 @@ class Insert(Stmt, SetValuesMixin):
             if self._values:
                 for col, val in self._values.items():
                     col_names.append(col)
-                    self._parameterize_values(val, inline_values, param_values)
+                    self.parameterize_values(val, inline_values, param_values)
 
             for col in self._values_raw:
                 val, val_params = self._values_raw[col]
@@ -267,7 +267,7 @@ class Insert(Stmt, SetValuesMixin):
 
                 for row in self._batch_values:
                     row_values = []
-                    self._parameterize_values(row, row_values, None)
+                    self.parameterize_values(row, row_values, None)
                     inline_values.append(f"({', '.join(row_values)})")
 
                 sql.append(f"VALUES {', '.join(inline_values)}")
@@ -279,7 +279,7 @@ class Insert(Stmt, SetValuesMixin):
 
                 for row in self._batch_values:
                     row_param_value = []
-                    self._parameterize_values(row, None, row_param_value)
+                    self.parameterize_values(row, None, row_param_value)
                     param_values.append(row_param_value)
 
         elif self._select:

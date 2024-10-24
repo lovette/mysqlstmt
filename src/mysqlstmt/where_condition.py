@@ -332,7 +332,7 @@ class WhereCondition:
             else:
                 val = inline_values[0]
 
-            if val == "NULL" or val == "NOT NULL":
+            if val in ("NULL", "NOT NULL"):
                 if op == "=":
                     op = "IS"
                 elif op == "<>":

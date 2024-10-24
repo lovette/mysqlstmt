@@ -139,7 +139,7 @@ class SetValuesMixin:
             self.set_raw_value(field_or_dict, (value_or_tuple, value_params))
         else:
             assert isinstance(value_or_tuple, tuple)
-            assert len(value_or_tuple) == 2
+            assert len(value_or_tuple) == 2  # noqa: PLR2004
             self._values_raw[field_or_dict] = value_or_tuple
 
         return self

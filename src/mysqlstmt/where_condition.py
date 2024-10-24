@@ -241,11 +241,11 @@ class WhereCondition:
             self.where_raw_value(field_or_dict, (value_or_tuple, operator, value_params))
         elif isinstance(self._values_raw, dict):
             assert isinstance(value_or_tuple, tuple)
-            assert len(value_or_tuple) == 3
+            assert len(value_or_tuple) == 3  # noqa: PLR2004
             self._values_raw[field_or_dict] = value_or_tuple
         else:
             assert isinstance(value_or_tuple, tuple)
-            assert len(value_or_tuple) == 3
+            assert len(value_or_tuple) == 3  # noqa: PLR2004
             self._values_raw.append((field_or_dict, value_or_tuple))
 
         return self
@@ -275,7 +275,7 @@ class WhereCondition:
             self.where_expr((expr_or_list, expr_params))
         else:
             assert isinstance(expr_or_list, tuple)
-            assert len(expr_or_list) == 2
+            assert len(expr_or_list) == 2  # noqa: PLR2004
             self._raw_exprs.append(expr_or_list)
 
         return self

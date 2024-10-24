@@ -63,7 +63,7 @@ class Stmt:
         # Public properties
         self.query_options = []  # can append with ``set_option``
 
-    def __call__(self, *args, **kwargs) -> str:
+    def __call__(self, *args, **kwargs) -> str:  # noqa: ARG002
         """Returns SQL statement created by :py:meth:`sql`"""
         return self.sql()
 

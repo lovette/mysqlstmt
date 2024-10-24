@@ -138,7 +138,8 @@ class SetValuesMixin:
         elif not isinstance(value_or_tuple, tuple):
             self.set_raw_value(field_or_dict, (value_or_tuple, value_params))
         else:
-            assert isinstance(value_or_tuple, tuple) and len(value_or_tuple) == 2
+            assert isinstance(value_or_tuple, tuple)
+            assert len(value_or_tuple) == 2
             self._values_raw[field_or_dict] = value_or_tuple
 
         return self

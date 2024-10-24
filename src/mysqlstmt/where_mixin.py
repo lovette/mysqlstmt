@@ -32,7 +32,7 @@ class WhereMixin:
         """
         super().__init__(**kwargs)
 
-        assert where_predicate == "AND" or where_predicate == "OR"
+        assert where_predicate in ("AND", "OR")
 
         self._where_cond_root = WhereCondition(self, where_predicate=where_predicate)
 

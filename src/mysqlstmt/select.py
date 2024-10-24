@@ -70,7 +70,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         """
         super().__init__(**kwargs)
 
-        assert having_predicate == "AND" or having_predicate == "OR"
+        assert having_predicate in ("AND", "OR")
 
         self._table_factors = []
         self._select_col = []

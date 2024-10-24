@@ -113,7 +113,7 @@ class Stmt:
 
         return col_ref
 
-    def pickle(self, val: str | bool | float | datetime.datetime | datetime.date | datetime.time | object | None) -> tuple[str, bool]:
+    def pickle(self, val: str | bool | float | datetime.datetime | datetime.date | datetime.time | object | None) -> tuple[str, bool]:  # noqa: PLR0911
         """Convert variable value into a value that can be included in a SQL statement.
 
         Arguments:

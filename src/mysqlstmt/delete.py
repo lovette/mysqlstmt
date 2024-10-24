@@ -107,11 +107,12 @@ class Delete(Stmt, WhereMixin, JoinMixin):
     """
 
     def __init__(self, table_name: str | None = None, ignore_error: bool = False, allow_unqualified_delete: bool = False, **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             table_name (string or list, optional): Table(s) to delete from.
             ignore_error (bool, optional): Include IGNORE flag in statement.
+            allow_unqualified_delete (bool, optional): Allow DELETE to not have any conditions; default is False.
             where_predicate (string, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.
             **kwargs: Base class arguments.
         """

@@ -38,7 +38,7 @@ class Union(Stmt):
     """
 
     def __init__(self, list_or_stmt: str | Sequence | None = None, distinct: bool | None = None, **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             list_or_stmt(string or list, optional): A single, or list of, 'SELECT...' SQL

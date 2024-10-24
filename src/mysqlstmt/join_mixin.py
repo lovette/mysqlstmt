@@ -22,7 +22,7 @@ class JoinMixin:
     """
 
     def __init__(self, **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             **kwargs: Base class arguments.
@@ -135,10 +135,11 @@ class JoinMixin:
         return self.join(table_or_dict, join_cond, "LEFT")
 
     def _append_join_table_refs(self, root_table_factor: str, table_refs: list) -> None:
-        """
+        """Append JOIN clauses to `table_refs`.
 
-        :param root_table_factor:
-        :param table_refs:
+        Args:
+            root_table_factor (str): Root table name.
+            table_refs (list): Join table references.
         """
         root_table_alias = self.table_alias(root_table_factor)
 

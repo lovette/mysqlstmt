@@ -23,7 +23,7 @@ class SetValuesMixin:
     """
 
     def __init__(self, **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             **kwargs: Base class arguments.

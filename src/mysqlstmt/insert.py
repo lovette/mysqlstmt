@@ -41,7 +41,7 @@ class Insert(Stmt, SetValuesMixin):
     """
 
     def __init__(self, table_name: str | None = None, ignore_error: bool = False, **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             table_name (string, optional): Table to insert into.

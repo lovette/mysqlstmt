@@ -26,7 +26,7 @@ class WhereCondition:
     """
 
     def __init__(self, stmt: Stmt, where_predicate: str | None = None, **kwargs) -> None:
-        """Constructor
+        """Constructor.
 
         Keyword Arguments:
             stmt (mysqlstmt.stmt.Stmt): Statement this condition is associated with.

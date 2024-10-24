@@ -294,8 +294,9 @@ class WhereCondition:
         sql = []
 
         for cond in self._conds:
-            if cond.has_conds:
-                sql.append(cond.sql(param_values))
+            cond_sql = cond.sql(param_values)
+            if cond_sql:
+                sql.append(cond_sql)
 
         for field_or_tuple in self._values:
             if isinstance(self._values, dict):

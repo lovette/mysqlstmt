@@ -109,8 +109,7 @@ class Stmt:
             if len(col_ref_parts) > 1:
                 table, col = col_ref_parts
                 return f"{table}.`{col}`"
-            else:
-                return f"`{col_ref}`"
+            return f"`{col_ref}`"
 
         return col_ref
 
@@ -125,19 +124,19 @@ class Stmt:
         """
         if val is None:
             return "NULL", False
-        elif val is True:
+        if val is True:
             return "1", False
-        elif val is False:
+        if val is False:
             return "0", False
-        elif isinstance(val, str):
+        if isinstance(val, str):
             return val, True
-        elif isinstance(val, (int, float)):
+        if isinstance(val, (int, float)):
             return str(val), False
-        elif isinstance(val, datetime.datetime):
+        if isinstance(val, datetime.datetime):
             return val.strftime("%Y-%m-%d %H:%M:%S"), True
-        elif isinstance(val, datetime.date):
+        if isinstance(val, datetime.date):
             return val.strftime("%Y-%m-%d"), True
-        elif isinstance(val, datetime.time):
+        if isinstance(val, datetime.time):
             return val.strftime("%H:%M:%S"), True
         return str(val), True
 

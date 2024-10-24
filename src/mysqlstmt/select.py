@@ -556,7 +556,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._having_cond_root.where_or()
         return self
 
-    def sql(self) -> str:
+    def sql(self) -> str:  # noqa: C901, PLR0912
         """Build SELECT SQL statement.
 
         Returns:

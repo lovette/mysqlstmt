@@ -177,7 +177,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         self._limit = row_count
         return self
 
-    def sql(self) -> str:
+    def sql(self) -> str:  # noqa: C901, PLR0912
         """Build DELETE SQL statement.
 
         Returns:

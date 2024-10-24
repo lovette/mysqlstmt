@@ -177,7 +177,7 @@ class Insert(Stmt, SetValuesMixin):
     set_batch_values = set_batch_value
     """Alias for :py:meth:`set_batch_value`"""
 
-    def sql(self) -> str:
+    def sql(self) -> str:  # noqa: C901, PLR0912, PLR0915
         """Build INSERT SQL statement.
 
         Returns:

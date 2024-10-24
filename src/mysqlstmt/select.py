@@ -283,9 +283,8 @@ class Select(Stmt, WhereMixin, JoinMixin):
             ('SELECT t1.`t1c1`, t2.`t2c1` FROM t1, t2', None)
         """
         for i, col in enumerate(self._select_col):
-            if qualify_cols is None or col in qualify_cols:
-                if "." not in col:
-                    self._select_col[i] = f"{table_name}.{col}"
+            if (qualify_cols is None or col in qualify_cols) and "." not in col:
+                self._select_col[i] = f"{table_name}.{col}"
 
         return self
 

@@ -81,11 +81,7 @@ class WhereCondition:
         if self._values or self._values_raw or self._raw_exprs:
             return True
 
-        for cond in self._conds:
-            if cond.has_conds:
-                return True
-
-        return False
+        return any(cond.has_conds for cond in self._conds)
 
     @property
     def nesting_level(self) -> int:

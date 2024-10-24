@@ -156,8 +156,8 @@ class JoinMixin:
             }
 
             if isinstance(join_cond, tuple) and join_cond[0].startswith("."):
-                # tuple ('.Field1', '.Field2')
-                # JOIN table ON (root_table_alias.Field1 = table.Field2)
+                # > tuple ('.Field1', '.Field2')
+                # > JOIN table ON (root_table_alias.Field1 = table.Field2)
                 assert len(join_cond) == 2
                 field1, field2 = join_cond
                 join_clause = "{join_type} {join_table_factor} ON ({root_table_alias}.{field1} = {join_table}.{field2})".format(
@@ -167,37 +167,37 @@ class JoinMixin:
                 )
 
             elif isinstance(join_cond, tuple):
-                # tuple ('Field1', 'Field2', ...)
-                # JOIN table USING (Field1, Field2, ...)
+                # > tuple ('Field1', 'Field2', ...)
+                # > JOIN table USING (Field1, Field2, ...)
                 join_clause = "{join_type} {join_table_factor} USING ({column_list})".format(
                     column_list=", ".join([self.quote_col_ref(col) for col in join_cond]),
                     **format_args,
                 )
 
             elif not isinstance(join_cond, str):
-                # list [condition,...]
-                # JOIN table ON (condition [AND condition [AND ...]])
+                # > list [condition,...]
+                # > JOIN table ON (condition [AND condition [AND ...]])
                 join_clause = "{join_type} {join_table_factor} ON ({conditions})".format(conditions=" AND ".join(join_cond), **format_args)
 
             elif join_cond.startswith(".."):
-                # '..Field1'
-                # JOIN table ON (prev_join_table.Field1 = table.Field1)
+                # > '..Field1'
+                # > JOIN table ON (prev_join_table.Field1 = table.Field1)
                 join_clause = "{join_type} {join_table_factor} ON ({prev_join_table}.{field} = {join_table}.{field})".format(
                     field=self.quote_col_ref(join_cond[2:]),
                     **format_args,
                 )
 
             elif join_cond.startswith("."):
-                # '.Field1'
-                # JOIN table ON (root_table_alias.Field1 = table.Field1)
+                # > '.Field1'
+                # > JOIN table ON (root_table_alias.Field1 = table.Field1)
                 join_clause = "{join_type} {join_table_factor} ON ({root_table_alias}.{field} = {join_table}.{field})".format(
                     field=self.quote_col_ref(join_cond[1:]),
                     **format_args,
                 )
 
             else:
-                # 'Field1'
-                # JOIN table USING (Field1)
+                # > 'Field1'
+                # > JOIN table USING (Field1)
                 join_clause = "{join_type} {join_table_factor} USING ({field})".format(field=self.quote_col_ref(join_cond), **format_args)
 
             table_refs.append(join_clause)

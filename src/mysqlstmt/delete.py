@@ -198,18 +198,18 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         #
         # Single-table:
         #
-        # DELETE [LOW_PRIORITY] [QUICK] [IGNORE] FROM tbl_name
-        #     [PARTITION (partition_name,...)]
-        #     [WHERE where_condition]
-        #     [ORDER BY ...]
-        #     [LIMIT row_count]
+        # > DELETE [LOW_PRIORITY] [QUICK] [IGNORE] FROM tbl_name
+        # >     [PARTITION (partition_name,...)]
+        # >     [WHERE where_condition]
+        # >     [ORDER BY ...]
+        # >     [LIMIT row_count]
         #
         # Multiple-table:
         #
-        # DELETE [LOW_PRIORITY] [QUICK] [IGNORE]
-        #     FROM tbl_name[.*] [, tbl_name[.*]] ...
-        #     USING table_references
-        #     [WHERE where_condition]
+        # > DELETE [LOW_PRIORITY] [QUICK] [IGNORE]
+        # >     FROM tbl_name[.*] [, tbl_name[.*]] ...
+        # >     USING table_references
+        # >     [WHERE where_condition]
 
         sql = ["DELETE"]
 

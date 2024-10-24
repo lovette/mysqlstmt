@@ -76,7 +76,8 @@ class Insert(Stmt, SetValuesMixin):
             ValueError: More than one table was specified.
         """
         if not isinstance(table_name, str):
-            raise ValueError("Only one table can be specified")
+            msg = "Only one table can be specified"
+            raise ValueError(msg)
 
         self._table_name = table_name
         return self
@@ -190,7 +191,8 @@ class Insert(Stmt, SetValuesMixin):
         param_values = []
 
         if not self._table_name:
-            raise ValueError("No table is specified")
+            msg = "No table is specified"
+            raise ValueError(msg)
 
         # MySQL INSERT syntax as of 5.7:
         #
@@ -221,11 +223,14 @@ class Insert(Stmt, SetValuesMixin):
 
         if self._values or self._values_raw:
             if col_names:
-                raise ValueError("columns cannot be explicitly set when set_value or set_raw_value is used")
+                msg = "columns cannot be explicitly set when set_value or set_raw_value is used"
+                raise ValueError(msg)
             if self._batch_values:
-                raise ValueError("set_batch_value is incompatible with set_value and set_raw_value")
+                msg = "set_batch_value is incompatible with set_value and set_raw_value"
+                raise ValueError(msg)
             if self._select:
-                raise ValueError("set_value and set_raw_value are incompatible with INSERT...SELECT")
+                msg = "set_value and set_raw_value are incompatible with INSERT...SELECT"
+                raise ValueError(msg)
 
             col_names = []
             inline_values = []
@@ -249,9 +254,11 @@ class Insert(Stmt, SetValuesMixin):
 
         elif self._batch_values:
             if not col_names:
-                raise ValueError("columns must be explicitly set when set_batch_value is used")
+                msg = "columns must be explicitly set when set_batch_value is used"
+                raise ValueError(msg)
             if self._select:
-                raise ValueError("set_batch_value is incompatible with INSERT...SELECT")
+                msg = "set_batch_value is incompatible with INSERT...SELECT"
+                raise ValueError(msg)
 
             sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
 
@@ -277,20 +284,23 @@ class Insert(Stmt, SetValuesMixin):
 
         elif self._select:
             if not col_names:
-                raise ValueError("No columns are specified")
+                msg = "No columns are specified"
+                raise ValueError(msg)
 
             sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
 
             if isinstance(self._select, Select):
                 select_sql, select_params = self._select.sql()
                 if select_params is not None:
-                    raise ValueError("INSERT...SELECT cannot use parameterized SELECT")
+                    msg = "INSERT...SELECT cannot use parameterized SELECT"
+                    raise ValueError(msg)
                 sql.append(select_sql)
             else:
                 sql.append(self._select)
 
         else:
-            raise ValueError("No values are specified")
+            msg = "No values are specified"
+            raise ValueError(msg)
 
         if self.placeholder:
             return " ".join(sql), param_values if param_values else None

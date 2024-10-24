@@ -46,9 +46,11 @@ class Lock(Stmt):
             ("SELECT GET_LOCK('mylock', 5)", None)
         """
         if not self._name:
-            raise ValueError("Lock name is required")
+            msg = "Lock name is required"
+            raise ValueError(msg)
         if not self._timeout:
-            raise ValueError("Lock timeout is required")
+            msg = "Lock timeout is required"
+            raise ValueError(msg)
 
         sql = ["SELECT", f"GET_LOCK({self.quote(self._name)}, {self._timeout})"]
 
@@ -73,7 +75,8 @@ class Lock(Stmt):
             ("SELECT RELEASE_LOCK('mylock')", None)
         """
         if not self._name:
-            raise ValueError("Lock name is required")
+            msg = "Lock name is required"
+            raise ValueError(msg)
 
         sql = ["SELECT", f"RELEASE_LOCK({self.quote(self._name)})"]
 
@@ -98,7 +101,8 @@ class Lock(Stmt):
             ("SELECT IS_FREE_LOCK('mylock')", None)
         """
         if not self._name:
-            raise ValueError("Lock name is required")
+            msg = "Lock name is required"
+            raise ValueError(msg)
 
         sql = ["SELECT", f"IS_FREE_LOCK({self.quote(self._name)})"]
 

@@ -50,7 +50,8 @@ class WhereCondition:
             self._values = []
             self._values_raw = []
         else:
-            raise ValueError("where_predicate must be 'AND' or 'OR'")
+            msg = "where_predicate must be 'AND' or 'OR'"
+            raise ValueError(msg)
 
         self._conds = []
         self._raw_exprs = []

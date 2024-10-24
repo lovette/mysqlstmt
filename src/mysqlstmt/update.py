@@ -189,9 +189,11 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
             ValueError: The statement cannot be created with the given attributes.
         """
         if not self._table_names:
-            raise ValueError("UPDATE requires at least one table")
+            msg = "UPDATE requires at least one table"
+            raise ValueError(msg)
         if not self._values and not self._values_raw:
-            raise ValueError("UPDATE requires at least one value")
+            msg = "UPDATE requires at least one value"
+            raise ValueError(msg)
 
         table_refs = [", ".join(self._table_names)]
         param_values = []
@@ -252,14 +254,16 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
 
         if self._orderby_conds:
             if len(self._table_names) + len(self._join_refs) > 1:
-                raise ValueError("Multiple-table UPDATE does not support ORDER BY")
+                msg = "Multiple-table UPDATE does not support ORDER BY"
+                raise ValueError(msg)
 
             sql.append("ORDER BY")
             sql.append(", ".join(self._orderby_conds))
 
         if self._limit:
             if len(self._table_names) + len(self._join_refs) > 1:
-                raise ValueError("Multiple-table UPDATE does not support LIMIT")
+                msg = "Multiple-table UPDATE does not support LIMIT"
+                raise ValueError(msg)
 
             sql.append(f"LIMIT {self._limit}")
 

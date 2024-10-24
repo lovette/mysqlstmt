@@ -178,7 +178,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         self._limit = row_count
         return self
 
-    def sql(self) -> str:  # noqa: C901, PLR0912
+    def sql(self) -> str | tuple[str, list[str] | None]:  # noqa: C901, PLR0912
         """Build UPDATE SQL statement.
 
         Returns:

@@ -170,7 +170,7 @@ class Stmt:
         table_parts = table_factor.split("AS")
         return table_factor if len(table_parts) == 1 else table_parts[1].strip()
 
-    def _parameterize_values(self, list_or_value: str | Sequence, inline_values: Sequence | None, param_values: Sequence | None) -> None:
+    def parameterize_values(self, list_or_value: str | Sequence, inline_values: Sequence | None, param_values: Sequence | None) -> None:
         """Parameterizes a value or list of values.
 
         Evaluates or iterates through ``list_or_value`` and if the value can be parameterized
@@ -185,7 +185,7 @@ class Stmt:
         """
         if isinstance(list_or_value, collections.abc.Iterable) and not isinstance(list_or_value, str):
             for val in list_or_value:
-                self._parameterize_values(val, inline_values, param_values)
+                self.parameterize_values(val, inline_values, param_values)
         else:
             using_placeholder = False if (param_values is None) else bool(self.placeholder)
             quote = False if using_placeholder is True else self.quote_all_values

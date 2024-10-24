@@ -206,7 +206,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         if self._values:
             for col, val in self._values.items():
                 col_names.append(col)
-                self._parameterize_values(val, inline_values, param_values)
+                self.parameterize_values(val, inline_values, param_values)
 
         for col in self._values_raw:
             val, val_params = self._values_raw[col]

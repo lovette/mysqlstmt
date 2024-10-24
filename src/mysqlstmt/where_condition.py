@@ -309,7 +309,7 @@ class WhereCondition:
             field = self._stmt.quote_col_ref(field)
             inline_values = []
 
-            self._stmt._parameterize_values(val, inline_values, param_values)
+            self._stmt.parameterize_values(val, inline_values, param_values)
 
             if isinstance(val, collections.abc.Iterable) and not isinstance(val, str):
                 # Force lists and tuples to be an IN statement

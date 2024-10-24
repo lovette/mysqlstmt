@@ -72,7 +72,7 @@ class Stmt:
         sql_t = self.sql()
         return sql_t[0] if self.placeholder else sql_t
 
-    def sql(self) -> str:
+    def sql(self) -> str | tuple[str, list[str]]:
         """Derived classes must override and build appropriate SQL statement.
 
         Returns:

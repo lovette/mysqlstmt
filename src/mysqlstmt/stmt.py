@@ -26,7 +26,7 @@ class Stmt:
 
     def __init__(
         self,
-        placeholder: str | None = None,
+        placeholder: str | bool | None = None,
         quote_all_col_refs: bool | None = None,
         quote_all_values: bool | None = None,
         **kwargs,
@@ -34,8 +34,9 @@ class Stmt:
         """Constructor.
 
         Keyword Arguments:
-            placeholder (string, optional): Placeholder character to use when parameterization is enabled.
-                Default is None, in which case the :py:class:`mysqlstmt.config.Config` setting will be used.
+            placeholder (string|bool, optional): Placeholder character to use when parameterization is enabled.
+                Default is None, in which case the :py:class:`mysqlstmt.config.Config` setting will be used;
+                False to disable parameterization.
             quote_all_col_refs (bool, optional): Quote all column references.
                 Default is None, in which case the :py:class:`mysqlstmt.config.Config` setting will be used.
             quote_all_values (bool, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.
@@ -48,10 +49,12 @@ class Stmt:
         """
         super().__init__(**kwargs)
 
-        if placeholder is False or Config.placeholder is False:
-            self.placeholder = False
+        if placeholder is None:
+            self.placeholder = Config.placeholder
+        elif isinstance(placeholder, bool):
+            self.placeholder = Config.placeholder if placeholder else None
         else:
-            self.placeholder = Config.placeholder if placeholder is None else placeholder
+            self.placeholder = placeholder or Config.placeholder
 
         if quote_all_values is False or Config.quote_all_values is False:
             self.quote_all_values = False
@@ -73,7 +76,7 @@ class Stmt:
     def __str__(self) -> str:
         """Returns SQL statement created by :py:meth:`sql`."""
         sql_t = self.sql()
-        return sql_t[0] if self.placeholder else sql_t
+        return sql_t if isinstance(sql_t, str) else sql_t[0]
 
     def sql(self) -> SQLReturnT:
         """Derived classes must override and build appropriate SQL statement.
@@ -201,13 +204,13 @@ class Stmt:
             for val in list_or_value:
                 self.parameterize_values(val, inline_values, param_values)
         else:
-            using_placeholder = False if (param_values is None) else bool(self.placeholder)
+            using_placeholder = (param_values is not None) and bool(self.placeholder)
             quote = False if using_placeholder is True else self.quote_all_values
 
             list_or_value, can_paramize_val = self.pickle(list_or_value)
 
             if inline_values is not None:
-                if can_paramize_val and using_placeholder and param_values is not None:
+                if can_paramize_val and param_values is not None and self.placeholder:
                     inline_values.append(self.placeholder)
                     param_values.append(list_or_value)
                 elif can_paramize_val and quote:

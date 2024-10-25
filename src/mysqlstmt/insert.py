@@ -275,7 +275,8 @@ class Insert(Stmt, SetValuesMixin):
                 sql.append(f"VALUES {', '.join(inline_values)}")
             else:
                 # ALL columns are parameterized
-                inline_values = [self.placeholder for _ in range(len(col_names))]
+                placeholder = str(self.placeholder)
+                inline_values = [placeholder for _ in range(len(col_names))]
                 assert len(col_names) == len(inline_values)
                 sql.append(f"VALUES ({', '.join(inline_values)})")
 

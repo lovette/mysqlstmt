@@ -6,6 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from .stmt import Stmt
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-class JoinMixin:
+class JoinMixin(ABC):
     """Provide join related functionality to statement classes.
 
     Note:
@@ -206,3 +207,16 @@ class JoinMixin:
             table_refs.append(join_clause)
 
             prev_join_table = join_table
+
+    @abstractmethod
+    def quote_col_ref(self, col_ref: str) -> str:
+        """Quote column reference with backticks.
+
+        Arguments:
+            col_ref (string): Column reference. Can be prefixed with the table name.
+
+        Returns:
+            string: Column reference quoted with backticks (``).
+
+        Implemented in `mysqlstmt.Stmt`.
+        """

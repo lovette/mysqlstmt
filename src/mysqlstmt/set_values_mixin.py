@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-import collections
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -152,7 +152,7 @@ class SetValuesMixin:
         """
         assert isinstance(field_or_dict, (str, dict))
         assert value_or_tuple is None or isinstance(value_or_tuple, (str, tuple))
-        assert value_params is None or isinstance(value_params, collections.abc.Iterable)
+        assert value_params is None or isinstance(value_params, Iterable)
 
         if not isinstance(field_or_dict, str):
             for f, v in field_or_dict.items():

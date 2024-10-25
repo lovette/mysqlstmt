@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-import collections
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from .config import Config
@@ -183,7 +183,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').columns('`t1c1` AS `t1a1`').sql()
             ('SELECT `t1c1` AS `t1a1` FROM t1', None)
         """
-        assert value_params is None or isinstance(value_params, collections.abc.Iterable)
+        assert value_params is None or isinstance(value_params, Iterable)
 
         if not isinstance(list_or_name, str):
             for c in list_or_name:

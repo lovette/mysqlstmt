@@ -31,8 +31,8 @@ class SetValuesMixin:
         """
         super().__init__(**kwargs)
 
-        self._values = collections.OrderedDict()
-        self._values_raw = collections.OrderedDict()
+        self._values: dict[str, str | float | datetime.datetime | datetime.date | datetime.time | None] = {}
+        self._values_raw: dict[str, tuple[str, Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None]] = {}
 
     def set_value(self, field_or_dict: str | Mapping, value: str | float | datetime.datetime | datetime.date | datetime.time | None = None) -> Self:
         """Set value that may be translated, escaped or parameterized.

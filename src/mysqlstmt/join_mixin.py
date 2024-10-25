@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from .stmt import Stmt
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
@@ -141,12 +143,12 @@ class JoinMixin:
             root_table_factor (str): Root table name.
             table_refs (list): Join table references.
         """
-        root_table_alias = self.table_alias(root_table_factor)
+        root_table_alias = Stmt.table_alias(root_table_factor)
 
         prev_join_table = root_table_alias
 
         for join_type, join_table_factor, join_cond in self._join_refs:
-            join_table = self.table_alias(join_table_factor)
+            join_table = Stmt.table_alias(join_table_factor)
 
             format_args = {
                 "join_table": join_table,

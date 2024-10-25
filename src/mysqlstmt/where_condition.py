@@ -40,11 +40,42 @@ class WhereCondition:
         assert isinstance(stmt, Stmt)
         self._stmt = stmt
 
+        # > AND {field: (value, operator), ...}
+        # >  OR [(field, (value, operator)), ...]
+        self._values: (
+            dict[str, tuple[str | float | datetime.datetime | datetime.date | datetime.time | None, str]]
+            | list[tuple[str, tuple[str | float | datetime.datetime | datetime.date | datetime.time | None, str]]]
+        )
+
+        # > AND {field: (value, operator, params), ...}
+        # >  OR [(field, (value, operator, params)), ...]
+        # with 'params' being sequence of values or None.
+        self._values_raw: (
+            dict[
+                str,
+                tuple[
+                    str | float | datetime.datetime | datetime.date | datetime.time | None,
+                    str,
+                    Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None,
+                ],
+            ]
+            | list[
+                tuple[
+                    str,
+                    tuple[
+                        str | float | datetime.datetime | datetime.date | datetime.time | None,
+                        str,
+                        Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None,
+                    ],
+                ]
+            ]
+        )
+
         if where_predicate is None or where_predicate == "AND":
             # With 'AND', it makes sense to only set one value per field
             # so we use a dict: field=(value, operator, value_params)
-            self._values = collections.OrderedDict()
-            self._values_raw = collections.OrderedDict()
+            self._values = {}
+            self._values_raw = {}
             where_predicate = "AND"
         elif where_predicate == "OR":
             # With 'OR', you can reference the same field multiple times

@@ -37,7 +37,7 @@ class Union(Stmt):
         ('(SELECT `t1c1` FROM t1) UNION (SELECT `t2c1` FROM t2)', None)
     """
 
-    def __init__(self, list_or_stmt: str | Sequence | None = None, distinct: bool | None = None, **kwargs) -> None:
+    def __init__(self, list_or_stmt: str | Select | Sequence[str | Select] | None = None, distinct: bool | None = None, **kwargs) -> None:
         """Constructor.
 
         Keyword Arguments:
@@ -56,7 +56,7 @@ class Union(Stmt):
         if list_or_stmt is not None:
             self.union(list_or_stmt)
 
-    def union(self, list_or_stmt: str | Sequence) -> Union:
+    def union(self, list_or_stmt: str | Select | Sequence[str | Select]) -> Union:
         """Add SELECT statement to union.
 
         Arguments:

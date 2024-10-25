@@ -25,7 +25,7 @@ class Lock(Stmt):
         self._name = name
         self._timeout = timeout
 
-    def get_lock(self) -> str:
+    def get_lock(self) -> str | tuple[str, None]:
         """Build SELECT GET_LOCK SQL statement.
 
         Returns:
@@ -58,7 +58,7 @@ class Lock(Stmt):
             return " ".join(sql), None
         return " ".join(sql)
 
-    def release_lock(self) -> str:
+    def release_lock(self) -> str | tuple[str, None]:
         """Build SELECT RELEASE_LOCK SQL statement.
 
         Returns:
@@ -84,7 +84,7 @@ class Lock(Stmt):
             return " ".join(sql), None
         return " ".join(sql)
 
-    def is_free_lock(self) -> str:
+    def is_free_lock(self) -> str | tuple[str, None]:
         """Build SELECT IS_FREE_LOCK SQL statement.
 
         Returns:

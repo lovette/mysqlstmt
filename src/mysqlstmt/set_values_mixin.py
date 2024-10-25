@@ -10,9 +10,10 @@ import collections
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    import datetime
+    from collections.abc import Mapping, Sequence
 
-    from .stmt import Stmt
+    from typing_extensions import Self
 
 
 class SetValuesMixin:
@@ -33,7 +34,7 @@ class SetValuesMixin:
         self._values = collections.OrderedDict()
         self._values_raw = collections.OrderedDict()
 
-    def set_value(self, field_or_dict: str | dict, value: str | None = None) -> Stmt:
+    def set_value(self, field_or_dict: str | Mapping, value: str | float | datetime.datetime | datetime.date | datetime.time | None = None) -> Self:
         """Set value that may be translated, escaped or parameterized.
 
         Field names may be escaped with backticks.
@@ -97,7 +98,28 @@ class SetValuesMixin:
     set_values = set_value
     """Alias for :py:meth:`set_value`"""
 
-    def set_raw_value(self, field_or_dict: str | dict, value_or_tuple: str | Sequence | None = None, value_params: Sequence | None = None) -> Stmt:
+    def set_raw_value(
+        self,
+        field_or_dict: str
+        | Mapping[
+            str,
+            str
+            | float
+            | datetime.datetime
+            | datetime.date
+            | datetime.time
+            | None
+            | tuple[str, Sequence[str | float | datetime.datetime | datetime.date | datetime.time]],
+        ],
+        value_or_tuple: str
+        | float
+        | datetime.datetime
+        | datetime.date
+        | datetime.time
+        | None
+        | tuple[str, Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None] = None,
+        value_params: Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None = None,
+    ) -> Self:
         """Set value to be included directly in the SQL.
 
         Field names may be escaped with backticks.

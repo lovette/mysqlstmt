@@ -101,7 +101,7 @@ class Insert(Stmt, SetValuesMixin):
     columns = column
     """Alias for :py:meth:`column`"""
 
-    def select(self, stmt: Stmt) -> Insert:
+    def select(self, stmt: str | Select) -> Insert:
         """Insert rows resulting from a SELECT statement.
 
         Arguments:

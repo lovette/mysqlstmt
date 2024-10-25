@@ -106,7 +106,13 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         ('DELETE LOW_PRIORITY FROM t1 WHERE `t1c1` = 1', None)
     """
 
-    def __init__(self, table_name: str | None = None, ignore_error: bool = False, allow_unqualified_delete: bool = False, **kwargs) -> None:
+    def __init__(
+        self,
+        table_name: str | Sequence[str] | None = None,
+        ignore_error: bool = False,
+        allow_unqualified_delete: bool = False,
+        **kwargs,
+    ) -> None:
         """Constructor.
 
         Keyword Arguments:

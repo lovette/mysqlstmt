@@ -16,7 +16,10 @@ from .where_condition import WhereCondition
 from .where_mixin import WhereMixin
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    import datetime
+    from collections.abc import Mapping, Sequence
+
+    from typing_extensions import Self
 
 
 class Select(Stmt, WhereMixin, JoinMixin):
@@ -123,7 +126,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     from_tables = from_table
     """Alias for :py:meth:`from_table`"""
 
-    def column(self, list_or_name: str | Sequence, raw: bool = False, value_params: Sequence | None = None) -> Select:
+    def column(self, list_or_name: str | Sequence[str], raw: bool = False, value_params: Sequence[str] | None = None) -> Select:
         """Add column names to select.
 
         Arguments:
@@ -198,7 +201,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     columns = column
     """Alias for :py:meth:`column`"""
 
-    def column_expr(self, list_or_expr: str | Sequence, value_params: Sequence | None = None) -> Select:
+    def column_expr(self, list_or_expr: str | Sequence[str], value_params: Sequence[str] | None = None) -> Select:
         """Add expressions to select.
 
         Arguments:
@@ -255,7 +258,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def qualify_columns(self, table_name: str, qualify_cols: Sequence | None = None) -> Select:
+    def qualify_columns(self, table_name: str, qualify_cols: Sequence[str] | None = None) -> Select:
         """Qualify column names with a table name.
 
         Arguments:
@@ -357,7 +360,19 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._limit = (row_count, offset)
         return self
 
-    def having_value(self, field_or_dict: str | dict, value_or_tuple: str | Sequence | None = None, operator: str = "=") -> Select:
+    def having_value(
+        self,
+        field_or_dict: str | Mapping[str, str | float | datetime.datetime | datetime.date | datetime.time | None],
+        value_or_tuple: str
+        | float
+        | datetime.datetime
+        | datetime.date
+        | datetime.time
+        | object
+        | Sequence[str | float | datetime.datetime | datetime.date | datetime.time | object]
+        | None = None,
+        operator: str = "=",
+    ) -> Select:
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -404,10 +419,20 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
     def having_raw_value(
         self,
-        field_or_dict: str | dict,
-        value_or_tuple: str | Sequence | None = None,
+        field_or_dict: str | Mapping[str, str | float | datetime.datetime | datetime.date | datetime.time | None],
+        value_or_tuple: str
+        | float
+        | datetime.datetime
+        | datetime.date
+        | datetime.time
+        | None
+        | tuple[
+            str | float | datetime.datetime | datetime.date | datetime.time | None,
+            str,
+            Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None,
+        ] = None,
         operator: str = "=",
-        value_params: Sequence | None = None,
+        value_params: Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None = None,
     ) -> Select:
         """Compare field to a an unmanipulated value.
 
@@ -445,7 +470,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     having_raw_values = having_raw_value
     """Alias for :py:meth:`having_raw_value`"""
 
-    def having_expr(self, list_or_expr: str | Sequence, expr_params: Sequence | None = None) -> Select:
+    def having_expr(self, list_or_expr: str | list[str], expr_params: Sequence[str] | None = None) -> Select:
         """Include a complex expression in conditional statement.
 
         Expressions will be included in the SQL statement verbatim.
@@ -476,7 +501,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     having_exprs = having_expr
     """Alias for :py:meth:`having_expr`"""
 
-    def get_having_cond(self, index: int = -1) -> Select:
+    def get_having_cond(self, index: int = -1) -> WhereCondition:
         """Returns a ``WhereCondition`` object from the list of conditions.
 
         Arguments:
@@ -494,7 +519,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         """
         return self._having_cond_root.get_where_cond(index)
 
-    def having_cond(self, cond: WhereCondition | None = None, where_predicate: str | None = None) -> Select:
+    def having_cond(self, cond: WhereCondition | None = None, where_predicate: str | None = None) -> Self:
         """Activates a new ``WhereCondition``.
 
         Arguments:

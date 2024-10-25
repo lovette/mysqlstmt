@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from .stmt import Stmt
+    from typing_extensions import Self
 
 
 class JoinMixin:
@@ -31,7 +31,7 @@ class JoinMixin:
 
         self._join_refs = []
 
-    def join(self, dict_or_table_factor: str | dict, join_cond: str | Sequence | None = None, join_type: str = "INNER") -> Stmt:
+    def join(self, dict_or_table_factor: str | dict, join_cond: str | Sequence[str] | None = None, join_type: str = "INNER") -> Self:
         """Join a table with a JOIN condition.
 
         Arguments:
@@ -79,7 +79,7 @@ class JoinMixin:
 
         return self
 
-    def left_join(self, table_or_dict: str | dict, join_cond: str | Sequence | None = None) -> Stmt:
+    def left_join(self, table_or_dict: str | dict, join_cond: str | Sequence[str] | None = None) -> Self:
         """Convenience function to create a LEFT JOIN. See :py:meth:`join` for details.
 
         Examples: ::

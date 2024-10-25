@@ -11,9 +11,10 @@ from typing import TYPE_CHECKING
 from .where_condition import WhereCondition
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    import datetime
+    from collections.abc import Mapping, Sequence
 
-    from .stmt import Stmt
+    from typing_extensions import Self
 
 
 class WhereMixin:
@@ -39,7 +40,20 @@ class WhereMixin:
         # Default first condition is 'AND'; will be ignored if where_or is called first
         self.where_cond(where_predicate="AND")
 
-    def where_value(self, field_or_dict: str | dict, value_or_tuple: str | Sequence | None = None, operator: str = "=") -> Stmt:
+    def where_value(
+        self,
+        field_or_dict: str | Mapping[str, str | float | datetime.datetime | datetime.date | datetime.time | None],
+        value_or_tuple: str
+        | float
+        | datetime.datetime
+        | datetime.date
+        | datetime.time
+        | tuple[str | float | datetime.datetime | datetime.date | datetime.time | None, str]
+        | list[str | float | datetime.datetime | datetime.date | datetime.time]
+        | object
+        | None = None,
+        operator: str = "=",
+    ) -> Self:
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -153,11 +167,21 @@ class WhereMixin:
 
     def where_raw_value(
         self,
-        field_or_dict: str | dict,
-        value_or_tuple: str | Sequence | None = None,
+        field_or_dict: str | Mapping[str, str | float | datetime.datetime | datetime.date | datetime.time | None],
+        value_or_tuple: str
+        | float
+        | datetime.datetime
+        | datetime.date
+        | datetime.time
+        | None
+        | tuple[
+            str | float | datetime.datetime | datetime.date | datetime.time,
+            str,
+            Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None,
+        ] = None,
         operator: str = "=",
-        value_params: Sequence | None = None,
-    ) -> Stmt:
+        value_params: Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None = None,
+    ) -> Self:
         """Compare field to a an unmanipulated value.
 
         Field names may be escaped with backticks.
@@ -209,7 +233,7 @@ class WhereMixin:
 
     where_raw_values = where_raw_value
 
-    def where_expr(self, list_or_expr: str | Sequence, expr_params: Sequence | None = None) -> Stmt:
+    def where_expr(self, list_or_expr: str | list[str], expr_params: Sequence[str] | None = None) -> Self:
         """Include a complex expression in conditional statement.
 
         Expressions will be included in the SQL statement verbatim.
@@ -265,7 +289,7 @@ class WhereMixin:
         """
         return self._where_cond_root.get_where_cond(index)
 
-    def where_cond(self, cond: WhereCondition | None = None, where_predicate: str | None = None) -> Stmt:
+    def where_cond(self, cond: WhereCondition | None = None, where_predicate: str | None = None) -> Self:
         """Activates a new ``WhereCondition``.
 
         Arguments:
@@ -285,7 +309,7 @@ class WhereMixin:
         self._where_cond_root.add_cond(cond, where_predicate)
         return self
 
-    def where_and(self) -> Stmt:
+    def where_and(self) -> Self:
         """Activates a new ``WhereCondition`` with an 'AND' predicate.
 
         Returns:
@@ -314,7 +338,7 @@ class WhereMixin:
         self._where_cond_root.where_and()
         return self
 
-    def where_or(self) -> Stmt:
+    def where_or(self) -> Self:
         """Activates a new ``WhereCondition`` with an 'OR' predicate.
 
         Returns:

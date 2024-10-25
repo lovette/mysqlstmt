@@ -12,9 +12,11 @@ from typing import TYPE_CHECKING
 from .stmt import Stmt
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    import datetime
+    from collections.abc import Mapping, Sequence
 
     from .where_condition import WhereCondition
+    from .where_mixin import WhereMixin
 
 
 class WhereCondition:
@@ -25,11 +27,11 @@ class WhereCondition:
     ``WhereCondition`` objects.
     """
 
-    def __init__(self, stmt: Stmt, where_predicate: str | None = None, **kwargs) -> None:
+    def __init__(self, stmt: WhereMixin, where_predicate: str | None = None, **kwargs) -> None:
         """Constructor.
 
         Keyword Arguments:
-            stmt (mysqlstmt.stmt.Stmt): Statement this condition is associated with.
+            stmt (WhereMixin): Statement this condition is associated with.
             where_predicate (string, optional): The predicate for this condition, either 'AND' or 'OR'.
             **kwargs: Base class arguments.
         """
@@ -164,7 +166,17 @@ class WhereCondition:
         """
         return self.add_cond(where_predicate="OR")
 
-    def where_value(self, field_or_dict: str | dict, value_or_tuple: str | Sequence | None = None, operator: str = "=") -> WhereCondition:
+    def where_value(
+        self,
+        field_or_dict: str | Mapping[str, str | float | datetime.datetime | datetime.date | datetime.time | None],
+        value_or_tuple: str
+        | float
+        | tuple[str | float | datetime.datetime | datetime.date | datetime.time | None, str]
+        | list[str | float | datetime.datetime | datetime.date | datetime.time]
+        | object
+        | None = None,
+        operator: str = "=",
+    ) -> WhereCondition:
         """Compare field to a value.
 
         Field names may be escaped with backticks.
@@ -202,10 +214,20 @@ class WhereCondition:
 
     def where_raw_value(
         self,
-        field_or_dict: str | dict,
-        value_or_tuple: str | Sequence | None = None,
+        field_or_dict: str | Mapping[str, str | float | datetime.datetime | datetime.date | datetime.time | None],
+        value_or_tuple: str
+        | float
+        | datetime.datetime
+        | datetime.date
+        | datetime.time
+        | None
+        | tuple[
+            str | float | datetime.datetime | datetime.date | datetime.time | None,
+            str,
+            Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None,
+        ] = None,
         operator: str = "=",
-        value_params: Sequence | None = None,
+        value_params: Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None = None,
     ) -> WhereCondition:
         """Compare field to a an unmanipulated value.
 
@@ -250,7 +272,11 @@ class WhereCondition:
 
         return self
 
-    def where_expr(self, expr_or_list: str | Sequence, expr_params: Sequence | None = None) -> WhereCondition:
+    def where_expr(
+        self,
+        expr_or_list: str | list[str] | tuple[str, Sequence[str] | None],
+        expr_params: Sequence[str] | None = None,
+    ) -> WhereCondition:
         """Include a complex expression in conditional statement.
 
         Expressions will be included in the SQL statement verbatim.
@@ -280,7 +306,7 @@ class WhereCondition:
 
         return self
 
-    def sql(self, param_values: Sequence[str]) -> str:  # noqa: C901, PLR0912
+    def sql(self, param_values: list[str]) -> str | None:  # noqa: C901, PLR0912
         """Build SQL snippet to include in a WHERE or HAVING clause.
 
         Returns:

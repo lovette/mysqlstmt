@@ -15,7 +15,7 @@ from .config import Config
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from .stmt import Stmt
+    from typing_extensions import Self
 
 
 class Stmt:
@@ -170,7 +170,18 @@ class Stmt:
         table_parts = table_factor.split("AS")
         return table_factor if len(table_parts) == 1 else table_parts[1].strip()
 
-    def parameterize_values(self, list_or_value: str | Sequence, inline_values: Sequence | None, param_values: Sequence | None) -> None:
+    def parameterize_values(
+        self,
+        list_or_value: str
+        | float
+        | datetime.datetime
+        | datetime.date
+        | datetime.time
+        | None
+        | Sequence[str | float | datetime.datetime | datetime.date | datetime.time],
+        inline_values: list | None,
+        param_values: list | None,
+    ) -> None:
         """Parameterizes a value or list of values.
 
         Evaluates or iterates through ``list_or_value`` and if the value can be parameterized
@@ -202,7 +213,7 @@ class Stmt:
             else:
                 inline_values.append(list_or_value)
 
-    def set_option(self, list_or_value: str | Sequence) -> Stmt:
+    def set_option(self, list_or_value: str | Sequence) -> Self:
         """Sets query options (the keywords at the beginning of the SQL statement).
 
         Arguments:

@@ -34,19 +34,19 @@ class TestUpdate:
 
     def test_dict_ints(self) -> None:
         q = Update()
-        values = OrderedDict([("t1c1", 1), ("t1c2", 2)])
+        values = {**OrderedDict([("t1c1", 1), ("t1c2", 2)])}
         sql_t = q.table("t1").set_value(values).sql()
         assert sql_t == ("UPDATE t1 SET `t1c1`=1, `t1c2`=2", None)
 
     def test_dict_strings(self) -> None:
         q = Update()
-        values = OrderedDict([("t1c1", "a"), ("t1c2", "b")])
+        values = {**OrderedDict([("t1c1", "a"), ("t1c2", "b")])}
         sql_t = q.table("t1").set_value(values).sql()
         assert sql_t == ("UPDATE t1 SET `t1c1`=?, `t1c2`=?", ["a", "b"])
 
     def test_null(self) -> None:
         q = Update()
-        values = OrderedDict([("t1c1", "a"), ("t1c2", None)])
+        values = {**OrderedDict([("t1c1", "a"), ("t1c2", None)])}
         sql_t = q.table("t1").set_value(values).sql()
         assert sql_t == ("UPDATE t1 SET `t1c1`=?, `t1c2`=NULL", ["a"])
 

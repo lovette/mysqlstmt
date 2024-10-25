@@ -34,19 +34,19 @@ class TestInsert:
 
     def test_dict_ints(self) -> None:
         q = Insert()
-        values = OrderedDict([("t1c1", 1), ("t1c2", 2)])
+        values = {**OrderedDict([("t1c1", 1), ("t1c2", 2)])}
         sql_t = q.into_table("t1").set_value(values).sql()
         assert sql_t == ("INSERT INTO t1 (`t1c1`, `t1c2`) VALUES (1, 2)", None)
 
     def test_dict_strings(self) -> None:
         q = Insert()
-        values = OrderedDict([("t1c1", "a"), ("t1c2", "b")])
+        values = {**OrderedDict([("t1c1", "a"), ("t1c2", "b")])}
         sql_t = q.into_table("t1").set_value(values).sql()
         assert sql_t == ("INSERT INTO t1 (`t1c1`, `t1c2`) VALUES (?, ?)", ["a", "b"])
 
     def test_null(self) -> None:
         q = Insert()
-        values = OrderedDict([("t1c1", "a"), ("t1c2", None)])
+        values = {**OrderedDict([("t1c1", "a"), ("t1c2", None)])}
         sql_t = q.into_table("t1").set_value(values).sql()
         assert sql_t == ("INSERT INTO t1 (`t1c1`, `t1c2`) VALUES (?, NULL)", ["a"])
 
@@ -134,7 +134,7 @@ class TestInsert:
 
     def test_dict_strings_utf_param(self) -> None:
         q = Insert()
-        values = OrderedDict([("t1c1", "äöü")])
+        values = {**OrderedDict([("t1c1", "äöü")])}
         sql_t = q.into_table("t1").set_value(values).sql()
         assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (?)", ["äöü"])
 

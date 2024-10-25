@@ -34,19 +34,19 @@ class TestDelete:
 
     def test_dict_ints(self) -> None:
         q = Delete()
-        values = OrderedDict([("t1c1", 1), ("t1c2", 2)])
+        values = {**OrderedDict([("t1c1", 1), ("t1c2", 2)])}
         sql_t = q.from_table("t1").where_value(values).sql()
         assert sql_t == ("DELETE FROM t1 WHERE (`t1c1` = 1 AND `t1c2` = 2)", None)
 
     def test_dict_strings(self) -> None:
         q = Delete()
-        values = OrderedDict([("t1c1", "a"), ("t1c2", "b")])
+        values = {**OrderedDict([("t1c1", "a"), ("t1c2", "b")])}
         sql_t = q.from_table("t1").where_value(values).sql()
         assert sql_t == ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` = ?)", ["a", "b"])
 
     def test_null(self) -> None:
         q = Delete()
-        values = OrderedDict([("t1c1", "a"), ("t1c2", None)])
+        values = {**OrderedDict([("t1c1", "a"), ("t1c2", None)])}
         sql_t = q.from_table("t1").where_value(values).sql()
         assert sql_t == ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` IS NULL)", ["a"])
 

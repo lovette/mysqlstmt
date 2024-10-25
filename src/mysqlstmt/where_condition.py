@@ -6,14 +6,14 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING
 
 from .stmt import Stmt
 
 if TYPE_CHECKING:
     import datetime
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Mapping
 
     from .where_condition import WhereCondition
     from .where_mixin import WhereMixin
@@ -337,7 +337,7 @@ class WhereCondition:
 
             self._stmt.parameterize_values(val, inline_values, param_values)
 
-            if isinstance(val, collections.abc.Iterable) and not isinstance(val, str):
+            if isinstance(val, Sequence) and not isinstance(val, str):
                 # Force lists and tuples to be an IN statement
                 if len(val) > 1:
                     val = f"({', '.join(inline_values)})"

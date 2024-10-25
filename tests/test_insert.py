@@ -166,7 +166,7 @@ class TestInsert:
 
     def test_fail_multi_tables(self) -> None:
         with pytest.raises(ValueError):  # noqa: PT011
-            Insert(["t1", "t2"])
+            Insert(["t1", "t2"])  # pyright: ignore[reportArgumentType]
 
     def test_fail_no_values(self) -> None:
         q = Insert("t1")

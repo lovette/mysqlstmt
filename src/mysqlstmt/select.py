@@ -654,17 +654,19 @@ class Select(Stmt, WhereMixin, JoinMixin):
             sql.append("FROM")
             sql.append(" ".join(table_refs))
 
-        if self._where_cond_root.has_conds:
+        where_cond = self._where_cond_root.sql(param_values)
+        if where_cond:
             sql.append("WHERE")
-            sql.append(self._where_cond_root.sql(param_values))
+            sql.append(where_cond)
 
         if self._groupby_conds:
             sql.append("GROUP BY")
             sql.append(", ".join(self._groupby_conds))
 
-        if self._having_cond_root.has_conds:
+        having_cond = self._having_cond_root.sql(param_values)
+        if having_cond:
             sql.append("HAVING")
-            sql.append(self._having_cond_root.sql(param_values))
+            sql.append(having_cond)
 
         if self._orderby_conds:
             sql.append("ORDER BY")

@@ -230,9 +230,10 @@ class Delete(Stmt, WhereMixin, JoinMixin):
             sql.append("FROM")
             sql.append(self._table_names[0])
 
-            if self._where_cond_root.has_conds:
+            where_sql = self._where_cond_root.sql(param_values)
+            if where_sql:
                 sql.append("WHERE")
-                sql.append(self._where_cond_root.sql(param_values))
+                sql.append(where_sql)
             elif not self.allow_unqualified_delete:
                 msg = "DANGER! Unqualified deletes can ruin your day!"
                 raise ValueError(msg)
@@ -253,9 +254,10 @@ class Delete(Stmt, WhereMixin, JoinMixin):
                 self._append_join_table_refs(self._table_names[0], table_refs)
                 sql.append(" ".join(table_refs))
 
-            if self._where_cond_root.has_conds:
+            where_sql = self._where_cond_root.sql(param_values)
+            if where_sql:
                 sql.append("WHERE")
-                sql.append(self._where_cond_root.sql(param_values))
+                sql.append(where_sql)
             elif not self.allow_unqualified_delete:
                 msg = "DANGER! Unqualified deletes can ruin your day!"
                 raise ValueError(msg)

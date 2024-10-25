@@ -248,9 +248,10 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         sql.append("SET")
         sql.append(", ".join(set_values))
 
-        if self._where_cond_root.has_conds:
+        where_cond = self._where_cond_root.sql(param_values)
+        if where_cond:
             sql.append("WHERE")
-            sql.append(self._where_cond_root.sql(param_values))
+            sql.append(where_cond)
 
         if self._orderby_conds:
             if len(self._table_names) + len(self._join_refs) > 1:

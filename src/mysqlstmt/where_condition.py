@@ -356,12 +356,17 @@ class WhereCondition:
                 sql.append(cond_sql)
 
         for field_or_tuple in self._values:
-            if isinstance(self._values, dict):
+            if not isinstance(field_or_tuple, str):
+                # > OR = tuple
+                field, value_op_tuple = field_or_tuple
+                val, op = value_op_tuple
+            elif isinstance(self._values, dict):
+                # > AND = dict key
                 val, op = self._values[field_or_tuple]
                 field = field_or_tuple
             else:
-                field, value_op_tuple = field_or_tuple
-                val, op = value_op_tuple
+                errmsg = "WhereCondition expected a tuple or string dictionary key"
+                raise TypeError(errmsg)
 
             field = self._stmt.quote_col_ref(field)
             inline_values = []
@@ -395,12 +400,15 @@ class WhereCondition:
             sql.append(f"{field} {op} {val}")
 
         for field_or_tuple in self._values_raw:
-            if isinstance(self._values_raw, dict):
+            if not isinstance(field_or_tuple, str):
+                field, value_op_tuple = field_or_tuple
+                val, op, val_params = value_op_tuple
+            elif isinstance(self._values_raw, dict):
                 val, op, val_params = self._values_raw[field_or_tuple]
                 field = field_or_tuple
             else:
-                field, value_op_tuple = field_or_tuple
-                val, op, val_params = value_op_tuple
+                errmsg = "WhereCondition expected a tuple or string dictionary key"
+                raise TypeError(errmsg)
 
             if val_params is not None and self._stmt.placeholder:
                 for param_val in val_params:

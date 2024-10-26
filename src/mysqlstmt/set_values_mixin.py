@@ -157,12 +157,14 @@ class SetValuesMixin:
         if not isinstance(field_or_dict, str):
             for f, v in field_or_dict.items():
                 self.set_raw_value(f, v)
-        elif not isinstance(value_or_tuple, tuple):
-            self.set_raw_value(field_or_dict, (value_or_tuple, value_params))
-        else:
-            assert isinstance(value_or_tuple, tuple)
+        elif value_or_tuple is None:
+            errmsg = "Raw value cannot be 'None'"
+            raise ValueError(errmsg)
+        elif isinstance(value_or_tuple, tuple):
             assert len(value_or_tuple) == 2  # noqa: PLR2004
             self._values_raw[field_or_dict] = value_or_tuple
+        else:
+            self.set_raw_value(field_or_dict, (value_or_tuple, value_params))
 
         return self
 

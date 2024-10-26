@@ -203,15 +203,19 @@ class Stmt:
 
             list_or_value, can_paramize_val = self.pickle(list_or_value)
 
-            if inline_values is None:
+            if inline_values is not None:
+                if can_paramize_val and using_placeholder and param_values is not None:
+                    inline_values.append(self.placeholder)
+                    param_values.append(list_or_value)
+                elif can_paramize_val and quote:
+                    inline_values.append(self.quote(list_or_value))
+                else:
+                    inline_values.append(list_or_value)
+            elif param_values is not None:
                 param_values.append(list_or_value)
-            elif can_paramize_val and using_placeholder:
-                inline_values.append(self.placeholder)
-                param_values.append(list_or_value)
-            elif can_paramize_val and quote:
-                inline_values.append(self.quote(list_or_value))
             else:
-                inline_values.append(list_or_value)
+                errmsg = "Either 'inline_values' or 'param_values' arguments must not be None"
+                raise ValueError(errmsg)
 
     def set_option(self, list_or_value: str | Sequence) -> Self:
         """Sets query options (the keywords at the beginning of the SQL statement).

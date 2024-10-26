@@ -337,7 +337,7 @@ class WhereCondition:
 
         return self
 
-    def sql(self, param_values: list[str]) -> str | None:  # noqa: C901, PLR0912
+    def sql(self, param_values: list[str]) -> str | None:  # noqa: C901, PLR0912, PLR0915
         """Build SQL snippet to include in a WHERE or HAVING clause.
 
         Returns:

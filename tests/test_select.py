@@ -346,11 +346,6 @@ class TestSelect:
         sql_t = q.from_table("t1").where_value("t1c1", None, "<>").sql()
         assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` IS NOT NULL", None)
 
-    def test_where_value_notnull_tuple(self) -> None:
-        q = Select()
-        sql_t = q.from_table("t1").where_value("t1c1", (None, "<>")).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` IS NOT NULL", None)
-
     def test_where_value_in(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", [1, 2, 3]).sql()

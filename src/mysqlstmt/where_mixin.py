@@ -45,7 +45,7 @@ class WhereMixin:
     def where_value(
         self,
         field_or_dict: str | Mapping[str, WhereValueT],
-        value_or_tuple: WhereValueT = None,
+        value: WhereValueT = None,
         operator: WhereOpT = "=",
     ) -> Self:
         """Compare field to a value.
@@ -60,9 +60,8 @@ class WhereMixin:
 
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
-            value_or_tuple (mixed or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
-                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Iterable, Object,etc.).
-                Can also be a tuple ``(value, operator)``.
+            value (mixed, optional): Value to compare with if ``field_or_dict`` is a field name.
+                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Collection, Object,etc.).
             operator (string, optional): Comparison operator, default is '='.
 
         Returns:
@@ -154,7 +153,7 @@ class WhereMixin:
             >>> q.from_table('t1').where_value('DATE(`t1c1`)', datetime.date(2014,3,2), '>').sql()
             ('SELECT * FROM t1 WHERE DATE(`t1c1`) > ?', ['2014-03-02'])
         """
-        self.get_where_cond().where_value(field_or_dict, value_or_tuple, operator)
+        self.get_where_cond().where_value(field_or_dict, value, operator)
         return self
 
     where_values = where_value
@@ -162,7 +161,7 @@ class WhereMixin:
     def where_raw_value(
         self,
         field_or_dict: str | Mapping[str, WhereRawValueT],
-        value_or_tuple: WhereRawValueT | None = None,
+        raw_value: WhereRawValueT | None = None,
         operator: WhereOpT = "=",
         value_params: StmtParamValuesT | None = None,
     ) -> Self:
@@ -177,9 +176,7 @@ class WhereMixin:
 
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
-                Dictionary values can also be a tuple, as described below.
-            value_or_tuple (string or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
-                Can also be a tuple ``(value, operator, value_params)``.
+            raw_value (string, optional): Value to compare with if ``field_or_dict`` is a field name.
             operator (string, optional): Comparison operator, default is '='.
             value_params (Collection, optional): List of value params. Default is None.
 
@@ -212,7 +209,7 @@ class WhereMixin:
             >>> q.from_table('t1').where_raw_value('DATE(`t1c1`)', 'NOW()', '>').sql()
             ('SELECT * FROM t1 WHERE DATE(`t1c1`) > NOW()')
         """
-        self.get_where_cond().where_raw_value(field_or_dict, value_or_tuple, operator, value_params)
+        self.get_where_cond().where_raw_value(field_or_dict, raw_value, operator, value_params)
         return self
 
     where_raw_values = where_raw_value
@@ -226,7 +223,6 @@ class WhereMixin:
 
         Arguments:
             list_or_expr (string or list): An expression or :py:class:`list` of expressions.
-                Expression values can also be a tuple ``(expression, expr_params)``.
             expr_params (Collection, optional): List of expression params. Default is None.
 
         Returns:

@@ -192,7 +192,7 @@ class Stmt:
         it is added to ``param_values``, otherwise it is added to ``inline_values``.
 
         Arguments:
-            list_or_value (list or mixed): A value or list of values to replace with ``placeholder``.
+            list_or_value (mixed or collection): A value or collection of values to replace with ``placeholder``.
             inline_values (list or None, modified): List to append non-parameterized values to;
                 set to None to force everything to be parameterized.
             param_values (list or None, modified): List to append parameterized values to;

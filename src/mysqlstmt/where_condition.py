@@ -188,7 +188,7 @@ class WhereCondition:
     def where_value(
         self,
         field_or_dict: str | Mapping[str, WhereValueT],
-        value_or_tuple: WhereValueT | None = None,
+        value: WhereValueT | None = None,
         operator: WhereOpT = "=",
     ) -> WhereCondition:
         """Compare field to a value.
@@ -203,9 +203,8 @@ class WhereCondition:
 
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
-            value_or_tuple (mixed or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
-                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Iterable, Object,etc.).
-                Can also be a tuple ``(value, operator)``.
+            value (mixed, optional): Value to compare with if ``field_or_dict`` is a field name.
+                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Collection, Object,etc.).
             operator (string, optional): Comparison operator, default is '='.
 
         Returns:
@@ -217,19 +216,17 @@ class WhereCondition:
         if isinstance(field_or_dict, Mapping):
             for f, v in field_or_dict.items():
                 self.where_value(f, v, operator)
-        elif not isinstance(value_or_tuple, tuple):
-            self.where_value(field_or_dict, (value_or_tuple, operator))
         elif isinstance(self._values, dict):
-            self._values[field_or_dict] = value_or_tuple
+            self._values[field_or_dict] = (value, operator)
         else:
-            self._values.append((field_or_dict, value_or_tuple))
+            self._values.append((field_or_dict, (value, operator)))
 
         return self
 
     def where_raw_value(
         self,
         field_or_dict: str | Mapping[str, WhereRawValueT],
-        value_or_tuple: WhereRawValueT | None = None,
+        raw_value: WhereRawValueT | None = None,
         operator: WhereOpT = "=",
         value_params: StmtParamValuesT | None = None,
     ) -> WhereCondition:
@@ -246,9 +243,7 @@ class WhereCondition:
 
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
-                Dictionary values can also be a tuple, as described below.
-            value_or_tuple (string or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
-                Can also be a tuple ``(value, operator, value_params)``.
+            raw_value (string, optional): Value to compare with if ``field_or_dict`` is a field name.
             operator (string, optional): Comparison operator, default is '='.
             value_params (Collection, optional): List of value params. Default is None.
 
@@ -256,23 +251,20 @@ class WhereCondition:
             object: self
         """
         assert isinstance(field_or_dict, (str, dict))
-        assert value_or_tuple is None or isinstance(value_or_tuple, (str, tuple))
+        assert raw_value is None or isinstance(raw_value, (str, tuple))
         assert isinstance(operator, str)
         assert value_params is None or isinstance(value_params, Collection)
 
         if isinstance(field_or_dict, Mapping):
             for f, v in field_or_dict.items():
                 self.where_raw_value(f, v)
-        elif not isinstance(value_or_tuple, tuple):
-            self.where_raw_value(field_or_dict, (value_or_tuple, operator, value_params))
+        elif raw_value is None:
+            errmsg = "Raw value cannot be 'None'"
+            raise ValueError(errmsg)
         elif isinstance(self._values_raw, dict):
-            assert isinstance(value_or_tuple, tuple)
-            assert len(value_or_tuple) == 3  # noqa: PLR2004
-            self._values_raw[field_or_dict] = value_or_tuple
+            self._values_raw[field_or_dict] = (raw_value, operator, value_params)
         else:
-            assert isinstance(value_or_tuple, tuple)
-            assert len(value_or_tuple) == 3  # noqa: PLR2004
-            self._values_raw.append((field_or_dict, value_or_tuple))
+            self._values_raw.append((field_or_dict, (raw_value, operator, value_params)))
 
         return self
 
@@ -289,24 +281,18 @@ class WhereCondition:
 
         Arguments:
             expr_or_list (string or list): An expression or :py:class:`list` of expressions.
-                Expression values can also be a tuple ``(expression, expr_params)``.
             expr_params (Collection, optional): List of expression params. Default is None.
 
         Returns:
             object: self
         """
-        assert isinstance(expr_or_list, (str, list, tuple))
         assert expr_params is None or isinstance(expr_params, Collection)
 
-        if not isinstance(expr_or_list, str) and not isinstance(expr_or_list, tuple):
+        if not isinstance(expr_or_list, str):
             for expr in expr_or_list:
                 self.where_expr(expr)
-        elif not isinstance(expr_or_list, tuple):
-            self.where_expr((expr_or_list, expr_params))
         else:
-            assert isinstance(expr_or_list, tuple)
-            assert len(expr_or_list) == 2  # noqa: PLR2004
-            self._raw_exprs.append(expr_or_list)
+            self._raw_exprs.append((expr_or_list, expr_params))
 
         return self
 

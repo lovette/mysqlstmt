@@ -365,7 +365,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     def having_value(
         self,
         field_or_dict: str | Mapping[str, WhereValueT],
-        value_or_tuple: WhereValueT | None = None,
+        value: WhereValueT | None = None,
         operator: WhereOpT = "=",  # pyright: ignore[reportInvalidTypeVarUse]
     ) -> Select:
         """Compare field to a value.
@@ -380,9 +380,8 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
-            value_or_tuple (mixed or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
-                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Iterable, Object,etc.).
-                Can also be a tuple ``(value, operator)``.
+            value (mixed, optional): Value to compare with if ``field_or_dict`` is a field name.
+                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Collection, Object,etc.).
             operator (string, optional): Comparison operator, default is '='.
 
         Returns:
@@ -406,7 +405,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').having_value('t1c1', 1).having_value('t1c2', 5).having_and().having_value('t1c1', 6).having_value('t1c2', 10).sql()
             ('SELECT * FROM t1 HAVING ((`t1c1` = 1 AND `t1c2` = 5) OR (`t1c1` = 6 AND `t1c2` = 10))', None)
         """
-        self.get_having_cond().where_value(field_or_dict, value_or_tuple, operator)
+        self.get_having_cond().where_value(field_or_dict, value, operator)
         return self
 
     having_values = having_value
@@ -415,7 +414,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     def having_raw_value(
         self,
         field_or_dict: str | Mapping[str, WhereRawValueT],
-        value_or_tuple: WhereRawValueT | None = None,
+        raw_value: WhereRawValueT | None = None,
         operator: WhereOpT = "=",
         value_params: StmtParamValuesT | None = None,
     ) -> Select:
@@ -430,9 +429,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
-                Dictionary values can also be a tuple, as described below.
-            value_or_tuple (string or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
-                Can also be a tuple ``(value, operator, value_params)``.
+            raw_value (string, optional): Value to compare with if ``field_or_dict`` is a field name.
             operator (string, optional): Comparison operator, default is '='.
             value_params (Collection, optional): List of value params. Default is None.
 
@@ -449,7 +446,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').having_raw_value('t1c1', 'PASSWORD(?)', value_params=('mypw',)).sql()
             ('SELECT * FROM t1 WHERE `t1c1` = PASSWORD(?)', ['mypw'])
         """
-        self.get_having_cond().where_raw_value(field_or_dict, value_or_tuple, operator, value_params)
+        self.get_having_cond().where_raw_value(field_or_dict, raw_value, operator, value_params)
         return self
 
     having_raw_values = having_raw_value
@@ -464,7 +461,6 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         Arguments:
             list_or_expr (string or list): An expression or :py:class:`list` of expressions.
-                Expression values can also be a tuple ``(expression, expr_params)``.
             expr_params (Collection, optional): List of expression params. Default is None.
 
         Returns:

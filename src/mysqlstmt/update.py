@@ -124,8 +124,8 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         self.ignore_error = ignore_error
 
         # Internals
-        self._table_names = []
-        self._orderby_conds = []
+        self._table_names: list[str] = []
+        self._orderby_conds: list[str] = []
         self._limit = None
 
         if table_name:

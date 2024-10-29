@@ -59,8 +59,8 @@ class Insert(Stmt, SetValuesMixin):
 
         # Internals
         self._table_name = None
-        self._columns = []
-        self._select = None
+        self._columns: list[str] = []
+        self._select: str | Select | None = None
         self._batch_values: list[SetBatchValueT] = []
         self._replace = False
 

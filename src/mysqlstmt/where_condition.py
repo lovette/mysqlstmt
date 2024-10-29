@@ -74,8 +74,8 @@ class WhereCondition:
             msg = "where_predicate must be 'AND' or 'OR'"
             raise ValueError(msg)
 
-        self._conds = []
-        self._raw_exprs = []
+        self._conds: list[WhereCondition] = []
+        self._raw_exprs: list[WhereExprValuesT] = []
         self._predicate = f" {where_predicate} "
         self._nesting_level = 0
 

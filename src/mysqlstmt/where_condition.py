@@ -7,15 +7,27 @@ This module provides:
 from __future__ import annotations
 
 from collections.abc import Collection, Mapping
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
+from typing import Union as UnionT
 
-from .stmt import Stmt
+from .stmt import Stmt, StmtParamValuesT, StmtPickleT, ValueParamsT
 
 if TYPE_CHECKING:
-    import datetime
-
     from .where_condition import WhereCondition
     from .where_mixin import WhereMixin
+
+
+WhereOpT = str
+WherePredT = Literal["AND", "OR"]
+
+WhereValueT = UnionT[StmtPickleT, Collection[StmtPickleT]]
+WhereRawValueT = str
+
+WhereFieldConditionT = tuple[WhereValueT, WhereOpT]
+WhereFieldConditionRawT = tuple[WhereRawValueT, WhereOpT, UnionT[StmtParamValuesT, None]]
+
+WhereExprValuesT = tuple[str, UnionT[ValueParamsT, None]]
+WhereExprT = UnionT[str, ValueParamsT]
 
 
 class WhereCondition:
@@ -26,7 +38,7 @@ class WhereCondition:
     ``WhereCondition`` objects.
     """
 
-    def __init__(self, stmt: WhereMixin, where_predicate: str | None = None, **kwargs) -> None:
+    def __init__(self, stmt: WhereMixin, where_predicate: WherePredT | None = None, **kwargs) -> None:
         """Constructor.
 
         Keyword Arguments:
@@ -41,34 +53,11 @@ class WhereCondition:
 
         # > AND {field: (value, operator), ...}
         # >  OR [(field, (value, operator)), ...]
-        self._values: (
-            dict[str, tuple[str | float | datetime.datetime | datetime.date | datetime.time | None, str]]
-            | list[tuple[str, tuple[str | float | datetime.datetime | datetime.date | datetime.time | None, str]]]
-        )
+        self._values: dict[str, WhereFieldConditionT] | list[tuple[str, WhereFieldConditionT]]
 
         # > AND {field: (value, operator, params), ...}
         # >  OR [(field, (value, operator, params)), ...]
-        # with 'params' being sequence of values or None.
-        self._values_raw: (
-            dict[
-                str,
-                tuple[
-                    str | float | datetime.datetime | datetime.date | datetime.time | None,
-                    str,
-                    Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None,
-                ],
-            ]
-            | list[
-                tuple[
-                    str,
-                    tuple[
-                        str | float | datetime.datetime | datetime.date | datetime.time | None,
-                        str,
-                        Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None,
-                    ],
-                ]
-            ]
-        )
+        self._values_raw: dict[str, WhereFieldConditionRawT] | list[tuple[str, WhereFieldConditionRawT]]
 
         if where_predicate is None or where_predicate == "AND":
             # With 'AND', it makes sense to only set one value per field
@@ -150,7 +139,7 @@ class WhereCondition:
         """
         return self._conds[index]
 
-    def add_cond(self, cond: WhereCondition | None = None, where_predicate: str | None = None) -> WhereCondition:
+    def add_cond(self, cond: WhereCondition | None = None, where_predicate: WherePredT | None = None) -> WhereCondition:
         """Activates a new ``WhereCondition``.
 
         Arguments:
@@ -198,14 +187,9 @@ class WhereCondition:
 
     def where_value(
         self,
-        field_or_dict: str | Mapping[str, str | float | datetime.datetime | datetime.date | datetime.time | None],
-        value_or_tuple: str
-        | float
-        | tuple[str | float | datetime.datetime | datetime.date | datetime.time | None, str]
-        | list[str | float | datetime.datetime | datetime.date | datetime.time]
-        | object
-        | None = None,
-        operator: str = "=",
+        field_or_dict: str | Mapping[str, WhereValueT],
+        value_or_tuple: WhereValueT | None = None,
+        operator: WhereOpT = "=",
     ) -> WhereCondition:
         """Compare field to a value.
 
@@ -244,20 +228,10 @@ class WhereCondition:
 
     def where_raw_value(
         self,
-        field_or_dict: str | Mapping[str, str | float | datetime.datetime | datetime.date | datetime.time | None],
-        value_or_tuple: str
-        | float
-        | datetime.datetime
-        | datetime.date
-        | datetime.time
-        | None
-        | tuple[
-            str | float | datetime.datetime | datetime.date | datetime.time | None,
-            str,
-            Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None,
-        ] = None,
-        operator: str = "=",
-        value_params: Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None = None,
+        field_or_dict: str | Mapping[str, WhereRawValueT],
+        value_or_tuple: WhereRawValueT | None = None,
+        operator: WhereOpT = "=",
+        value_params: StmtParamValuesT | None = None,
     ) -> WhereCondition:
         """Compare field to a an unmanipulated value.
 
@@ -304,8 +278,8 @@ class WhereCondition:
 
     def where_expr(
         self,
-        expr_or_list: str | list[str] | tuple[str, Sequence[str] | None],
-        expr_params: Sequence[str] | None = None,
+        expr_or_list: WhereExprT,
+        expr_params: ValueParamsT | None = None,
     ) -> WhereCondition:
         """Include a complex expression in conditional statement.
 

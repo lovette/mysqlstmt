@@ -9,16 +9,20 @@ from __future__ import annotations
 import datetime
 from collections.abc import Collection
 from typing import TYPE_CHECKING
+from typing import Union as UnionT
 
 from .config import Config
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from typing_extensions import Self
 
 
 SQLReturnT = UnionT[str, tuple[str, UnionT[Collection[str], None]]]
+StmtParamValueT = UnionT[str, float, bool, datetime.datetime, datetime.date, datetime.time]  # ,object
+StmtPickleT = UnionT[StmtParamValueT, None]
+StmtParamValuesT = Collection[StmtParamValueT]
+ValueParamsT = Collection[str]
+SelectExprT = UnionT[str, Collection[str]]
 
 
 class Stmt:
@@ -119,7 +123,7 @@ class Stmt:
 
         return col_ref
 
-    def pickle(self, val: str | bool | float | datetime.datetime | datetime.date | datetime.time | object | None) -> tuple[str, bool]:  # noqa: PLR0911
+    def pickle(self, val: StmtPickleT) -> tuple[str, bool]:  # noqa: PLR0911
         """Convert variable value into a value that can be included in a SQL statement.
 
         Arguments:
@@ -178,13 +182,7 @@ class Stmt:
 
     def parameterize_values(
         self,
-        list_or_value: str
-        | float
-        | datetime.datetime
-        | datetime.date
-        | datetime.time
-        | None
-        | Sequence[str | float | datetime.datetime | datetime.date | datetime.time],
+        list_or_value: StmtPickleT | Collection[StmtPickleT],
         inline_values: list | None,
         param_values: list | None,
     ) -> None:

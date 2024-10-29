@@ -8,12 +8,17 @@ from __future__ import annotations
 
 from collections.abc import Collection, Mapping
 from typing import TYPE_CHECKING
+from typing import Union as UnionT
+
+from .stmt import StmtParamValuesT, StmtPickleT
 
 if TYPE_CHECKING:
-    import datetime
-    from collections.abc import Mapping, Sequence
-
     from typing_extensions import Self
+
+
+SetValueT = StmtPickleT
+SetRawValueTupleT = tuple[str, UnionT[StmtParamValuesT, None]]
+SetRawValueT = UnionT[str, SetRawValueTupleT]
 
 
 class SetValuesMixin:
@@ -31,10 +36,10 @@ class SetValuesMixin:
         """
         super().__init__(**kwargs)
 
-        self._values: dict[str, str | float | datetime.datetime | datetime.date | datetime.time | None] = {}
-        self._values_raw: dict[str, tuple[str, Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None]] = {}
+        self._values: dict[str, SetValueT] = {}
+        self._values_raw: dict[str, SetRawValueTupleT] = {}
 
-    def set_value(self, field_or_dict: str | Mapping, value: str | float | datetime.datetime | datetime.date | datetime.time | None = None) -> Self:
+    def set_value(self, field_or_dict: str | Mapping[str, SetValueT], value: SetValueT = None) -> Self:
         """Set value that may be translated, escaped or parameterized.
 
         Field names may be escaped with backticks.
@@ -100,25 +105,9 @@ class SetValuesMixin:
 
     def set_raw_value(
         self,
-        field_or_dict: str
-        | Mapping[
-            str,
-            str
-            | float
-            | datetime.datetime
-            | datetime.date
-            | datetime.time
-            | None
-            | tuple[str, Sequence[str | float | datetime.datetime | datetime.date | datetime.time]],
-        ],
-        value_or_tuple: str
-        | float
-        | datetime.datetime
-        | datetime.date
-        | datetime.time
-        | None
-        | tuple[str, Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None] = None,
-        value_params: Sequence[str | float | datetime.datetime | datetime.date | datetime.time] | None = None,
+        field_or_dict: str | Mapping[str, SetRawValueT],
+        value_or_tuple: SetRawValueT | None = None,
+        value_params: StmtParamValuesT | None = None,
     ) -> Self:
         """Set value to be included directly in the SQL.
 

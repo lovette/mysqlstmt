@@ -11,10 +11,13 @@ from typing import TYPE_CHECKING
 
 from .select import Select
 from .set_values_mixin import SetValuesMixin
-from .stmt import Stmt
+from .stmt import Stmt, StmtPickleT
 
 if TYPE_CHECKING:
     from .stmt import SQLReturnT
+
+
+SetBatchValueT = Collection[StmtPickleT]
 
 
 class Insert(Stmt, SetValuesMixin):
@@ -58,7 +61,7 @@ class Insert(Stmt, SetValuesMixin):
         self._table_name = None
         self._columns = []
         self._select = None
-        self._batch_values = []
+        self._batch_values: list[SetBatchValueT] = []
         self._replace = False
 
         if table_name:
@@ -129,7 +132,7 @@ class Insert(Stmt, SetValuesMixin):
         self._select = stmt
         return self
 
-    def set_batch_value(self, values: Collection) -> Insert:
+    def set_batch_value(self, values: Collection[SetBatchValueT]) -> Insert:
         """Set batch values.
 
         Sets values for multiple rows at once.

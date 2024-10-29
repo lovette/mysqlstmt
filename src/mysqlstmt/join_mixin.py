@@ -10,12 +10,14 @@ from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
-from .stmt import Stmt
+from .stmt import SelectExprT, Stmt
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from typing_extensions import Self
+
+
+JoinConditionsT = SelectExprT
+JoinTypeT = str
 
 
 class JoinMixin(ABC):
@@ -35,7 +37,12 @@ class JoinMixin(ABC):
 
         self._join_refs = []
 
-    def join(self, dict_or_table_factor: str | Mapping, join_cond: str | Sequence[str] | None = None, join_type: str = "INNER") -> Self:
+    def join(
+        self,
+        dict_or_table_factor: str | Mapping[str, JoinConditionsT],
+        join_cond: JoinConditionsT | None = None,
+        join_type: JoinTypeT = "INNER",
+    ) -> Self:
         """Join a table with a JOIN condition.
 
         Arguments:
@@ -72,18 +79,21 @@ class JoinMixin(ABC):
             ('SELECT `t1c1`, `t2c1` FROM t1 STRAIGHT_JOIN t2 USING (`t1c1`)', None)
         """
         # Turn 'INNER' into 'INNER JOIN' but ignore 'STRAIGHT_JOIN'
-        if "JOIN" not in join_type:
-            join_type += " JOIN"
+        _join_type = join_type if "JOIN" in join_type else (join_type + " JOIN")
 
         if isinstance(dict_or_table_factor, Mapping):
             for table_factor, cond in dict_or_table_factor.items():
-                self.join(table_factor, cond, join_type)
+                self.join(table_factor, cond, _join_type)
         else:
-            self._join_refs.append((join_type, dict_or_table_factor, join_cond))
+            self._join_refs.append((_join_type, dict_or_table_factor, join_cond))
 
         return self
 
-    def left_join(self, table_or_dict: str | Mapping, join_cond: str | Sequence[str] | None = None) -> Self:
+    def left_join(
+        self,
+        table_or_dict: str | Mapping[str, JoinConditionsT],
+        join_cond: JoinConditionsT | None = None,
+    ) -> Self:
         """Convenience function to create a LEFT JOIN. See :py:meth:`join` for details.
 
         Examples: ::

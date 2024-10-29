@@ -318,7 +318,7 @@ class TestSelect:
                 return "object as a string"
 
         q = Select()
-        sql_t = q.from_table("t1").where_value("t1c1", TestClass()).sql()
+        sql_t = q.from_table("t1").where_value("t1c1", TestClass()).sql()  # pyright:ignore[reportArgumentType]
         assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ["object as a string"])
 
     def test_where_expr(self) -> None:

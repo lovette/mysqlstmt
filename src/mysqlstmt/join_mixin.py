@@ -7,6 +7,7 @@ This module provides:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from .stmt import Stmt
@@ -34,7 +35,7 @@ class JoinMixin(ABC):
 
         self._join_refs = []
 
-    def join(self, dict_or_table_factor: str | dict, join_cond: str | Sequence[str] | None = None, join_type: str = "INNER") -> Self:
+    def join(self, dict_or_table_factor: str | Mapping, join_cond: str | Sequence[str] | None = None, join_type: str = "INNER") -> Self:
         """Join a table with a JOIN condition.
 
         Arguments:
@@ -74,7 +75,7 @@ class JoinMixin(ABC):
         if "JOIN" not in join_type:
             join_type += " JOIN"
 
-        if not isinstance(dict_or_table_factor, str):
+        if isinstance(dict_or_table_factor, Mapping):
             for table_factor, cond in dict_or_table_factor.items():
                 self.join(table_factor, cond, join_type)
         else:
@@ -82,7 +83,7 @@ class JoinMixin(ABC):
 
         return self
 
-    def left_join(self, table_or_dict: str | dict, join_cond: str | Sequence[str] | None = None) -> Self:
+    def left_join(self, table_or_dict: str | Mapping, join_cond: str | Sequence[str] | None = None) -> Self:
         """Convenience function to create a LEFT JOIN. See :py:meth:`join` for details.
 
         Examples: ::

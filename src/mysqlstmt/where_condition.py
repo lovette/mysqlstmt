@@ -6,14 +6,13 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Collection, Mapping
 from typing import TYPE_CHECKING
 
 from .stmt import Stmt
 
 if TYPE_CHECKING:
     import datetime
-    from collections.abc import Mapping
 
     from .where_condition import WhereCondition
     from .where_mixin import WhereMixin
@@ -231,7 +230,7 @@ class WhereCondition:
         assert isinstance(field_or_dict, (str, dict))
         assert isinstance(operator, str)
 
-        if not isinstance(field_or_dict, str):
+        if isinstance(field_or_dict, Mapping):
             for f, v in field_or_dict.items():
                 self.where_value(f, v, operator)
         elif not isinstance(value_or_tuple, tuple):
@@ -287,7 +286,7 @@ class WhereCondition:
         assert isinstance(operator, str)
         assert value_params is None or isinstance(value_params, Collection)
 
-        if not isinstance(field_or_dict, str):
+        if isinstance(field_or_dict, Mapping):
             for f, v in field_or_dict.items():
                 self.where_raw_value(f, v)
         elif not isinstance(value_or_tuple, tuple):

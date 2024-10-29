@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Collection, Mapping
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -87,7 +87,7 @@ class SetValuesMixin:
             >>> q.into_table('t1').set_value('t1c1', 'NOW()').sql()
             ('INSERT INTO t1 (`t1c1`) VALUES (?)', ['NOW()'])
         """
-        if not isinstance(field_or_dict, str):
+        if isinstance(field_or_dict, Mapping):
             for f, v in field_or_dict.items():
                 self.set_value(f, v)
         else:
@@ -150,11 +150,11 @@ class SetValuesMixin:
             >>> q.into_table('t1').set_raw_value('t1c1', 'PASSWORD(?)', value_params=('mypw',)).sql()
             ('INSERT INTO t1 (`t1c1`) VALUES (PASSWORD(?))', ['mypw'])
         """
-        assert isinstance(field_or_dict, (str, dict))
+        assert isinstance(field_or_dict, (str, Mapping))
         assert value_or_tuple is None or isinstance(value_or_tuple, (str, tuple))
         assert value_params is None or isinstance(value_params, Collection)
 
-        if not isinstance(field_or_dict, str):
+        if isinstance(field_or_dict, Mapping):
             for f, v in field_or_dict.items():
                 self.set_raw_value(f, v)
         elif value_or_tuple is None:

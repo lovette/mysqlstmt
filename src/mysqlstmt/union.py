@@ -14,6 +14,8 @@ from .stmt import Stmt
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from .stmt import SQLReturnT
+
 
 class Union(Stmt):
     """SELECT... UNION statement.
@@ -131,7 +133,7 @@ class Union(Stmt):
         self._limit = (row_count, offset)
         return self
 
-    def sql(self) -> str | tuple[str, list[str] | None]:  # noqa: C901, PLR0912
+    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912
         """Build SELECT... UNION SQL statement.
 
         Returns:

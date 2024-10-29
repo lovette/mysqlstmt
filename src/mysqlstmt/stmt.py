@@ -18,6 +18,9 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
+SQLReturnT = UnionT[str, tuple[str, UnionT[Collection[str], None]]]
+
+
 class Stmt:
     """Base class for all statement classes."""
 
@@ -63,7 +66,7 @@ class Stmt:
         # Public properties
         self.query_options = []  # can append with ``set_option``
 
-    def __call__(self, *args, **kwargs) -> str | tuple[str, list[str] | None]:  # noqa: ARG002
+    def __call__(self, *args, **kwargs) -> SQLReturnT:  # noqa: ARG002
         """Returns SQL statement created by :py:meth:`sql`."""
         return self.sql()
 
@@ -72,7 +75,7 @@ class Stmt:
         sql_t = self.sql()
         return sql_t[0] if self.placeholder else sql_t
 
-    def sql(self) -> str | tuple[str, list[str] | None]:
+    def sql(self) -> SQLReturnT:
         """Derived classes must override and build appropriate SQL statement.
 
         Returns:

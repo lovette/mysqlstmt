@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
+    from .stmt import SQLReturnT
 
 class Select(Stmt, WhereMixin, JoinMixin):
     """SELECT statement.
@@ -581,7 +582,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._having_cond_root.where_or()
         return self
 
-    def sql(self) -> str | tuple[str, list[str] | None]:  # noqa: C901, PLR0912
+    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912
         """Build SELECT SQL statement.
 
         Returns:

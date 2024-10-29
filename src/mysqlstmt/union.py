@@ -12,7 +12,7 @@ from .select import Select
 from .stmt import Stmt
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Collection
 
     from .stmt import SQLReturnT
 
@@ -39,7 +39,7 @@ class Union(Stmt):
         ('(SELECT `t1c1` FROM t1) UNION (SELECT `t2c1` FROM t2)', None)
     """
 
-    def __init__(self, list_or_stmt: str | Select | Sequence[str | Select] | None = None, distinct: bool | None = None, **kwargs) -> None:
+    def __init__(self, list_or_stmt: str | Select | Collection[str | Select] | None = None, distinct: bool | None = None, **kwargs) -> None:
         """Constructor.
 
         Keyword Arguments:
@@ -58,7 +58,7 @@ class Union(Stmt):
         if list_or_stmt is not None:
             self.union(list_or_stmt)
 
-    def union(self, list_or_stmt: str | Select | Sequence[str | Select]) -> Union:
+    def union(self, list_or_stmt: str | Select | Collection[str | Select]) -> Union:
         """Add SELECT statement to union.
 
         Arguments:
@@ -91,7 +91,7 @@ class Union(Stmt):
     select = union
     """Alias for :py:meth:`union`."""
 
-    def order_by(self, list_or_name: str | Sequence) -> Union:
+    def order_by(self, list_or_name: str | Collection[str]) -> Union:
         """Add expressions to order by.
 
         Arguments:

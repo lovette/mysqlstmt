@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -131,7 +131,7 @@ class SetValuesMixin:
                 Dictionary values can also be a tuple, as described below.
             value_or_tuple (string, optional): Field value if ``field_or_dict`` is a field name.
                 Can also be a tuple (value, value_params).
-            value_params (iterable, optional): List of value params. Default is None.
+            value_params (collection, optional): List of value params. Default is None.
 
         Returns:
             object: self
@@ -152,7 +152,7 @@ class SetValuesMixin:
         """
         assert isinstance(field_or_dict, (str, dict))
         assert value_or_tuple is None or isinstance(value_or_tuple, (str, tuple))
-        assert value_params is None or isinstance(value_params, Iterable)
+        assert value_params is None or isinstance(value_params, Collection)
 
         if not isinstance(field_or_dict, str):
             for f, v in field_or_dict.items():

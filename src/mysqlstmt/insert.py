@@ -6,6 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
+from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 from .select import Select
@@ -13,8 +14,6 @@ from .set_values_mixin import SetValuesMixin
 from .stmt import Stmt
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from .stmt import SQLReturnT
 
 
@@ -84,7 +83,7 @@ class Insert(Stmt, SetValuesMixin):
         self._table_name = table_name
         return self
 
-    def column(self, list_or_name: str | Sequence) -> Insert:
+    def column(self, list_or_name: str | Collection[str]) -> Insert:
         """Add column names to insert into.
 
         Arguments:
@@ -130,13 +129,13 @@ class Insert(Stmt, SetValuesMixin):
         self._select = stmt
         return self
 
-    def set_batch_value(self, values: Sequence) -> Insert:
+    def set_batch_value(self, values: Collection) -> Insert:
         """Set batch values.
 
         Sets values for multiple rows at once.
 
         Arguments:
-            values (list): List of row values; each row value must be a list or tuple of column values.
+            values (list): List of row values; each row value must be a collection of column values.
 
         Returns:
             object: self

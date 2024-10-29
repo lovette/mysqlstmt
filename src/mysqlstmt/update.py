@@ -14,7 +14,7 @@ from .stmt import Stmt
 from .where_mixin import WhereMixin
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Collection
 
     from .stmt import SQLReturnT
 
@@ -131,7 +131,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         if table_name:
             self.table(table_name)
 
-    def table(self, list_or_name: str | Sequence) -> Update:
+    def table(self, list_or_name: str | Collection[str]) -> Update:
         """Add tables to update.
 
         Arguments:
@@ -151,7 +151,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
     from_tables = table
     """Alias for :py:meth:`from_table`"""
 
-    def order_by(self, list_or_name: str | Sequence) -> Update:
+    def order_by(self, list_or_name: str | Collection[str]) -> Update:
         """Add expressions to order by.
 
         Arguments:

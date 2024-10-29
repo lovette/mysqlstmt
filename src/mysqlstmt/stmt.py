@@ -7,7 +7,7 @@ This module provides:
 from __future__ import annotations
 
 import datetime
-from collections.abc import Iterable
+from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 from .config import Config
@@ -200,7 +200,7 @@ class Stmt:
             param_values (list or None): List to append parameterized values to;
                 set to None to force everything not to be inlined.
         """
-        if isinstance(list_or_value, Iterable) and not isinstance(list_or_value, str):
+        if isinstance(list_or_value, Collection) and not isinstance(list_or_value, str):
             for val in list_or_value:
                 self.parameterize_values(val, inline_values, param_values)
         else:
@@ -223,16 +223,16 @@ class Stmt:
                 errmsg = "Either 'inline_values' or 'param_values' arguments must not be None"
                 raise ValueError(errmsg)
 
-    def set_option(self, list_or_value: str | Sequence) -> Self:
+    def set_option(self, list_or_value: str | Collection[str]) -> Self:
         """Sets query options (the keywords at the beginning of the SQL statement).
 
         Arguments:
-            list_or_value (list or mixed): An option or list of options.
+            list_or_value (mixed): An option or collection of options.
 
         Returns:
             object: self
         """
-        if isinstance(list_or_value, Iterable) and not isinstance(list_or_value, str):
+        if isinstance(list_or_value, Collection) and not isinstance(list_or_value, str):
             for val in list_or_value:
                 self.set_option(val)
         else:

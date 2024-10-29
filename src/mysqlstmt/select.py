@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 from .config import Config
@@ -55,7 +55,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
     def __init__(
         self,
-        table_name: str | None = None,
+        table_name: str | Collection[str] | None = None,
         having_predicate: str = "OR",
         cacheable: bool | None = None,
         calc_found_rows: bool = False,
@@ -97,7 +97,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         if table_name:
             self.from_table(table_name)
 
-    def from_table(self, list_or_name: str | Sequence) -> Select:
+    def from_table(self, list_or_name: str | Collection[str]) -> Select:
         """Add tables to select from.
 
         Arguments:
@@ -133,7 +133,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         Arguments:
             list_or_name (string or list): Column name or list of column names.
             raw (bool, optional): Set to True for column name to be included in the SQL verbatim, default is False.
-            value_params (iterable, optional): List of value params if ``raw`` is True. Default is None.
+            value_params (Collection, optional): List of value params if ``raw`` is True. Default is None.
 
         Returns:
             object: self
@@ -184,7 +184,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').columns('`t1c1` AS `t1a1`').sql()
             ('SELECT `t1c1` AS `t1a1` FROM t1', None)
         """
-        assert value_params is None or isinstance(value_params, Iterable)
+        assert value_params is None or isinstance(value_params, Collection)
 
         if not isinstance(list_or_name, str):
             for c in list_or_name:
@@ -207,7 +207,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         Arguments:
             list_or_expr (string or list): Expression or list of expressions.
-            value_params (iterable, optional): List of value params. Default is None.
+            value_params (Collection, optional): List of value params. Default is None.
 
         Returns:
             object: self
@@ -230,7 +230,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
     columns_expr = column_expr
     """Alias for :py:meth:`column_expr`"""
 
-    def remove_column(self, list_or_name: str | Sequence) -> Select:
+    def remove_column(self, list_or_name: str | Collection[str]) -> Select:
         """Remove column names to select.
 
         Arguments:
@@ -259,12 +259,12 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def qualify_columns(self, table_name: str, qualify_cols: Sequence[str] | None = None) -> Select:
+    def qualify_columns(self, table_name: str, qualify_cols: Collection[str] | None = None) -> Select:
         """Qualify column names with a table name.
 
         Arguments:
             table_name (string): Table name
-            qualify_cols (Iterable, optional): Column names to qualify,
+            qualify_cols (Collection, optional): Column names to qualify,
                 or None to qualify all non-qualified columns. Default is None.
 
         Returns:
@@ -292,7 +292,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def order_by(self, list_or_name: str | Sequence) -> Select:
+    def order_by(self, list_or_name: str | Collection[str]) -> Select:
         """Add expressions to order by.
 
         Arguments:
@@ -315,7 +315,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def group_by(self, list_or_name: str | Sequence) -> Select:
+    def group_by(self, list_or_name: str | Collection[str]) -> Select:
         """Add expressions to group by.
 
         Arguments:
@@ -450,7 +450,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             value_or_tuple (string or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
                 Can also be a tuple ``(value, operator, value_params)``.
             operator (string, optional): Comparison operator, default is '='.
-            value_params (iterable, optional): List of value params. Default is None.
+            value_params (Collection, optional): List of value params. Default is None.
 
         Returns:
             object: self
@@ -481,7 +481,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         Arguments:
             list_or_expr (string or list): An expression or :py:class:`list` of expressions.
                 Expression values can also be a tuple ``(expression, expr_params)``.
-            expr_params (iterable, optional): List of expression params. Default is None.
+            expr_params (Collection, optional): List of expression params. Default is None.
 
         Returns:
             object: self

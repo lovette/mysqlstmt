@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 from .stmt import Stmt
@@ -277,7 +277,7 @@ class WhereCondition:
             value_or_tuple (string or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
                 Can also be a tuple ``(value, operator, value_params)``.
             operator (string, optional): Comparison operator, default is '='.
-            value_params (iterable, optional): List of value params. Default is None.
+            value_params (Collection, optional): List of value params. Default is None.
 
         Returns:
             object: self
@@ -285,7 +285,7 @@ class WhereCondition:
         assert isinstance(field_or_dict, (str, dict))
         assert value_or_tuple is None or isinstance(value_or_tuple, (str, tuple))
         assert isinstance(operator, str)
-        assert value_params is None or isinstance(value_params, Iterable)
+        assert value_params is None or isinstance(value_params, Collection)
 
         if not isinstance(field_or_dict, str):
             for f, v in field_or_dict.items():
@@ -317,13 +317,13 @@ class WhereCondition:
         Arguments:
             expr_or_list (string or list): An expression or :py:class:`list` of expressions.
                 Expression values can also be a tuple ``(expression, expr_params)``.
-            expr_params (iterable, optional): List of expression params. Default is None.
+            expr_params (Collection, optional): List of expression params. Default is None.
 
         Returns:
             object: self
         """
         assert isinstance(expr_or_list, (str, list, tuple))
-        assert expr_params is None or isinstance(expr_params, Iterable)
+        assert expr_params is None or isinstance(expr_params, Collection)
 
         if not isinstance(expr_or_list, str) and not isinstance(expr_or_list, tuple):
             for expr in expr_or_list:
@@ -373,7 +373,7 @@ class WhereCondition:
 
             self._stmt.parameterize_values(val, inline_values, param_values)
 
-            if isinstance(val, Sequence) and not isinstance(val, str):
+            if isinstance(val, Collection) and not isinstance(val, str):
                 # Force lists and tuples to be an IN statement
                 if len(val) > 1:
                     val = f"({', '.join(inline_values)})"

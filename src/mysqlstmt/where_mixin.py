@@ -197,7 +197,7 @@ class WhereMixin:
             value_or_tuple (string or tuple, optional): Value to compare with if ``field_or_dict`` is a field name.
                 Can also be a tuple ``(value, operator, value_params)``.
             operator (string, optional): Comparison operator, default is '='.
-            value_params (iterable, optional): List of value params. Default is None.
+            value_params (Collection, optional): List of value params. Default is None.
 
         Returns:
             object: self
@@ -243,7 +243,7 @@ class WhereMixin:
         Arguments:
             list_or_expr (string or list): An expression or :py:class:`list` of expressions.
                 Expression values can also be a tuple ``(expression, expr_params)``.
-            expr_params (iterable, optional): List of expression params. Default is None.
+            expr_params (Collection, optional): List of expression params. Default is None.
 
         Returns:
             object: self

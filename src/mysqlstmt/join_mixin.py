@@ -148,12 +148,12 @@ class JoinMixin(ABC):
         """
         return self.join(table_or_dict, join_cond, "LEFT")
 
-    def _append_join_table_refs(self, root_table_factor: str, table_refs: list) -> None:
+    def _append_join_table_refs(self, root_table_factor: str, table_refs: list[str]) -> None:
         """Append JOIN clauses to `table_refs`.
 
         Args:
             root_table_factor (str): Root table name.
-            table_refs (list): Join table references.
+            table_refs (list, modified): List to append join table references to.
         """
         root_table_alias = Stmt.table_alias(root_table_factor)
 

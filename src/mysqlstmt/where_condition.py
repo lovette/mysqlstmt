@@ -313,6 +313,9 @@ class WhereCondition:
     def sql(self, param_values: list[str]) -> str | None:  # noqa: C901, PLR0912, PLR0915
         """Build SQL snippet to include in a WHERE or HAVING clause.
 
+        Args:
+            param_values (list, modified): List to append parameterized values to.
+
         Returns:
             Either SQL statement as string, or ``None`` if condition is empty.
 

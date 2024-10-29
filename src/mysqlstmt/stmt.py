@@ -183,8 +183,8 @@ class Stmt:
     def parameterize_values(
         self,
         list_or_value: StmtPickleT | Collection[StmtPickleT],
-        inline_values: list | None,
-        param_values: list | None,
+        inline_values: list[str] | None,
+        param_values: list[str] | None,
     ) -> None:
         """Parameterizes a value or list of values.
 
@@ -193,9 +193,9 @@ class Stmt:
 
         Arguments:
             list_or_value (list or mixed): A value or list of values to replace with ``placeholder``.
-            inline_values (list or None): List to append non-parameterized values to;
+            inline_values (list or None, modified): List to append non-parameterized values to;
                 set to None to force everything to be parameterized.
-            param_values (list or None): List to append parameterized values to;
+            param_values (list or None, modified): List to append parameterized values to;
                 set to None to force everything not to be inlined.
         """
         if isinstance(list_or_value, Collection) and not isinstance(list_or_value, str):

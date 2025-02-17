@@ -7,7 +7,7 @@ This module provides:
 from __future__ import annotations
 
 import datetime
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from typing import TYPE_CHECKING
 from typing import Union as UnionT
 
@@ -17,12 +17,12 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-SQLReturnT = UnionT[str, tuple[str, UnionT[Collection[str], None]]]
+SQLReturnT = UnionT[str, tuple[str, UnionT[Sequence[str], None]]]
 StmtParamValueT = UnionT[str, float, bool, datetime.datetime, datetime.date, datetime.time]  # ,object
 StmtPickleT = UnionT[StmtParamValueT, None]
-StmtParamValuesT = Collection[StmtParamValueT]
-ValueParamsT = Collection[str]
-SelectExprT = UnionT[str, Collection[str]]
+StmtParamValuesT = Sequence[StmtParamValueT]
+ValueParamsT = Sequence[str]
+SelectExprT = UnionT[str, Sequence[str]]
 
 
 class Stmt:
@@ -182,7 +182,7 @@ class Stmt:
 
     def parameterize_values(
         self,
-        list_or_value: StmtPickleT | Collection[StmtPickleT],
+        list_or_value: StmtPickleT | Sequence[StmtPickleT],
         inline_values: list[str] | None,
         param_values: list[str] | None,
     ) -> None:
@@ -198,7 +198,7 @@ class Stmt:
             param_values (list or None, modified): List to append parameterized values to;
                 set to None to force everything not to be inlined.
         """
-        if isinstance(list_or_value, Collection) and not isinstance(list_or_value, str):
+        if isinstance(list_or_value, Sequence) and not isinstance(list_or_value, str):
             for val in list_or_value:
                 self.parameterize_values(val, inline_values, param_values)
         else:

@@ -61,7 +61,7 @@ class WhereMixin:
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
             value (mixed, optional): Value to compare with if ``field_or_dict`` is a field name.
-                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Collection, Object,etc.).
+                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Sequence, Object,etc.).
             operator (string, optional): Comparison operator, default is '='.
 
         Returns:
@@ -178,7 +178,7 @@ class WhereMixin:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
             raw_value (string, optional): Value to compare with if ``field_or_dict`` is a field name.
             operator (string, optional): Comparison operator, default is '='.
-            value_params (Collection, optional): List of value params. Default is None.
+            value_params (Sequence, optional): List of value params. Default is None.
 
         Returns:
             object: self
@@ -223,7 +223,7 @@ class WhereMixin:
 
         Arguments:
             list_or_expr (string or list): An expression or :py:class:`list` of expressions.
-            expr_params (Collection, optional): List of expression params. Default is None.
+            expr_params (Sequence, optional): List of expression params. Default is None.
 
         Returns:
             object: self

@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from .select import Select
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from .stmt import SQLReturnT
 
 
-SetBatchValueT = Collection[StmtPickleT]
+SetBatchValueT = Sequence[StmtPickleT]
 
 
 class Insert(Stmt, SetValuesMixin):
@@ -94,7 +94,7 @@ class Insert(Stmt, SetValuesMixin):
         self._table_name = table_name
         return self
 
-    def column(self, list_or_name: str | Collection[str]) -> Insert:
+    def column(self, list_or_name: str | Sequence[str]) -> Insert:
         """Add column names to insert into.
 
         Arguments:
@@ -140,7 +140,7 @@ class Insert(Stmt, SetValuesMixin):
         self._select = stmt
         return self
 
-    def set_batch_value(self, values: Collection[SetBatchValueT]) -> Insert:
+    def set_batch_value(self, values: Sequence[SetBatchValueT]) -> Insert:
         """Set batch values.
 
         Sets values for multiple rows at once.
@@ -303,7 +303,7 @@ class Insert(Stmt, SetValuesMixin):
             sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
 
             if isinstance(self._select, Select):
-                select_sql, select_params = self._select.sql() if self._select.placeholder else (self._select.sql(), None)
+                select_sql, select_params = self._select.sql() if self._select.placeholder else (str(self._select.sql()), None)
 
                 if select_params is not None:
                     if not self.select_allow_placeholders:

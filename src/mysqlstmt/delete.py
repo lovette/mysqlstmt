@@ -13,7 +13,7 @@ from .stmt import Stmt
 from .where_mixin import WhereMixin
 
 if TYPE_CHECKING:
-    from collections.abc import Collection
+    from collections.abc import Sequence
 
     from .stmt import SQLReturnT
 
@@ -110,7 +110,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
 
     def __init__(
         self,
-        table_name: str | Collection[str] | None = None,
+        table_name: str | Sequence[str] | None = None,
         ignore_error: bool = False,
         allow_unqualified_delete: bool = False,
         **kwargs,
@@ -138,7 +138,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         if table_name:
             self.from_table(table_name)
 
-    def from_table(self, list_or_name: str | Collection[str]) -> Delete:
+    def from_table(self, list_or_name: str | Sequence[str]) -> Delete:
         """Add table(s) to delete from.
 
         Arguments:
@@ -157,7 +157,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
 
         return self
 
-    def order_by(self, list_or_name: str | Collection[str]) -> Delete:
+    def order_by(self, list_or_name: str | Sequence[str]) -> Delete:
         """Add expressions to order by.
 
         Arguments:

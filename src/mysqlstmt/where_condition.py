@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Literal
 from typing import Union as UnionT
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 WhereOpT = str
 WherePredT = Literal["AND", "OR"]
 
-WhereValueT = UnionT[StmtPickleT, Collection[StmtPickleT]]
+WhereValueT = UnionT[StmtPickleT, Sequence[StmtPickleT]]
 WhereRawValueT = str
 
 WhereFieldConditionT = tuple[WhereValueT, WhereOpT]
@@ -204,7 +204,7 @@ class WhereCondition:
         Arguments:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
             value (mixed, optional): Value to compare with if ``field_or_dict`` is a field name.
-                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Collection, Object,etc.).
+                Type can be anything that :py:meth:`mysqlstmt.stmt.Stmt.pickle` can handle (Sequence, Object,etc.).
             operator (string, optional): Comparison operator, default is '='.
 
         Returns:
@@ -245,7 +245,7 @@ class WhereCondition:
             field_or_dict (string or list): Name of field/column or :py:class:`dict` mapping fields to values.
             raw_value (string, optional): Value to compare with if ``field_or_dict`` is a field name.
             operator (string, optional): Comparison operator, default is '='.
-            value_params (Collection, optional): List of value params. Default is None.
+            value_params (Sequence, optional): List of value params. Default is None.
 
         Returns:
             object: self
@@ -253,7 +253,7 @@ class WhereCondition:
         assert isinstance(field_or_dict, (str, dict))
         assert raw_value is None or isinstance(raw_value, (str, tuple))
         assert isinstance(operator, str)
-        assert value_params is None or isinstance(value_params, Collection)
+        assert value_params is None or isinstance(value_params, Sequence)
 
         if isinstance(field_or_dict, Mapping):
             for f, v in field_or_dict.items():
@@ -281,12 +281,12 @@ class WhereCondition:
 
         Arguments:
             expr_or_list (string or list): An expression or :py:class:`list` of expressions.
-            expr_params (Collection, optional): List of expression params. Default is None.
+            expr_params (Sequence, optional): List of expression params. Default is None.
 
         Returns:
             object: self
         """
-        assert expr_params is None or isinstance(expr_params, Collection)
+        assert expr_params is None or isinstance(expr_params, Sequence)
 
         if not isinstance(expr_or_list, str):
             for expr in expr_or_list:
@@ -335,7 +335,7 @@ class WhereCondition:
 
             self._stmt.parameterize_values(val, inline_values, param_values)
 
-            if isinstance(val, Collection) and not isinstance(val, str):
+            if isinstance(val, Sequence) and not isinstance(val, str):
                 # Force lists and tuples to be an IN statement
                 if len(val) > 1:
                     val = f"({', '.join(inline_values)})"

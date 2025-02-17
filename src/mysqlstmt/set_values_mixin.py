@@ -6,7 +6,7 @@ This module provides:
 
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING
 from typing import Union as UnionT
 
@@ -141,7 +141,7 @@ class SetValuesMixin:
         """
         assert isinstance(field_or_dict, (str, Mapping))
         assert value_or_tuple is None or isinstance(value_or_tuple, (str, tuple))
-        assert value_params is None or isinstance(value_params, Collection)
+        assert value_params is None or isinstance(value_params, Sequence)
 
         if isinstance(field_or_dict, Mapping):
             for f, v in field_or_dict.items():

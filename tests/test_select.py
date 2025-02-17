@@ -246,6 +246,16 @@ class TestSelect:
         sql = q.from_table("t1").where_value("t1c1", 3).where_value("t1c2", "'string'").sql()
         assert sql == "SELECT * FROM t1 WHERE (`t1c1` = 3 AND `t1c2` = 'string')"
 
+    def test_where_values_noparam_quoted(self) -> None:
+        q = Select(placeholder=False, quote_all_values=True)
+        sql = q.from_table("t1").where_value("t1c1", 3).where_value("t1c2", "string").sql()
+        assert sql == "SELECT * FROM t1 WHERE (`t1c1` = 3 AND `t1c2` = 'string')"
+
+    def test_where_values_noparam_unquoted(self) -> None:
+        q = Select(placeholder=False, quote_all_values=False)
+        sql = q.from_table("t1").where_value("t1c1", 3).where_value("t1c2", "string").sql()
+        assert sql == "SELECT * FROM t1 WHERE (`t1c1` = 3 AND `t1c2` = string)"
+
     def test_where_raw_value(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_raw_value("t1c1", "NOW()").sql()

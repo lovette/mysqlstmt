@@ -12,13 +12,13 @@ from .update import Update
 from .where_condition import WhereCondition
 
 __all__ = [
-    "Stmt",
     "Config",
     "Delete",
     "Insert",
     "Lock",
     "Replace",
     "Select",
+    "Stmt",
     "Union",
     "Update",
     "WhereCondition",

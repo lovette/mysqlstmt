@@ -43,7 +43,7 @@ class Stmt:
                 False to disable parameterization.
             quote_all_col_refs (bool, optional): Quote all column references.
                 Default is None, in which case the :py:class:`mysqlstmt.config.Config` setting will be used.
-            quote_all_values (bool, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.
+            quote_all_values (bool, optional): Quote all values when not using placeholders.
                 Default is None, in which case the :py:class:`mysqlstmt.config.Config` setting will be used.
             **kwargs: Base class arguments.
 

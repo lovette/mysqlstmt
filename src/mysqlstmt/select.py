@@ -85,10 +85,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._limit = None
         self._having_cond_root = WhereCondition(self, where_predicate=having_predicate)
 
-        if cacheable is False or Config.select_cacheable is False:
-            self.cacheable = False
-        else:
-            self.cacheable = Config.select_cacheable if cacheable is None else cacheable
+        self.cacheable = Config.select_cacheable if cacheable is None else cacheable
 
         self.calc_found_rows = calc_found_rows
 

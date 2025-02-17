@@ -60,15 +60,9 @@ class Stmt:
         else:
             self.placeholder = placeholder or Config.placeholder
 
-        if quote_all_values is False or Config.quote_all_values is False:
-            self.quote_all_values = False
-        else:
-            self.quote_all_values = Config.quote_all_values if quote_all_values is None else quote_all_values
+        self.quote_all_values = Config.quote_all_values if quote_all_values is None else quote_all_values
 
-        if quote_all_col_refs is False or Config.quote_all_col_refs is False:
-            self.quote_all_col_refs = False
-        else:
-            self.quote_all_col_refs = Config.quote_all_col_refs if quote_all_col_refs is None else quote_all_col_refs
+        self.quote_all_col_refs = Config.quote_all_col_refs if quote_all_col_refs is None else quote_all_col_refs
 
         # Public properties
         self.query_options = []  # can append with ``set_option``

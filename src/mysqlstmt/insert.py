@@ -295,7 +295,7 @@ class Insert(Stmt, SetValuesMixin):
             sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
 
             if isinstance(self._select, Select):
-                select_sql, select_params = self._select.sql()
+                select_sql, select_params = self._select.sql() if self._select.placeholder else (self._select.sql(), None)
                 if select_params is not None:
                     msg = "INSERT...SELECT cannot use parameterized SELECT"
                     raise ValueError(msg)

@@ -161,7 +161,7 @@ class Union(Stmt):
 
         for stmt in self._selects:
             if isinstance(stmt, Select):
-                select_sql, select_params = stmt.sql()
+                select_sql, select_params = stmt.sql() if stmt.placeholder else (stmt.sql(), None)
                 stmtsql = select_sql
                 if select_params is not None:
                     param_values.extend(select_params)

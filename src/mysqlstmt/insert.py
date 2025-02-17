@@ -44,18 +44,26 @@ class Insert(Stmt, SetValuesMixin):
         :py:class:`mysqlstmt.replace.Replace`
     """
 
-    def __init__(self, table_name: str | None = None, ignore_error: bool = False, **kwargs) -> None:
+    def __init__(
+        self,
+        table_name: str | None = None,
+        ignore_error: bool = False,
+        select_allow_placeholders: bool = False,
+        **kwargs,
+    ) -> None:
         """Constructor.
 
         Keyword Arguments:
             table_name (string, optional): Table to insert into.
             ignore_error (bool, optional): Include IGNORE flag in statement.
+            select_allow_placeholders (bool, optional): Allow SELECT in INSERT...SELECT to use placeholders? Default is False.
             **kwargs: Base class arguments.
         """
         super().__init__(**kwargs)
 
         # Public flags
         self.ignore_error = ignore_error
+        self.select_allow_placeholders = select_allow_placeholders
 
         # Internals
         self._table_name = None
@@ -296,9 +304,14 @@ class Insert(Stmt, SetValuesMixin):
 
             if isinstance(self._select, Select):
                 select_sql, select_params = self._select.sql() if self._select.placeholder else (self._select.sql(), None)
+
                 if select_params is not None:
-                    msg = "INSERT...SELECT cannot use parameterized SELECT"
-                    raise ValueError(msg)
+                    if not self.select_allow_placeholders:
+                        msg = "INSERT...SELECT cannot use parameterized SELECT"
+                        raise ValueError(msg)
+
+                    param_values.extend(select_params)
+
                 sql.append(select_sql)
             else:
                 sql.append(self._select)

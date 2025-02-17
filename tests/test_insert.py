@@ -211,3 +211,9 @@ class TestInsert:
         qselect = Select("t2").columns(["t2c1"]).where_value("t2c1", "t2v1")
         with pytest.raises(ValueError):  # noqa: PT011
             q.into_table("t1").columns(["t1c1"]).select(qselect).sql()
+
+    def test_allow_select_with_params(self) -> None:
+        q = Insert(select_allow_placeholders=True)
+        qselect = Select("t2").columns(["t2c1"]).where_value("t2c1", "t2v1")
+        sql_t = q.into_table("t1").columns(["t1c1"]).select(qselect).sql()
+        assert sql_t == ("INSERT INTO t1 (`t1c1`) SELECT `t2c1` FROM t2 WHERE `t2c1` = ?", ["t2v1"])

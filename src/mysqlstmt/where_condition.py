@@ -79,6 +79,32 @@ class WhereCondition:
         self._predicate = f" {where_predicate} "
         self._nesting_level = 0
 
+    def __repr__(self) -> str:
+        """Return a string representation of the object for debugging purposes.
+
+        Returns:
+            str
+        """
+        # Note: I didn't use the result of sql() here to keep
+        # what's shown in the debug view as simple as possible.
+
+        pred = self._predicate.strip()
+        repr_conds = [cond.__repr__() for cond in self._conds]
+
+        repr_conds.extend(["VALUE"] * len(self._values))
+        repr_conds.extend(["RAWVALUE"] * len(self._values_raw))
+        repr_conds.extend(["EXPR"] * len(self._raw_exprs))
+        repr_conds.extend(["SELECT"] * len(self._selects))
+
+        if not repr_conds:
+            repr_str = "EMPTY"
+        elif len(repr_conds) == 1:
+            repr_str = repr_conds[0]
+        else:
+            repr_str = f"{self._predicate.join(repr_conds)}"
+
+        return f"<{self.__class__.__name__}:{pred} ({repr_str})>" if self.nesting_level == 0 else repr_str
+
     @property
     def expr_count(self) -> int:
         """Count the number of expressions in this condition.

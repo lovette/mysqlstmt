@@ -25,6 +25,7 @@ WhereRawValueT = str
 
 WhereFieldConditionT = tuple[WhereValueT, WhereOpT]
 WhereFieldConditionRawT = tuple[WhereRawValueT, WhereOpT, UnionT[StmtParamValuesT, None]]
+WhereFieldConditionSelectT = tuple[Stmt, WhereOpT, UnionT[StmtParamValuesT, None]]
 
 WhereExprValuesT = tuple[str, UnionT[ValueParamsT, None]]
 WhereExprT = UnionT[str, ValueParamsT]
@@ -43,7 +44,7 @@ class WhereCondition:
 
         Keyword Arguments:
             stmt (WhereMixin): Statement this condition is associated with.
-            where_predicate (string, optional): The predicate for this condition, either 'AND' or 'OR'.
+            where_predicate (string, optional): The predicate for this condition, either 'AND' or 'OR'. Default is 'AND'.
             **kwargs: Base class arguments.
         """
         super().__init__(**kwargs)
@@ -59,17 +60,23 @@ class WhereCondition:
         # >  OR [(field, (value, operator, params)), ...]
         self._values_raw: dict[str, WhereFieldConditionRawT] | list[tuple[str, WhereFieldConditionRawT]]
 
+        # > AND {field: (Select, operator, params), ...}
+        # >  OR [(field, (Select, operator, params)), ...]
+        self._selects: dict[str, WhereFieldConditionSelectT] | list[tuple[str, WhereFieldConditionSelectT]]
+
         if where_predicate is None or where_predicate == "AND":
             # With 'AND', it makes sense to only set one value per field
             # so we use a dict: field=(value, operator, value_params)
             self._values = {}
             self._values_raw = {}
+            self._selects = {}
             where_predicate = "AND"
         elif where_predicate == "OR":
             # With 'OR', you can reference the same field multiple times
             # so we use a list of tuples: (field, (value, operator, value_params))
             self._values = []
             self._values_raw = []
+            self._selects = []
         else:
             msg = "where_predicate must be 'AND' or 'OR'"
             raise ValueError(msg)
@@ -112,7 +119,8 @@ class WhereCondition:
         Returns:
             int: Number of values and conditions that will result in an expression.
         """
-        c = len(self._values) + len(self._values_raw) + len(self._raw_exprs)
+        c = len(self._values) + len(self._values_raw) + len(self._raw_exprs) + len(self._selects)
+
         for cond in self._conds:
             if cond.has_conds:
                 c += 1
@@ -125,7 +133,7 @@ class WhereCondition:
         Returns:
             bool: True if this condition has value or conditions that will result in an expression, otherwise False.
         """
-        if self._values or self._values_raw or self._raw_exprs:
+        if self._values or self._values_raw or self._raw_exprs or self._selects:
             return True
 
         return any(cond.has_conds for cond in self._conds)
@@ -322,6 +330,40 @@ class WhereCondition:
 
         return self
 
+    def where_select(
+        self,
+        field: str,
+        stmt: Stmt,
+        operator: WhereOpT,
+        value_params: StmtParamValuesT | None = None,
+    ) -> WhereCondition:
+        """Test field membership in subquery result.
+
+        Field names may be escaped with backticks.
+
+        Parameterized values will be pickled by :py:meth:`mysqlstmt.stmt.Stmt.pickle`.
+
+        Arguments:
+            field (string): Name of field/column .
+            stmt (Select): SELECT subquery.
+            operator (string): Membership operator [NOT] IN or [NOT] EXISTS.
+            value_params (Sequence, optional): List of value params for SELECT. Default is None.
+
+        Returns:
+            object: self
+        """
+        assert isinstance(field, str)
+        assert isinstance(stmt, Stmt)
+        assert isinstance(operator, str)
+        assert value_params is None or isinstance(value_params, Sequence)
+
+        if isinstance(self._selects, dict):
+            self._selects[field] = (stmt, operator, value_params)
+        else:
+            self._selects.append((field, (stmt, operator, value_params)))
+
+        return self
+
     def sql(self, param_values: list[str]) -> str | None:  # noqa: C901, PLR0912, PLR0915
         """Build SQL snippet to include in a WHERE or HAVING clause.
 
@@ -410,6 +452,29 @@ class WhereCondition:
             sql.append(expr)
             if expr_params is not None and self._stmt.placeholder:
                 param_values.extend(expr_params)
+
+        for field_or_tuple in self._selects:
+            if not isinstance(field_or_tuple, str):
+                field, value_op_tuple = field_or_tuple
+                stmt, op, val_params = value_op_tuple
+            elif isinstance(self._selects, dict):
+                stmt, op, val_params = self._selects[field_or_tuple]
+                field = field_or_tuple
+            else:
+                errmsg = "WhereCondition expected a tuple or string dictionary key"
+                raise TypeError(errmsg)
+
+            if val_params is not None and self._stmt.placeholder:
+                for param_val in val_params:
+                    pickled_val, can_paramize_val = self._stmt.pickle(param_val)
+                    param_values.append(pickled_val)
+
+            select_sql, select_params = stmt.sql() if stmt.placeholder else (str(stmt.sql()), None)
+
+            if select_params is not None:
+                param_values.extend(select_params)
+
+            sql.append(f"{self._stmt.quote_col_ref(field)} {op} ({select_sql})")
 
         if not sql:
             return None

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from .stmt import StmtParamValuesT, ValueParamsT
+    from .stmt import Stmt, StmtParamValuesT, ValueParamsT
     from .where_condition import WhereExprT, WhereOpT, WherePredT, WhereRawValueT, WhereValueT
 
 
@@ -251,6 +251,38 @@ class WhereMixin:
         return self
 
     where_exprs = where_expr
+
+    def where_select(
+        self,
+        field: str,
+        stmt: Stmt,
+        operator: WhereOpT,
+        value_params: StmtParamValuesT | None = None,
+    ) -> Self:
+        """Test field membership in subquery result.
+
+        Field names may be escaped with backticks.
+
+        Parameterized values will be pickled by :py:meth:`mysqlstmt.stmt.Stmt.pickle`.
+
+        Arguments:
+            field (string): Name of field/column .
+            stmt (Select): SELECT subquery.
+            operator (string): Membership operator [NOT] IN or [NOT] EXISTS.
+            value_params (Sequence, optional): List of value params for SELECT. Default is None.
+
+        Returns:
+            object: self
+
+        Examples: ::
+
+            >>> q = Select()
+            >>> q.from_table('t1').where_select('t1c1', Select('t2').columns('t2c1'), 'NOT IN').sql()
+            ('SELECT * FROM t1 WHERE `t1c1` NOT IN (SELECT `t2c1` FROM t2)', None)
+
+        """
+        self.get_where_cond().where_select(field, stmt, operator, value_params)
+        return self
 
     def get_where_cond(self, index: int = -1) -> WhereCondition:
         """Returns a ``WhereCondition`` object from the list of conditions.

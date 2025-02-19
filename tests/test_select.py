@@ -406,6 +406,44 @@ class TestSelect:
         sql_t = q.from_table("t1").where_raw_value("t1c1", "? AND ?", "BETWEEN", value_params=("a", "b")).sql()
         assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` BETWEEN ? AND ?", ["a", "b"])
 
+    def test_where_select(self) -> None:
+        q = Select("t1")
+        q.where_select("t1c1", Select("t2").columns("t2c1"), "NOT IN")
+        sql_t = q.sql()
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` NOT IN (SELECT `t2c1` FROM t2)", None)
+
+    def test_where_select_param(self) -> None:
+        q = Select("t1")
+        q.where_value("t1c1", "äöü")
+        q.where_select("t1c1", Select("t2").columns("t2c1"), "NOT IN")
+        sql_t = q.sql()
+        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = ? AND `t1c1` NOT IN (SELECT `t2c1` FROM t2))", ["äöü"])
+
+    def test_where_select_subparam(self) -> None:
+        qt2 = Select("t2").columns("t2c1")
+        qt2.where_value("t2c1", "äöü")
+
+        qt1 = Select("t1")
+        qt1.where_select("t1c1", qt2, "NOT IN")
+
+        sql_t = qt1.sql()
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` NOT IN (SELECT `t2c1` FROM t2 WHERE `t2c1` = ?)", ["äöü"])
+
+    def test_where_select_param_subparam(self) -> None:
+        qt2 = Select("t2").columns("t2c1")
+        qt2.where_value("t2c2", "t2v1")
+        qt2.where_value("t2c3", "t2v2")
+
+        qt1 = Select("t1")
+        qt1.where_value("t1c1", "t1v1")
+        qt1.where_select("t1c2", qt2, "NOT IN")
+
+        sql_t = qt1.sql()
+        assert sql_t == (
+            "SELECT * FROM t1 WHERE (`t1c1` = ? AND `t1c2` NOT IN (SELECT `t2c1` FROM t2 WHERE (`t2c2` = ? AND `t2c3` = ?)))",
+            ["t1v1", "t2v1", "t2v2"],
+        )
+
     def test_join_using_where_expr(self) -> None:
         q = Select()
         sql_t = q.from_table(["t1", "t2"]).where_expr("(t1.t1c1 = t2.t2c1)").sql()

@@ -8,11 +8,12 @@ from __future__ import annotations
 
 from collections.abc import Collection, Sequence
 from typing import TYPE_CHECKING
+from typing import Union as UnionT
 
 from .config import Config
 from .join_mixin import JoinMixin
 from .stmt import Stmt
-from .where_condition import StmtParamValuesT, WhereCondition
+from .where_condition import StmtParamValuesT, ValueParamsT, WhereCondition
 from .where_mixin import WhereMixin
 
 if TYPE_CHECKING:
@@ -21,7 +22,16 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from .stmt import SelectExprT, SQLReturnT
-    from .where_condition import ValueParamsT, WhereExprT, WhereOpT, WherePredT, WhereRawValueT, WhereValueT
+    from .where_condition import WhereExprT, WhereOpT, WherePredT, WhereRawValueT, WhereValueT
+
+SelectColumnT = list[
+    tuple[
+        str,  # name
+        UnionT[ValueParamsT, None],  # value_params
+        UnionT[str, None],  # named
+        bool,  # quote
+    ]
+]
 
 
 class Select(Stmt, WhereMixin, JoinMixin):
@@ -80,8 +90,8 @@ class Select(Stmt, WhereMixin, JoinMixin):
         assert having_predicate in ("AND", "OR")
 
         self._table_factors = []
-        self._select_col = []
-        self._select_expr = []  # tuple(name, value_params)
+        self._select_col: SelectColumnT = []
+        self._select_expr: SelectColumnT = []
         self._orderby_conds = []
         self._groupby_conds = []
         self._limit = None
@@ -127,13 +137,22 @@ class Select(Stmt, WhereMixin, JoinMixin):
     from_tables = from_table
     """Alias for :py:meth:`from_table`"""
 
-    def column(self, list_or_name: SelectExprT, raw: bool = False, value_params: ValueParamsT | None = None) -> Select:
+    def column(
+        self,
+        list_or_name: SelectExprT,
+        raw: bool = False,
+        value_params: ValueParamsT | None = None,
+        named: str | None = None,
+        quote: bool = False,
+    ) -> Select:
         """Add column names to select.
 
         Arguments:
             list_or_name (string or list): Column name or list of column names.
             raw (bool, optional): Set to True for column name to be included in the SQL verbatim, default is False.
             value_params (Sequence, optional): List of value params if ``raw`` is True. Default is None.
+            named (str, optional): Name column using "AS NAME". Default is None.
+            quote (bool, optional): Quote the value if necessary. Default is False. Applies only if ``raw`` is True.
 
         Returns:
             object: self
@@ -188,11 +207,11 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         if not isinstance(list_or_name, str):
             for c in list_or_name:
-                self.column(c, raw, value_params)
+                self.column(c, raw, value_params, named, quote)
         elif raw is True:
-            self._select_expr.append((list_or_name, value_params))
+            self._select_expr.append((list_or_name, value_params, named, quote))
         elif list_or_name not in self._select_col:
-            self._select_col.append(list_or_name)
+            self._select_col.append((list_or_name, None, named, False))
 
         return self
 
@@ -202,12 +221,20 @@ class Select(Stmt, WhereMixin, JoinMixin):
     columns = column
     """Alias for :py:meth:`column`"""
 
-    def column_expr(self, list_or_expr: SelectExprT, value_params: ValueParamsT | None = None) -> Select:
+    def column_expr(
+        self,
+        list_or_expr: SelectExprT,
+        value_params: ValueParamsT | None = None,
+        named: str | None = None,
+        quote: bool = False,
+    ) -> Select:
         """Add expressions to select.
 
         Arguments:
             list_or_expr (string or list): Expression or list of expressions.
             value_params (Sequence, optional): List of value params. Default is None.
+            named (str, optional): Name result using "AS NAME". Default is None.
+            quote (bool, optional): True to quote the value if necessary. Default is False.
 
         Returns:
             object: self
@@ -222,7 +249,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.column_expr('PASSWORD(?)', ['mypw']).sql()
             ('SELECT PASSWORD(?)', ['mypw'])
         """
-        return self.column(list_or_expr, raw=True, value_params=value_params)
+        return self.column(list_or_expr, raw=True, value_params=value_params, named=named, quote=quote)
 
     select_expr = column_expr
     """Alias for :py:meth:`column_expr`"""
@@ -254,8 +281,8 @@ class Select(Stmt, WhereMixin, JoinMixin):
                 self.remove_column(c)
         else:
             expr_alias = f" AS {list_or_name}"
-            self._select_col = [c for c in self._select_col if c != list_or_name]
-            self._select_expr = [c for c in self._select_expr if not c[0].endswith(expr_alias)]
+            self._select_col = [c for c in self._select_col if c[0] != list_or_name]
+            self._select_expr = [c for c in self._select_expr if not (c[2] == list_or_name or c[0].endswith(expr_alias))]
 
         return self
 
@@ -287,8 +314,8 @@ class Select(Stmt, WhereMixin, JoinMixin):
             ('SELECT t1.`t1c1`, t2.`t2c1` FROM t1, t2', None)
         """
         for i, col in enumerate(self._select_col):
-            if (qualify_cols is None or col in qualify_cols) and "." not in col:
-                self._select_col[i] = f"{table_name}.{col}"
+            if (qualify_cols is None or col[0] in qualify_cols) and "." not in col[0]:
+                self._select_col[i] = (f"{table_name}.{col[0]}", *col[1:])
 
         return self
 
@@ -573,12 +600,23 @@ class Select(Stmt, WhereMixin, JoinMixin):
         """
         table_refs = []
         param_values = []
+        cols = []
 
-        cols = [self.quote_col_ref(c) for c in self._select_col]
+        for c in self._select_col:
+            col, val_params, named, quote = c
+            col = self.quote_col_ref(col)
+            if named:
+                col += f" AS {named}"
+            cols.append(col)
 
         for c in self._select_expr:
-            expr, val_params = c
+            expr, val_params, named, quote = c
+            if quote and isinstance(expr, str):
+                expr = self.quote(expr)
+            if named:
+                expr += f" AS {named}"
             cols.append(expr)
+
             if val_params is not None and self.placeholder:
                 param_values.extend(val_params)
 

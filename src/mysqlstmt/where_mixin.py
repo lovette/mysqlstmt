@@ -31,6 +31,7 @@ class WhereMixin:
 
         Keyword Arguments:
             where_predicate (string, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.
+                Default is 'OR'.
             **kwargs: Base class arguments.
         """
         super().__init__(**kwargs)

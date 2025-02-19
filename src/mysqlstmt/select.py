@@ -67,7 +67,9 @@ class Select(Stmt, WhereMixin, JoinMixin):
         Keyword Arguments:
             table_name (string, optional): Table or tables to select from.
             having_predicate (string, optional): The predicate for the outer HAVING condition, either 'AND' or 'OR'.
+                Default is 'OR'.
             where_predicate (string, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.
+                Default is 'OR'.
             cacheable (bool, optional): Whether MySQL should cache query result.
                 Default is None, in which case the :py:class:`mysqlstmt.config.Config` setting will be used.
             calc_found_rows (bool, optional): Whether MySQL should calculate number of found rows. Default is False.

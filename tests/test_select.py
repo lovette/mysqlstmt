@@ -88,6 +88,11 @@ class TestSelect:
         sql_t = q.from_table("t1").columns("t1c1 AS t1a1").sql()
         assert sql_t == ("SELECT t1c1 AS t1a1 FROM t1", None)
 
+    def test_select_quote_col_named(self) -> None:
+        q = Select()
+        sql_t = q.from_table("t1").columns("t1c1", named="t1a1").sql()
+        assert sql_t == ("SELECT `t1c1` AS t1a1 FROM t1", None)
+
     def test_join_field(self) -> None:
         # > join(table, 'Field1')
         # > JOIN table USING (Field1)
@@ -586,6 +591,21 @@ class TestSelect:
         q = Select()
         sql_t = q.from_table("t1").columns("t1c1").column_expr("1+1 AS t2c1").remove_column("t2c1").sql()
         assert sql_t == ("SELECT `t1c1` FROM t1", None)
+
+    def test_remove_col_expr_named(self) -> None:
+        q = Select()
+        sql_t = q.from_table("t1").columns("t1c1").column_expr("1+1", named="t2c1").remove_column("t2c1").sql()
+        assert sql_t == ("SELECT `t1c1` FROM t1", None)
+
+    def test_col_expr_named(self) -> None:
+        q = Select()
+        sql_t = q.from_table("t1").column_expr("1+1", named="t2c1").sql()
+        assert sql_t == ("SELECT 1+1 AS t2c1 FROM t1", None)
+
+    def test_col_expr_named_quoted(self) -> None:
+        q = Select()
+        sql_t = q.from_table("t1").column_expr("t1v1", named="t2c1", quote=True).sql()
+        assert sql_t == ("SELECT 't1v1' AS t2c1 FROM t1", None)
 
     def test_qualify_columns(self) -> None:
         q = Select()

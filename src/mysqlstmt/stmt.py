@@ -102,17 +102,18 @@ class Stmt:
             Column reference will not be quoted if it contains a backtick, space or parenthesis.
         """
         if self.quote_all_col_refs:
-            if " " in col_ref:
-                return col_ref  # COLUMN AS ALIAS
-            if "(" in col_ref:
-                return col_ref  # FUNCTION(COLUMN)
-            if "`" in col_ref:
-                return col_ref  # already quoted
+            # '*' = TABLE.*
+            # ' ' = COLUMN AS ALIAS
+            # '(' = FUNCTION(COLUMN)
+            # '`' = Already quoted
+            if any(c in col_ref for c in ("*", " ", "(", "`")):
+                return col_ref
 
-            col_ref_parts = col_ref.split(".")
-            if len(col_ref_parts) > 1:
+            col_ref_parts = col_ref.split(".", 1)
+            if len(col_ref_parts) == 2:  # noqa: PLR2004
                 table, col = col_ref_parts
                 return f"{table}.`{col}`"
+
             return f"`{col_ref}`"
 
         return col_ref

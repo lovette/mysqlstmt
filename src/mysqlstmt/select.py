@@ -70,6 +70,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         having_predicate: str = "OR",
         cacheable: bool | None = None,
         calc_found_rows: bool = False,
+        distinct: bool = False,
         **kwargs,
     ) -> None:
         """Constructor.
@@ -83,6 +84,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             cacheable (bool, optional): Whether MySQL should cache query result.
                 Default is None, in which case the :py:class:`mysqlstmt.config.Config` setting will be used.
             calc_found_rows (bool, optional): Whether MySQL should calculate number of found rows. Default is False.
+            distinct (bool, optional): Whether to use DISTINCT. Default is False.
             **kwargs: Base class arguments.
         """
         super().__init__(**kwargs)
@@ -106,6 +108,8 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         if table_name:
             self.from_table(table_name)
+        if distinct:
+            self.set_option("DISTINCT")
 
     def from_table(self, list_or_name: str | Sequence[str]) -> Select:
         """Add tables to select from.
@@ -388,6 +392,15 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._limit = (row_count, offset)
         return self
 
+    def distinct(self) -> Select:
+        """Set DISTINCT option.
+
+        Returns:
+            object: self
+        """
+        self.set_option("DISTINCT")
+        return self
+
     def having_value(
         self,
         field_or_dict: str | Mapping[str, WhereValueT],
@@ -588,7 +601,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._having_cond_root.where_or()
         return self
 
-    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912
+    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912, PLR0915
         """Build SELECT SQL statement.
 
         Returns:

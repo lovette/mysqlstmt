@@ -68,7 +68,17 @@ class TestSelect:
         sql_t = q.column_expr("PASSWORD(?)", data).sql()
         assert sql_t == ("SELECT PASSWORD(?)", data)
 
-    def test_select_distinct(self) -> None:
+    def test_select_distinct_init(self) -> None:
+        q = Select("t1", distinct=True).columns("t1c1")
+        sql_t = q.sql()
+        assert sql_t == ("SELECT DISTINCT `t1c1` FROM t1", None)
+
+    def test_select_distinct_method(self) -> None:
+        q = Select("t1").distinct().columns("t1c1")
+        sql_t = q.sql()
+        assert sql_t == ("SELECT DISTINCT `t1c1` FROM t1", None)
+
+    def test_select_distinct_option(self) -> None:
         q = Select("t1")
         sql_t = q.set_option("DISTINCT").columns("t1c1").sql()
         assert sql_t == ("SELECT DISTINCT `t1c1` FROM t1", None)

@@ -37,6 +37,11 @@ class TestSelect:
         sql_t = q.from_table("t1 AS t1a").columns("t1c1").sql()
         assert sql_t == ("SELECT `t1c1` FROM t1 AS t1a", None)
 
+    def test_select_col_table_named(self) -> None:
+        q = Select()
+        sql_t = q.from_table("t1", named="t1a").columns("t1c1").sql()
+        assert sql_t == ("SELECT `t1c1` FROM t1 AS t1a", None)
+
     def test_select_col_callable(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").columns("t1c1")()
@@ -102,6 +107,21 @@ class TestSelect:
         q = Select()
         sql_t = q.from_table("t1").columns("t1c1", named="t1a1").sql()
         assert sql_t == ("SELECT `t1c1` AS t1a1 FROM t1", None)
+
+    def test_select_from_select(self) -> None:
+        q = Select()
+        sql_t = q.from_select(Select("t2").column("t2c1")).sql()
+        assert sql_t == ("SELECT * FROM (SELECT `t2c1` FROM t2)", None)
+
+    def test_select_from_select2(self) -> None:
+        q = Select(Select("t2").column("t2c1"))
+        sql_t = q.sql()
+        assert sql_t == ("SELECT * FROM (SELECT `t2c1` FROM t2)", None)
+
+    def test_select_from_select_named(self) -> None:
+        q = Select(Select("t2").column("t2c1"), named="t2a")
+        sql_t = q.sql()
+        assert sql_t == ("SELECT * FROM (SELECT `t2c1` FROM t2) AS t2a", None)
 
     def test_join_field(self) -> None:
         # > join(table, 'Field1')

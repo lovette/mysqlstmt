@@ -33,6 +33,13 @@ SelectColumnT = list[
     ]
 ]
 
+TableFactorT = tuple[
+    UnionT[str, Stmt],  # table | mysqlstmt.Select
+    UnionT[str, None],  # named
+]
+
+FromTableT = UnionT[str, Stmt, Sequence[str]]
+
 
 class Select(Stmt, WhereMixin, JoinMixin):
     """SELECT statement.
@@ -64,19 +71,20 @@ class Select(Stmt, WhereMixin, JoinMixin):
         ('SELECT DISTINCT `t1c1` FROM t1', None)
     """
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
-        table_name: str | Sequence[str] | None = None,
+        table_name: FromTableT | None = None,
         having_predicate: str = "OR",
         cacheable: bool | None = None,
         calc_found_rows: bool = False,
         distinct: bool = False,
+        named: str | None = None,
         **kwargs,
     ) -> None:
         """Constructor.
 
         Keyword Arguments:
-            table_name (string, optional): Table or tables to select from.
+            table_name (string | list[string] | Stmt, optional): Table, tables or SELECT to select from.
             having_predicate (string, optional): The predicate for the outer HAVING condition, either 'AND' or 'OR'.
                 Default is 'OR'.
             where_predicate (string, optional): The predicate for the outer WHERE condition, either 'AND' or 'OR'.
@@ -85,13 +93,14 @@ class Select(Stmt, WhereMixin, JoinMixin):
                 Default is None, in which case the :py:class:`mysqlstmt.config.Config` setting will be used.
             calc_found_rows (bool, optional): Whether MySQL should calculate number of found rows. Default is False.
             distinct (bool, optional): Whether to use DISTINCT. Default is False.
+            named (str, optional): Name table using "AS NAME". Default is None.
             **kwargs: Base class arguments.
         """
         super().__init__(**kwargs)
 
         assert having_predicate in ("AND", "OR")
 
-        self._table_factors = []
+        self._table_factors: list[TableFactorT] = []
         self._select_col: SelectColumnT = []
         self._select_expr: SelectColumnT = []
         self._orderby_conds = []
@@ -107,15 +116,16 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self.having_cond(where_predicate="AND")
 
         if table_name:
-            self.from_table(table_name)
+            self.from_table(table_name, named=named)
         if distinct:
             self.set_option("DISTINCT")
 
-    def from_table(self, list_or_name: str | Sequence[str]) -> Select:
+    def from_table(self, list_or_name: FromTableT, named: str | None = None) -> Select:
         """Add tables to select from.
 
         Arguments:
             list_or_name (string or list): Table name or list of table names.
+            named (str, optional): Name table using "AS NAME". Default is None.
 
         Returns:
             object: self
@@ -130,11 +140,35 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').sql()
             ('SELECT * FROM t1', None)
         """
-        if not isinstance(list_or_name, str):
+        if not isinstance(list_or_name, (Stmt, str)):
+            if named is not None:
+                msg = "Tables cannot be named when using a list of tables"
+                raise ValueError(msg)
+
             for c in list_or_name:
                 self.from_table(c)
         else:
-            self._table_factors.append(list_or_name)
+            self._table_factors.append((list_or_name, named))
+
+        return self
+
+    def from_select(self, qselect: Select, named: str | None = None) -> Select:
+        """Add subquery SELECT to select from.
+
+        Arguments:
+            qselect (Select): Select query.
+            named (str, optional): Name table using "AS NAME". Default is None.
+
+        Returns:
+            object: self
+
+        Examples: ::
+
+            >>> q = Select().from_select(Select('t2').column('t2c1'))
+            >>> q.sql()
+            ('SELECT * FROM (SELECT `t2c1` FROM t2)', None)
+        """
+        self.from_table(qselect, named=named)
 
         return self
 
@@ -611,6 +645,10 @@ class Select(Stmt, WhereMixin, JoinMixin):
         Raises:
             ValueError: The statement cannot be created with the given attributes.
         """
+
+        def _named(table_or_select: str, named: str | None) -> str:
+            return f"{table_or_select} AS {named}" if named else table_or_select
+
         table_refs = []
         param_values = []
         cols = []
@@ -634,14 +672,32 @@ class Select(Stmt, WhereMixin, JoinMixin):
                 param_values.extend(val_params)
 
         if self._table_factors:
-            table_refs.append(", ".join(self._table_factors))
+            _table_factors: list[str] = []
+
+            for table_or_select, table_named in self._table_factors:
+                if isinstance(table_or_select, Stmt):
+                    # SELECT ... FROM (SELECT ...)
+                    stmt_sql, stmt_params = table_or_select.sql() if self.placeholder else (table_or_select.sql(), None)
+                    _table_factors.append(_named(f"({stmt_sql})", table_named))
+                    if stmt_params:
+                        param_values.extend(stmt_params)
+                else:
+                    _table_factors.append(_named(table_or_select, table_named))
+
+            table_refs.append(", ".join(_table_factors))
 
         if self._join_refs:
             if not table_refs:
                 msg = "A root table must be specified when using joins"
                 raise ValueError(msg)
 
-            self._append_join_table_refs(self._table_factors[0], table_refs)
+            root_table, root_named = self._table_factors[0]
+
+            if not isinstance(root_table, str):
+                msg = "Root table must be a string when using joins"
+                raise ValueError(msg)
+
+            self._append_join_table_refs(root_table if root_named is None else root_named, table_refs)
 
         # MySQL SELECT syntax as of 5.7:
         #

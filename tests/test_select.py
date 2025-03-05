@@ -22,6 +22,11 @@ class TestSelect:
         sql_t = q.from_table("t1").columns("t1c1").sql()
         assert sql_t == ("SELECT `t1c1` FROM t1", None)
 
+    def test_select_col_dup(self) -> None:
+        q = Select()
+        with pytest.raises(ValueError):  # noqa: PT011
+            q.from_table("t1").columns("t1c1").columns("t1c1").sql()
+
     def test_select_col_qualified(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").columns("t1.t1c1").sql()
@@ -40,7 +45,7 @@ class TestSelect:
     def test_select_col_table_named(self) -> None:
         q = Select()
         sql_t = q.from_table("t1", named="t1a").columns("t1c1").sql()
-        assert sql_t == ("SELECT `t1c1` FROM t1 AS t1a", None)
+        assert sql_t == ("SELECT `t1c1` FROM t1 AS `t1a`", None)
 
     def test_select_col_callable(self) -> None:
         q = Select()
@@ -101,12 +106,12 @@ class TestSelect:
     def test_select_quote_col_as(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").columns("t1c1 AS t1a1").sql()
-        assert sql_t == ("SELECT t1c1 AS t1a1 FROM t1", None)
+        assert sql_t == ("SELECT `t1c1` AS `t1a1` FROM t1", None)
 
     def test_select_quote_col_named(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").columns("t1c1", named="t1a1").sql()
-        assert sql_t == ("SELECT `t1c1` AS t1a1 FROM t1", None)
+        assert sql_t == ("SELECT `t1c1` AS `t1a1` FROM t1", None)
 
     def test_select_from_select(self) -> None:
         q = Select()
@@ -121,7 +126,7 @@ class TestSelect:
     def test_select_from_select_named(self) -> None:
         q = Select(Select("t2").column("t2c1"), named="t2a")
         sql_t = q.sql()
-        assert sql_t == ("SELECT * FROM (SELECT `t2c1` FROM t2) AS t2a", None)
+        assert sql_t == ("SELECT * FROM (SELECT `t2c1` FROM t2) AS `t2a`", None)
 
     def test_join_field(self) -> None:
         # > join(table, 'Field1')
@@ -630,12 +635,12 @@ class TestSelect:
     def test_col_expr_named(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").column_expr("1+1", named="t2c1").sql()
-        assert sql_t == ("SELECT 1+1 AS t2c1 FROM t1", None)
+        assert sql_t == ("SELECT 1+1 AS `t2c1` FROM t1", None)
 
     def test_col_expr_named_quoted(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").column_expr("t1v1", named="t2c1", quote=True).sql()
-        assert sql_t == ("SELECT 't1v1' AS t2c1 FROM t1", None)
+        assert sql_t == ("SELECT 't1v1' AS `t2c1` FROM t1", None)
 
     def test_qualify_columns(self) -> None:
         q = Select()
@@ -651,6 +656,29 @@ class TestSelect:
         q = Select()
         sql_t = q.from_table(("t1", "t2")).columns(("t1c1", "t2.t2c1")).qualify_columns("t1").sql()
         assert sql_t == ("SELECT t1.`t1c1`, t2.`t2c1` FROM t1, t2", None)
+
+    def test_is_selected(self) -> None:
+        q = Select()
+        q.from_table("t1").columns(("t1c1", "t2c1"))
+        assert q.is_selected("t1c1") is True
+        assert q.is_selected("t2c1") is True
+        assert q.is_selected("t3c1") is False
+        q.remove_column("t2c1")
+        assert q.is_selected("t2c1") is False
+
+    def test_is_selected_expr(self) -> None:
+        q = Select()
+        q.from_table("t1").columns("t1c1").column_expr("1+1 AS t2c1")
+        assert q.is_selected("t2c1") is True
+        q.remove_column("t2c1")
+        assert q.is_selected("t2c1") is False
+
+    def test_is_selected_expr_named(self) -> None:
+        q = Select()
+        q.from_table("t1").columns("t1c1").column_expr("1+1", named="t2c1")
+        assert q.is_selected("t2c1") is True
+        q.remove_column("t2c1")
+        assert q.is_selected("t2c1") is False
 
     def test_join_no_root(self) -> None:
         q = Select()

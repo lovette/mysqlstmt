@@ -7,7 +7,7 @@ This module provides:
 from __future__ import annotations
 
 from collections.abc import Collection, Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 from typing import Union as UnionT
 
 from .config import Config
@@ -24,14 +24,24 @@ if TYPE_CHECKING:
     from .stmt import SelectExprT, SQLReturnT
     from .where_condition import WhereExprT, WhereOpT, WherePredT, WhereRawValueT, WhereValueT
 
-SelectColumnT = list[
-    tuple[
-        str,  # name
-        UnionT[ValueParamsT, None],  # value_params
-        UnionT[str, None],  # named
-        bool,  # quote
-    ]
-]
+
+class SelectColumnT(NamedTuple):
+    """Select column tuple.
+
+    Attributes:
+        expr (str): Column name or expression.
+        named (str):  Column alias or None.
+        value_params (ValueParamsT): Value params or None.
+        quote (bool): True if expression is to be quoted.
+        raw (bool): True if `expr` is an expression.
+    """
+
+    expr: str
+    named: UnionT[str, None]  # noqa: UP007
+    value_params: UnionT[ValueParamsT, None]  # noqa: UP007
+    quote: bool
+    raw: bool
+
 
 TableFactorT = tuple[
     UnionT[str, Stmt],  # table | mysqlstmt.Select
@@ -101,8 +111,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         assert having_predicate in ("AND", "OR")
 
         self._table_factors: list[TableFactorT] = []
-        self._select_col: SelectColumnT = []
-        self._select_expr: SelectColumnT = []
+        self._select_col: list[SelectColumnT] = []
         self._orderby_conds = []
         self._groupby_conds = []
         self._limit = None
@@ -190,7 +199,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             raw (bool, optional): Set to True for column name to be included in the SQL verbatim, default is False.
             value_params (Sequence, optional): List of value params if ``raw`` is True. Default is None.
             named (str, optional): Name column using "AS NAME". Default is None.
-            quote (bool, optional): Quote the value if necessary. Default is False. Applies only if ``raw`` is True.
+            quote (bool, optional): Quote the expression if necessary. Default is False. Applies only if ``raw`` is True.
 
         Returns:
             object: self
@@ -245,11 +254,22 @@ class Select(Stmt, WhereMixin, JoinMixin):
 
         if not isinstance(list_or_name, str):
             for c in list_or_name:
-                self.column(c, raw, value_params, named, quote)
-        elif raw is True:
-            self._select_expr.append((list_or_name, value_params, named, quote))
-        elif list_or_name not in self._select_col:
-            self._select_col.append((list_or_name, None, named, False))
+                self.column(c, raw, value_params, None, quote)
+        else:
+            if named is None:
+                name_parts = list_or_name.split(" AS ", 1)
+                if len(name_parts) == 2:  # noqa: PLR2004
+                    list_or_name, named = name_parts
+
+            if self.is_selected(named or list_or_name):
+                msg = f"Column '{named or list_or_name}' already exists"
+                raise ValueError(msg)
+
+            if not raw:
+                value_params = None
+                quote = False
+
+            self._select_col.append(SelectColumnT(list_or_name, named, value_params, quote, raw))
 
         return self
 
@@ -295,7 +315,47 @@ class Select(Stmt, WhereMixin, JoinMixin):
     columns_expr = column_expr
     """Alias for :py:meth:`column_expr`"""
 
-    def remove_column(self, list_or_name: str | Collection[str]) -> Select:
+    def is_selected(self, col_name: str) -> bool:
+        """Check if a column name or alias is selected.
+
+        Arguments:
+            col_name (string): Column name.
+
+        Returns:
+            bool
+
+        Examples: ::
+
+            >>> q = Select()
+            >>> q.from_table('t1').columns('t1c1')
+            >>> q.is_select_col('t1c1')
+            True
+        """
+        return self.get_column(col_name) is not None
+
+    def get_column(self, col_name: str) -> SelectColumnT | None:
+        """Get column details.
+
+        Arguments:
+            col_name (string): Column name.
+
+        Returns:
+            SelectColumnT or None if column is not selected.
+
+        Examples: ::
+
+            >>> q = Select()
+            >>> q.from_table('t1').columns('t1c1')
+            >>> q.get_column('t1c1')
+            ('t1c1', None, False, None)
+        """
+        for c in self._select_col:
+            if c.expr == col_name or (c.named and c.named == col_name):
+                return c
+
+        return None
+
+    def remove_column(self, list_or_name: str | Collection[str] | SelectColumnT) -> Select:
         """Remove column names to select.
 
         Arguments:
@@ -314,13 +374,13 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.from_table('t1').columns('t1c1').column_expr('1+1 AS t2c1').remove_column('t2c1').sql()
             ('SELECT `t1c1` FROM t1', None)
         """
-        if not isinstance(list_or_name, str):
+        if isinstance(list_or_name, SelectColumnT):
+            self.remove_column(list_or_name.named or list_or_name.expr)
+        elif isinstance(list_or_name, str):
+            self._select_col = [c for c in self._select_col if not (c.expr == list_or_name or (c.named and c.named == list_or_name))]
+        else:
             for c in list_or_name:
                 self.remove_column(c)
-        else:
-            expr_alias = f" AS {list_or_name}"
-            self._select_col = [c for c in self._select_col if c[0] != list_or_name]
-            self._select_expr = [c for c in self._select_expr if not (c[2] == list_or_name or c[0].endswith(expr_alias))]
 
         return self
 
@@ -353,7 +413,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         """
         for i, col in enumerate(self._select_col):
             if (qualify_cols is None or col[0] in qualify_cols) and "." not in col[0]:
-                self._select_col[i] = (f"{table_name}.{col[0]}", *col[1:])
+                self._select_col[i] = SelectColumnT(f"{table_name}.{col[0]}", *col[1:])
 
         return self
 
@@ -646,26 +706,26 @@ class Select(Stmt, WhereMixin, JoinMixin):
             ValueError: The statement cannot be created with the given attributes.
         """
 
-        def _named(table_or_select: str, named: str | None) -> str:
-            return f"{table_or_select} AS {named}" if named else table_or_select
+        def _named(self, table_or_select: str, named: str | None) -> str:  # noqa: ANN001
+            if named:
+                return " ".join([table_or_select, "AS", self.quote_col_ref(named)])
+            return table_or_select
 
         table_refs = []
         param_values = []
         cols = []
 
         for c in self._select_col:
-            col, val_params, named, quote = c
-            col = self.quote_col_ref(col)
-            if named:
-                col += f" AS {named}"
-            cols.append(col)
+            expr, named, val_params, quote, raw = c
 
-        for c in self._select_expr:
-            expr, val_params, named, quote = c
-            if quote and isinstance(expr, str):
+            if not raw:
+                expr = self.quote_col_ref(expr)
+            elif quote and isinstance(expr, str):
                 expr = self.quote(expr)
+
             if named:
-                expr += f" AS {named}"
+                expr = " ".join([expr, "AS", self.quote_col_ref(named)])
+
             cols.append(expr)
 
             if val_params is not None and self.placeholder:
@@ -678,11 +738,11 @@ class Select(Stmt, WhereMixin, JoinMixin):
                 if isinstance(table_or_select, Stmt):
                     # SELECT ... FROM (SELECT ...)
                     stmt_sql, stmt_params = table_or_select.sql() if self.placeholder else (table_or_select.sql(), None)
-                    _table_factors.append(_named(f"({stmt_sql})", table_named))
+                    _table_factors.append(_named(self, f"({stmt_sql})", table_named))
                     if stmt_params:
                         param_values.extend(stmt_params)
                 else:
-                    _table_factors.append(_named(table_or_select, table_named))
+                    _table_factors.append(_named(self, table_or_select, table_named))
 
             table_refs.append(", ".join(_table_factors))
 

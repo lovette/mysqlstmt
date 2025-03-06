@@ -276,7 +276,7 @@ class TestSelect:
         )
         assert sql_t == ("SELECT * FROM t1 WHERE ((`t1c1` = 1 OR `t1c1` = 5) AND (`t1c1` = 6 OR `t1c1` = 10))", None)
 
-    def test_where_value_or_and_not(self) -> None:
+    def test_where_value_not_or_and(self) -> None:
         q = Select(where_predicate="AND")
         sql_t = (
             q.from_table("t1")
@@ -289,6 +289,66 @@ class TestSelect:
             .sql()
         )
         assert sql_t == ("SELECT * FROM t1 WHERE (NOT (`t1c1` = 1 OR `t1c1` = 5) AND NOT (`t1c1` = 6 OR `t1c1` = 10))", None)
+
+    def test_where_value_not_or_unintended(self) -> None:
+        q = Select(where_predicate="AND").from_table("t1").column("t1c1")
+
+        q.where_value("t1c2", "t1v1")
+
+        where_cond = q.where_or(negate=True).get_where_cond()
+
+        # OR t1c3=...
+        where_cond.where_value("t1c3", "t1v2")
+
+        # OR (t1c3=... AND t1c2=...)
+        c = where_cond.where_and()
+        c.where_value("t1c3", "t1v3")
+        c.where_value("t1c4", "t1v4")
+
+        # OR (t1c3=... AND t1c4 IS NULL)
+        c = where_cond.where_and()
+        c.where_value("t1c3", "t1v5")
+        c.where_value("t1c4", None)
+
+        # Intention is for this to be ANDed with the very first `where_value`.
+        q.where_value("t1c5", "t1v6")
+
+        sql_t = q.sql()
+
+        assert sql_t == (
+            "SELECT `t1c1` FROM t1 WHERE (`t1c2` = ? AND NOT ((`t1c3` = ? AND `t1c4` = ?) OR (`t1c3` = ? AND `t1c4` IS NULL) OR `t1c3` = ? OR `t1c5` = ?))",  # noqa: E501
+            ["t1v1", "t1v3", "t1v4", "t1v5", "t1v2", "t1v6"],
+        )
+
+    def test_where_value_not_or_intended(self) -> None:
+        q = Select(where_predicate="AND").from_table("t1").column("t1c1")
+
+        q.where_value("t1c2", "t1v1")
+
+        where_cond = q.get_where_cond().where_or(negate=True)
+
+        # OR t1c3=...
+        where_cond.where_value("t1c3", "t1v2")
+
+        # OR (t1c3=... AND t1c2=...)
+        c = where_cond.where_and()
+        c.where_value("t1c3", "t1v3")
+        c.where_value("t1c4", "t1v4")
+
+        # OR (t1c3=... AND t1c4 IS NULL)
+        c = where_cond.where_and()
+        c.where_value("t1c3", "t1v5")
+        c.where_value("t1c4", None)
+
+        # Intention is for this to be ANDed with the very first `where_value`.
+        q.where_value("t1c5", "t1v6")
+
+        sql_t = q.sql()
+
+        assert sql_t == (
+            "SELECT `t1c1` FROM t1 WHERE (NOT ((`t1c3` = ? AND `t1c4` = ?) OR (`t1c3` = ? AND `t1c4` IS NULL) OR `t1c3` = ?) AND `t1c2` = ? AND `t1c5` = ?)",  # noqa: E501
+            ["t1v3", "t1v4", "t1v5", "t1v2", "t1v1", "t1v6"],
+        )
 
     def test_where_values_dict(self) -> None:
         q = Select()

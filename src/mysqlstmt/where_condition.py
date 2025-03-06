@@ -204,7 +204,7 @@ class WhereCondition:
             negate (bool, optional): Whether this condition is negated (as in "NOT").
 
         Returns:
-            object: self
+            WhereCondition: The new condition.
 
         Note:
             Conditions are typically created with ``where_and`` and ``where_or``.
@@ -218,7 +218,7 @@ class WhereCondition:
         assert isinstance(cond, WhereCondition)
         cond.nesting_level = self.nesting_level + 1
         self._conds.append(cond)
-        return self
+        return cond
 
     def where_and(self, negate: bool = False) -> WhereCondition:
         """Activates a new ``WhereCondition`` with an 'AND' predicate.
@@ -227,7 +227,7 @@ class WhereCondition:
             negate (bool, optional): Whether this condition is negated (as in "NOT").
 
         Returns:
-            object: self
+            WhereCondition: The new condition.
 
         See Also:
             :py:class:`mysqlstmt.where_condition.WhereCondition` :py:meth:`add_cond` :py:meth:`where_or`
@@ -241,7 +241,7 @@ class WhereCondition:
             negate (bool, optional): Whether this condition is negated (as in "NOT").
 
         Returns:
-            object: self
+            WhereCondition: The new condition.
 
         See Also:
             :py:class:`mysqlstmt.where_condition.WhereCondition` :py:meth:`where_cond` :py:meth:`where_and`

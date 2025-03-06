@@ -20,7 +20,16 @@ if TYPE_CHECKING:
 
 
 class WhereMixin:
-    """Provide where_value related functionality to statement classes.
+    """Provide WHERE clause functionality to statement classes.
+
+    The methods on this class allow you to add WHERE conditions to a statement.
+    The `where_value`, `where_raw_value`, `where_expr` and `where_select` methods
+    add conditions to the *active* condition, which is created with `where_and` or `where_or`.
+    The `where_predicate` argument in the constructor sets the default predicate for the outermost WHERE condition.
+    The `where_and` and `where_or` methods create a new active condition with 'AND' and 'OR' predicates, respectively.
+    The method `get_where_cond` returns the active `WhereCondition` by default.
+    A simple way to build complex conditions with grouping is to use `get_where_cond` to get the
+    active condition then use its `where_and` and `where_or` methods to add nested parenthesized conditions.
 
     Note:
         This class is not to be instantiated directly.

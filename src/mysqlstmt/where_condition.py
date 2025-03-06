@@ -172,6 +172,15 @@ class WhereCondition:
         for cond in self._conds:
             cond.nesting_level = self._nesting_level + 1
 
+    @property
+    def where_cond(self) -> WhereCondition:
+        """Returns the active condition.
+
+        Returns:
+            object: :py:class:`WhereCondition`
+        """
+        return self._conds[-1]
+
     def get_where_cond(self, index: int = -1) -> WhereCondition:
         """Returns a ``WhereCondition`` object from the list of conditions.
 

@@ -27,8 +27,8 @@ class WhereMixin:
     add conditions to the *active* condition, which is created with `where_and` or `where_or`.
     The `where_predicate` argument in the constructor sets the default predicate for the outermost WHERE condition.
     The `where_and` and `where_or` methods create a new active condition with 'AND' and 'OR' predicates, respectively.
-    The method `get_where_cond` returns the active `WhereCondition` by default.
-    A simple way to build complex conditions with grouping is to use `get_where_cond` to get the
+    The `where_cond` property returns the active `WhereCondition`.
+    A simple way to build complex conditions with grouping is to use `where_cond` to get the
     active condition then use its `where_and` and `where_or` methods to add nested parenthesized conditions.
 
     Note:
@@ -50,7 +50,7 @@ class WhereMixin:
         self._where_cond_root = WhereCondition(self, where_predicate=where_predicate)
 
         # Default first condition is 'AND'; will be ignored if where_or is called first
-        self.where_cond(where_predicate="AND")
+        self.add_cond(where_predicate="AND")
 
     def where_value(
         self,
@@ -163,7 +163,7 @@ class WhereMixin:
             >>> q.from_table('t1').where_value('DATE(`t1c1`)', datetime.date(2014,3,2), '>').sql()
             ('SELECT * FROM t1 WHERE DATE(`t1c1`) > ?', ['2014-03-02'])
         """
-        self.get_where_cond().where_value(field_or_dict, value, operator)
+        self.where_cond.where_value(field_or_dict, value, operator)
         return self
 
     where_values = where_value
@@ -219,7 +219,7 @@ class WhereMixin:
             >>> q.from_table('t1').where_raw_value('DATE(`t1c1`)', 'NOW()', '>').sql()
             ('SELECT * FROM t1 WHERE DATE(`t1c1`) > NOW()')
         """
-        self.get_where_cond().where_raw_value(field_or_dict, raw_value, operator, value_params)
+        self.where_cond.where_raw_value(field_or_dict, raw_value, operator, value_params)
         return self
 
     where_raw_values = where_raw_value
@@ -256,7 +256,7 @@ class WhereMixin:
             >>> q.from_table('t1').where_expr('`t1c1` = PASSWORD(?)', ('mypw',)).sql()
             ('SELECT * FROM t1 WHERE `t1c1` = PASSWORD(?)', ['mypw'])
         """
-        self.get_where_cond().where_expr(list_or_expr, expr_params)
+        self.where_cond.where_expr(list_or_expr, expr_params)
         return self
 
     where_exprs = where_expr
@@ -290,8 +290,17 @@ class WhereMixin:
             ('SELECT * FROM t1 WHERE `t1c1` NOT IN (SELECT `t2c1` FROM t2)', None)
 
         """
-        self.get_where_cond().where_select(field, stmt, operator, value_params)
+        self.where_cond.where_select(field, stmt, operator, value_params)
         return self
+
+    @property
+    def where_cond(self) -> WhereCondition:
+        """Returns the active condition.
+
+        Returns:
+            object: :py:class:`WhereCondition`
+        """
+        return self.get_where_cond(-1)
 
     def get_where_cond(self, index: int = -1) -> WhereCondition:
         """Returns a ``WhereCondition`` object from the list of conditions.
@@ -311,7 +320,7 @@ class WhereMixin:
         """
         return self._where_cond_root.get_where_cond(index)
 
-    def where_cond(self, cond: WhereCondition | None = None, where_predicate: WherePredT | None = None) -> Self:
+    def add_cond(self, cond: WhereCondition | None = None, where_predicate: WherePredT | None = None) -> Self:
         """Activates a new ``WhereCondition``.
 
         Arguments:

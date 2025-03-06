@@ -295,7 +295,7 @@ class TestSelect:
 
         q.where_value("t1c2", "t1v1")
 
-        where_cond = q.where_or(negate=True).get_where_cond()
+        where_cond = q.where_or(negate=True).where_cond
 
         # OR t1c3=...
         where_cond.where_value("t1c3", "t1v2")
@@ -325,7 +325,7 @@ class TestSelect:
 
         q.where_value("t1c2", "t1v1")
 
-        where_cond = q.get_where_cond().where_or(negate=True)
+        where_cond = q.where_cond.where_or(negate=True)
 
         # OR t1c3=...
         where_cond.where_value("t1c3", "t1v2")

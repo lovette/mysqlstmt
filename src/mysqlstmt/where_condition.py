@@ -111,17 +111,23 @@ class WhereCondition:
         repr_conds.extend(["EXPR"] * len(self._raw_exprs))
         repr_conds.extend(["SELECT"] * len(self._selects))
 
+        repr_conds = [cond for cond in repr_conds if cond]  # empty conditions can be ignored
+
         if not repr_conds:
-            repr_str = "EMPTY"
+            repr_str = ""
         elif len(repr_conds) == 1:
             repr_str = repr_conds[0]
         else:
-            repr_str = f"{self._predicate.join(repr_conds)}"
+            repr_str = self._predicate.join(repr_conds)
 
         if self._negate:
             repr_str = f"NOT {repr_str}"
 
-        return f"<{self.__class__.__name__}:{pred} ({repr_str})>" if self.nesting_level == 0 else repr_str
+        if self.nesting_level == 0:
+            return f"<{self.__class__.__name__}[{pred}] {repr_str}>"
+        if repr_str:
+            return f"({repr_str})"
+        return ""
 
     @property
     def expr_count(self) -> int:

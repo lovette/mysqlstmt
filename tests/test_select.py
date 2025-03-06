@@ -276,6 +276,20 @@ class TestSelect:
         )
         assert sql_t == ("SELECT * FROM t1 WHERE ((`t1c1` = 1 OR `t1c1` = 5) AND (`t1c1` = 6 OR `t1c1` = 10))", None)
 
+    def test_where_value_or_and_not(self) -> None:
+        q = Select(where_predicate="AND")
+        sql_t = (
+            q.from_table("t1")
+            .where_or(negate=True)
+            .where_value("t1c1", 1)
+            .where_value("t1c1", 5)
+            .where_or(negate=True)
+            .where_value("t1c1", 6)
+            .where_value("t1c1", 10)
+            .sql()
+        )
+        assert sql_t == ("SELECT * FROM t1 WHERE (NOT (`t1c1` = 1 OR `t1c1` = 5) AND NOT (`t1c1` = 6 OR `t1c1` = 10))", None)
+
     def test_where_values_dict(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value(OrderedDict([("t1c1", 3), ("t1c2", "string")])).sql()

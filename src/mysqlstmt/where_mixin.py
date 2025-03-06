@@ -322,8 +322,11 @@ class WhereMixin:
         self._where_cond_root.add_cond(cond, where_predicate)
         return self
 
-    def where_and(self) -> Self:
+    def where_and(self, negate: bool = False) -> Self:
         """Activates a new ``WhereCondition`` with an 'AND' predicate.
+
+        Arguments:
+            negate (bool, optional): Whether this condition is negated (as in "NOT").
 
         Returns:
             object: self
@@ -348,11 +351,14 @@ class WhereMixin:
                 .where_value('t1c2', 5).where_and().where_value('t1c1', 6).where_value('t1c2', 10).sql()
             ('SELECT * FROM t1 WHERE ((`t1c1` = 1 AND `t1c2` = 5) OR (`t1c1` = 6 AND `t1c2` = 10))', None)
         """
-        self._where_cond_root.where_and()
+        self._where_cond_root.where_and(negate=negate)
         return self
 
-    def where_or(self) -> Self:
+    def where_or(self, negate: bool = False) -> Self:
         """Activates a new ``WhereCondition`` with an 'OR' predicate.
+
+        Arguments:
+            negate (bool, optional): Whether this condition is negated (as in "NOT").
 
         Returns:
             object: self
@@ -371,5 +377,5 @@ class WhereMixin:
                 't1c1', 5).where_or().where_value('t1c1', 6).where_value('t1c1', 10).sql()
             ('SELECT * FROM t1 WHERE ((`t1c1` = 1 OR `t1c1` = 5) AND (`t1c1` = 6 OR `t1c1` = 10))', None)
         """
-        self._where_cond_root.where_or()
+        self._where_cond_root.where_or(negate=negate)
         return self

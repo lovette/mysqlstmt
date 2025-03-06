@@ -39,18 +39,26 @@ class WhereCondition:
     ``WhereCondition`` objects.
     """
 
-    def __init__(self, stmt: WhereMixin, where_predicate: WherePredT | None = None, **kwargs) -> None:
+    def __init__(
+        self,
+        stmt: WhereMixin,
+        where_predicate: WherePredT | None = None,
+        negate: bool = False,
+        **kwargs,
+    ) -> None:
         """Constructor.
 
         Keyword Arguments:
             stmt (WhereMixin): Statement this condition is associated with.
             where_predicate (string, optional): The predicate for this condition, either 'AND' or 'OR'. Default is 'AND'.
+            negate (bool, optional): Whether this condition is negated (as in "NOT").
             **kwargs: Base class arguments.
         """
         super().__init__(**kwargs)
 
         assert isinstance(stmt, Stmt)
         self._stmt = stmt
+        self._negate = negate
 
         # > AND {field: (value, operator), ...}
         # >  OR [(field, (value, operator)), ...]
@@ -109,6 +117,9 @@ class WhereCondition:
             repr_str = repr_conds[0]
         else:
             repr_str = f"{self._predicate.join(repr_conds)}"
+
+        if self._negate:
+            repr_str = f"NOT {repr_str}"
 
         return f"<{self.__class__.__name__}:{pred} ({repr_str})>" if self.nesting_level == 0 else repr_str
 
@@ -173,12 +184,18 @@ class WhereCondition:
         """
         return self._conds[index]
 
-    def add_cond(self, cond: WhereCondition | None = None, where_predicate: WherePredT | None = None) -> WhereCondition:
+    def add_cond(
+        self,
+        cond: WhereCondition | None = None,
+        where_predicate: WherePredT | None = None,
+        negate: bool = False,
+    ) -> WhereCondition:
         """Activates a new ``WhereCondition``.
 
         Arguments:
             cond (mysqlstmt.WhereCondition, optional): A new condition; one will be created if not specified.
             where_predicate (string): The predicate for the new condition if a new one is created, either 'AND' or 'OR'.
+            negate (bool, optional): Whether this condition is negated (as in "NOT").
 
         Returns:
             object: self
@@ -191,14 +208,17 @@ class WhereCondition:
             :py:class:`mysqlstmt.where_condition.WhereCondition` :py:meth:`where_and` :py:meth:`where_or`
         """
         if cond is None:
-            cond = WhereCondition(self._stmt, where_predicate=where_predicate)
+            cond = WhereCondition(self._stmt, where_predicate=where_predicate, negate=negate)
         assert isinstance(cond, WhereCondition)
         cond.nesting_level = self.nesting_level + 1
         self._conds.append(cond)
         return self
 
-    def where_and(self) -> WhereCondition:
+    def where_and(self, negate: bool = False) -> WhereCondition:
         """Activates a new ``WhereCondition`` with an 'AND' predicate.
+
+        Arguments:
+            negate (bool, optional): Whether this condition is negated (as in "NOT").
 
         Returns:
             object: self
@@ -206,10 +226,13 @@ class WhereCondition:
         See Also:
             :py:class:`mysqlstmt.where_condition.WhereCondition` :py:meth:`add_cond` :py:meth:`where_or`
         """
-        return self.add_cond(where_predicate="AND")
+        return self.add_cond(where_predicate="AND", negate=negate)
 
-    def where_or(self) -> WhereCondition:
+    def where_or(self, negate: bool = False) -> WhereCondition:
         """Activates a new ``WhereCondition`` with an 'OR' predicate.
+
+        Arguments:
+            negate (bool, optional): Whether this condition is negated (as in "NOT").
 
         Returns:
             object: self
@@ -217,7 +240,7 @@ class WhereCondition:
         See Also:
             :py:class:`mysqlstmt.where_condition.WhereCondition` :py:meth:`where_cond` :py:meth:`where_and`
         """
-        return self.add_cond(where_predicate="OR")
+        return self.add_cond(where_predicate="OR", negate=negate)
 
     def where_value(
         self,
@@ -478,6 +501,12 @@ class WhereCondition:
 
         if not sql:
             return None
-        if self.expr_count > 1:
-            return f"({self._predicate.join(sql)})"
-        return f"{self._predicate.join(sql)}"
+
+        sql = self._predicate.join(sql)
+
+        if self._negate:
+            sql = f"NOT ({sql})"
+        elif self.expr_count > 1:
+            sql = f"({sql})"
+
+        return sql

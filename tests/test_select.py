@@ -113,6 +113,24 @@ class TestSelect:
         sql_t = q.from_table("t1").columns("t1c1", named="t1a1").sql()
         assert sql_t == ("SELECT `t1c1` AS `t1a1` FROM t1", None)
 
+    def test_select_get_column(self) -> None:
+        q = Select()
+        col_t = q.from_table("t1").columns(["t1c1", "t1c2", "t1c3"]).get_column("t1c2")
+        assert col_t is not None
+        assert col_t.expr == "t1c2"
+
+    def test_select_get_column_quoted(self) -> None:
+        q = Select()
+        col_t = q.from_table("t1").columns(["t1c1", q.quote_col_ref("t1c2"), "t1c3"]).get_column("t1c2")
+        assert col_t is not None
+        assert col_t.expr == "`t1c2`"
+
+    def test_select_get_column_quoted2(self) -> None:
+        q = Select()
+        col_t = q.from_table("t1").columns(["t1c1", q.quote_col_ref("t1c2"), "t1c3"]).get_column("`t1c2`")
+        assert col_t is not None
+        assert col_t.expr == "`t1c2`"
+
     def test_select_from_select(self) -> None:
         q = Select()
         sql_t = q.from_select(Select("t2").column("t2c1")).sql()

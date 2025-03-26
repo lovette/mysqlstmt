@@ -334,7 +334,10 @@ class Select(Stmt, WhereMixin, JoinMixin):
         return self.get_column(col_name) is not None
 
     def get_column(self, col_name: str) -> SelectColumnT | None:
-        """Get column details.
+        """Get details of named column.
+
+        Will find quoted and unquoted column names.
+        Will not find table qualified column names.
 
         Arguments:
             col_name (string): Column name.
@@ -349,9 +352,10 @@ class Select(Stmt, WhereMixin, JoinMixin):
             >>> q.get_column('t1c1')
             ('t1c1', None, False, None)
         """
-        for c in self._select_col:
-            if c.expr == col_name or (c.named and c.named == col_name):
-                return c
+        for col_named in {col_name, self.quote_col_ref(col_name)}:
+            for c in self._select_col:
+                if c.expr == col_named or (c.named and c.named == col_named):
+                    return c
 
         return None
 

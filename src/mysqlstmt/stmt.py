@@ -7,6 +7,7 @@ This module provides:
 from __future__ import annotations
 
 import datetime
+from abc import ABC, abstractmethod
 from collections.abc import Collection, Sequence
 from typing import TYPE_CHECKING
 from typing import Union as UnionT
@@ -27,7 +28,7 @@ ValueParamsT = Sequence[str]
 SelectExprT = UnionT[str, Sequence[str]]
 
 
-class Stmt:
+class Stmt(ABC):
     """Base class for all statement classes."""
 
     def __init__(
@@ -96,6 +97,7 @@ class Stmt:
         assert not param_values
         return sql_
 
+    @abstractmethod
     def sqlp(self) -> SQLPReturnT:
         """Returns SQL statement and parameterized values.
 

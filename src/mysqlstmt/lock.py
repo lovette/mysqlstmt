@@ -6,7 +6,12 @@ This module provides:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from .stmt import Stmt
+
+if TYPE_CHECKING:
+    from .stmt import SQLPReturnT
 
 
 class Lock(Stmt):
@@ -25,7 +30,7 @@ class Lock(Stmt):
         self._name = name
         self._timeout = timeout
 
-    def get_lock(self) -> str | tuple[str, None]:
+    def get_lock(self) -> SQLPReturnT:
         """Build SELECT GET_LOCK SQL statement.
 
         Returns:
@@ -54,11 +59,9 @@ class Lock(Stmt):
 
         sql = ["SELECT", f"GET_LOCK({self.quote(self._name)}, {self._timeout})"]
 
-        if self.placeholder:
-            return " ".join(sql), None
-        return " ".join(sql)
+        return " ".join(sql), None
 
-    def release_lock(self) -> str | tuple[str, None]:
+    def release_lock(self) -> SQLPReturnT:
         """Build SELECT RELEASE_LOCK SQL statement.
 
         Returns:
@@ -80,11 +83,9 @@ class Lock(Stmt):
 
         sql = ["SELECT", f"RELEASE_LOCK({self.quote(self._name)})"]
 
-        if self.placeholder:
-            return " ".join(sql), None
-        return " ".join(sql)
+        return " ".join(sql), None
 
-    def is_free_lock(self) -> str | tuple[str, None]:
+    def is_free_lock(self) -> SQLPReturnT:
         """Build SELECT IS_FREE_LOCK SQL statement.
 
         Returns:
@@ -106,9 +107,7 @@ class Lock(Stmt):
 
         sql = ["SELECT", f"IS_FREE_LOCK({self.quote(self._name)})"]
 
-        if self.placeholder:
-            return " ".join(sql), None
-        return " ".join(sql)
+        return " ".join(sql), None
 
-    sql = get_lock
+    sqlp = get_lock
     """Alias for :py:meth:`get_lock`."""

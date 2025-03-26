@@ -507,7 +507,7 @@ class WhereCondition:
                     pickled_val, can_paramize_val = self._stmt.pickle(param_val)
                     param_values.append(pickled_val)
 
-            select_sql, select_params = stmt.sql() if stmt.placeholder else (str(stmt.sql()), None)
+            select_sql, select_params = stmt.sqlp()
 
             if select_params is not None:
                 param_values.extend(select_params)

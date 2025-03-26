@@ -14,7 +14,7 @@ from .stmt import Stmt
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from .stmt import SQLReturnT
+    from .stmt import SQLPReturnT
 
 
 class Union(Stmt):
@@ -133,7 +133,7 @@ class Union(Stmt):
         self._limit = (row_count, offset)
         return self
 
-    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912
+    def sqlp(self) -> SQLPReturnT:  # noqa: C901, PLR0912
         """Build SELECT... UNION SQL statement.
 
         Returns:
@@ -161,7 +161,7 @@ class Union(Stmt):
 
         for stmt in self._selects:
             if isinstance(stmt, Select):
-                select_sql, select_params = stmt.sql() if stmt.placeholder else (stmt.sql(), None)
+                select_sql, select_params = stmt.sqlp()
                 stmtsql = select_sql
                 if select_params is not None:
                     param_values.extend(select_params)
@@ -190,4 +190,4 @@ class Union(Stmt):
         if self.placeholder:
             return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return " ".join(sql)
+        return " ".join(sql), None

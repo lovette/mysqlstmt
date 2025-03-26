@@ -17,7 +17,9 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-SQLReturnT = UnionT[str, tuple[str, UnionT[Sequence[str], None]]]
+SQLReturnParamT = UnionT[Sequence[str], None]
+SQLReturnT = UnionT[str, tuple[str, SQLReturnParamT]]
+SQLPReturnT = tuple[str, SQLReturnParamT]
 StmtParamValueT = UnionT[str, float, bool, datetime.datetime, datetime.date, datetime.time]  # ,object
 StmtPickleT = UnionT[StmtParamValueT, None]
 StmtParamValuesT = Sequence[StmtParamValueT]
@@ -67,17 +69,19 @@ class Stmt:
         # Public properties
         self.query_options = []  # can append with ``set_option``
 
-    def __call__(self, *args, **kwargs) -> SQLReturnT:  # noqa: ARG002
-        """Returns SQL statement created by :py:meth:`sql`."""
-        return self.sql()
+    def __call__(self, *args, **kwargs) -> SQLPReturnT:  # noqa: ARG002
+        """Returns SQL statement created by :py:meth:`sqlp`."""
+        return self.sqlp()
 
     def __str__(self) -> str:
-        """Returns SQL statement created by :py:meth:`sql`."""
-        sql_t = self.sql()
-        return sql_t if isinstance(sql_t, str) else sql_t[0]
+        """Returns SQL statement (without params) created by :py:meth:`sqlp`."""
+        sql_t, _ = self.sqlp()
+        return sql_t
 
     def sql(self) -> SQLReturnT:
-        """Derived classes must override and build appropriate SQL statement.
+        """Returns SQL statement and optionally, parameterized values.
+
+        This method is deprecated and `sqlp` should be used instead.
 
         Returns:
             Either a tuple ``(SQL statement, parameterized values)`` if ``placeholder`` is set,
@@ -85,7 +89,23 @@ class Stmt:
 
         Raises:
             ValueError: The statement cannot be created with the given attributes.
-            NotImplementedError: There is no base class implementation.
+        """
+        sql_, param_values = self.sqlp()
+        if self.placeholder:
+            return sql_, param_values
+        assert not param_values
+        return sql_
+
+    def sqlp(self) -> SQLPReturnT:
+        """Returns SQL statement and parameterized values.
+
+        Derived classes must override and build appropriate SQL statement.
+
+        Returns:
+            tuple ``(SQL statement, [parameterized values])``
+
+        Raises:
+            ValueError: The statement cannot be created with the given attributes.
         """
         raise NotImplementedError
 

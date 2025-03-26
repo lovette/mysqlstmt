@@ -14,7 +14,7 @@ from .set_values_mixin import SetValuesMixin
 from .stmt import Stmt, StmtPickleT
 
 if TYPE_CHECKING:
-    from .stmt import SQLReturnT
+    from .stmt import SQLPReturnT
 
 
 SetBatchValueT = Sequence[StmtPickleT]
@@ -189,7 +189,7 @@ class Insert(Stmt, SetValuesMixin):
     set_batch_values = set_batch_value
     """Alias for :py:meth:`set_batch_value`"""
 
-    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912, PLR0915
+    def sqlp(self) -> SQLPReturnT:  # noqa: C901, PLR0912, PLR0915
         """Build INSERT SQL statement.
 
         Returns:
@@ -303,7 +303,7 @@ class Insert(Stmt, SetValuesMixin):
             sql.append(f"({', '.join([self.quote_col_ref(col) for col in col_names])})")
 
             if isinstance(self._select, Select):
-                select_sql, select_params = self._select.sql() if self._select.placeholder else (str(self._select.sql()), None)
+                select_sql, select_params = self._select.sqlp()
 
                 if select_params is not None:
                     if not self.select_allow_placeholders:
@@ -323,4 +323,4 @@ class Insert(Stmt, SetValuesMixin):
         if self.placeholder:
             return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return " ".join(sql)
+        return " ".join(sql), None

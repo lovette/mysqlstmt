@@ -15,7 +15,7 @@ from .where_mixin import WhereMixin
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from .stmt import SQLReturnT
+    from .stmt import SQLPReturnT
 
 
 class Delete(Stmt, WhereMixin, JoinMixin):
@@ -186,7 +186,7 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         self._limit = row_count
         return self
 
-    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912
+    def sqlp(self) -> SQLPReturnT:  # noqa: C901, PLR0912
         """Build DELETE SQL statement.
 
         Returns:
@@ -274,4 +274,4 @@ class Delete(Stmt, WhereMixin, JoinMixin):
         if self.placeholder:
             return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return " ".join(sql)
+        return " ".join(sql), None

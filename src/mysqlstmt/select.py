@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from .stmt import SelectExprT, SQLReturnT
+    from .stmt import SelectExprT, SQLPReturnT
     from .where_condition import WhereExprT, WhereOpT, WherePredT, WhereRawValueT, WhereValueT
 
 
@@ -699,7 +699,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
         self._having_cond_root.where_or()
         return self
 
-    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912, PLR0915
+    def sqlp(self) -> SQLPReturnT:  # noqa: C901, PLR0912, PLR0915
         """Build SELECT SQL statement.
 
         Returns:
@@ -741,7 +741,7 @@ class Select(Stmt, WhereMixin, JoinMixin):
             for table_or_select, table_named in self._table_factors:
                 if isinstance(table_or_select, Stmt):
                     # SELECT ... FROM (SELECT ...)
-                    stmt_sql, stmt_params = table_or_select.sql() if self.placeholder else (table_or_select.sql(), None)
+                    stmt_sql, stmt_params = table_or_select.sqlp()
                     _table_factors.append(_named(self, f"({stmt_sql})", table_named))
                     if stmt_params:
                         param_values.extend(stmt_params)
@@ -833,4 +833,4 @@ class Select(Stmt, WhereMixin, JoinMixin):
         if self.placeholder:
             return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return " ".join(sql)
+        return " ".join(sql), None

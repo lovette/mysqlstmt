@@ -16,7 +16,7 @@ from .where_mixin import WhereMixin
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from .stmt import SQLReturnT
+    from .stmt import SQLPReturnT
 
 
 class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
@@ -180,7 +180,7 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         self._limit = row_count
         return self
 
-    def sql(self) -> SQLReturnT:  # noqa: C901, PLR0912
+    def sqlp(self) -> SQLPReturnT:  # noqa: C901, PLR0912
         """Build UPDATE SQL statement.
 
         Returns:
@@ -273,4 +273,4 @@ class Update(Stmt, WhereMixin, JoinMixin, SetValuesMixin):
         if self.placeholder:
             return " ".join(sql), param_values if param_values else None
         assert not param_values
-        return " ".join(sql)
+        return " ".join(sql), None

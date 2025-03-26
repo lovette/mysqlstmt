@@ -831,6 +831,6 @@ class Select(Stmt, WhereMixin, JoinMixin):
                 sql.append(f"LIMIT {row_count}")
 
         if self.placeholder:
-            return " ".join(sql), param_values if param_values else None
+            return " ".join(sql), tuple(param_values) if param_values else None
         assert not param_values
         return " ".join(sql), None

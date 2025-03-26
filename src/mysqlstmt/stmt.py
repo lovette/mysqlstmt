@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-SQLReturnParamT = UnionT[Sequence[str], None]
+SQLReturnParamT = UnionT[tuple[str, ...], None]
 SQLReturnT = UnionT[str, tuple[str, SQLReturnParamT]]
 SQLPReturnT = tuple[str, SQLReturnParamT]
 StmtParamValueT = UnionT[str, float, bool, datetime.datetime, datetime.date, datetime.time]  # ,object

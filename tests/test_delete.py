@@ -42,18 +42,18 @@ class TestDelete:
         q = Delete()
         values = {**OrderedDict([("t1c1", "a"), ("t1c2", "b")])}
         sql_t = q.from_table("t1").where_value(values).sql()
-        assert sql_t == ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` = ?)", ["a", "b"])
+        assert sql_t == ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` = ?)", ("a", "b"))
 
     def test_null(self) -> None:
         q = Delete()
         values = {**OrderedDict([("t1c1", "a"), ("t1c2", None)])}
         sql_t = q.from_table("t1").where_value(values).sql()
-        assert sql_t == ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` IS NULL)", ["a"])
+        assert sql_t == ("DELETE FROM t1 WHERE (`t1c1` = ? AND `t1c2` IS NULL)", ("a",))
 
     def test_function_value(self) -> None:
         q = Delete()
         sql_t = q.from_table("t1").where_value("t1c1", "NOW()").sql()
-        assert sql_t == ("DELETE FROM t1 WHERE `t1c1` = ?", ["NOW()"])
+        assert sql_t == ("DELETE FROM t1 WHERE `t1c1` = ?", ("NOW()",))
 
     def test_function_raw_value(self) -> None:
         q = Delete()

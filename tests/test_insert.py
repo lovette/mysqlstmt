@@ -42,18 +42,18 @@ class TestInsert:
         q = Insert()
         values = {**OrderedDict([("t1c1", "a"), ("t1c2", "b")])}
         sql_t = q.into_table("t1").set_value(values).sql()
-        assert sql_t == ("INSERT INTO t1 (`t1c1`, `t1c2`) VALUES (?, ?)", ["a", "b"])
+        assert sql_t == ("INSERT INTO t1 (`t1c1`, `t1c2`) VALUES (?, ?)", ("a", "b"))
 
     def test_null(self) -> None:
         q = Insert()
         values = {**OrderedDict([("t1c1", "a"), ("t1c2", None)])}
         sql_t = q.into_table("t1").set_value(values).sql()
-        assert sql_t == ("INSERT INTO t1 (`t1c1`, `t1c2`) VALUES (?, NULL)", ["a"])
+        assert sql_t == ("INSERT INTO t1 (`t1c1`, `t1c2`) VALUES (?, NULL)", ("a",))
 
     def test_function_value(self) -> None:
         q = Insert()
         sql_t = q.into_table("t1").set_value("t1c1", "NOW()").sql()
-        assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (?)", ["NOW()"])
+        assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (?)", ("NOW()",))
 
     def test_function_raw_value(self) -> None:
         q = Insert()
@@ -68,12 +68,12 @@ class TestInsert:
     def test_function_raw_value_with_valparams(self) -> None:
         q = Insert()
         sql_t = q.into_table("t1").set_raw_value("t1c1", "PASSWORD(?)", value_params=("mypw",)).sql()
-        assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (PASSWORD(?))", ["mypw"])
+        assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (PASSWORD(?))", ("mypw",))
 
     def test_function_raw_value_dict_with_valparams(self) -> None:
         q = Insert()
         sql_t = q.into_table("t1").set_raw_value({"t1c1": ("PASSWORD(?)", ("mypw",))}).sql()
-        assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (PASSWORD(?))", ["mypw"])
+        assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (PASSWORD(?))", ("mypw",))
 
     def test_select_string_col(self) -> None:
         q = Insert()
@@ -98,37 +98,37 @@ class TestInsert:
 
     def test_function_batch_1x1(self) -> None:
         q = Insert()
-        data = [["v1"]]
+        data = (["v1"],)
         sql_t = q.into_table("t1").columns("t1c1").set_batch_value(data).sql()
         assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (?)", data)
 
     def test_function_batch_3x1(self) -> None:
         q = Insert()
-        data = [["v1"], ["v2"], ["NOW()"]]
+        data = (["v1"], ["v2"], ["NOW()"])
         sql_t = q.into_table("t1").columns("t1c1").set_batch_value(data).sql()
         assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (?)", data)
 
     def test_function_batch_3x3(self) -> None:
         q = Insert()
-        data = [["v1", "v2", "NOW()"], ["v1", "v2", "NOW()"], ["v1", "v2", "NOW()"]]
+        data = (["v1", "v2", "NOW()"], ["v1", "v2", "NOW()"], ["v1", "v2", "NOW()"])
         sql_t = q.into_table("t1").columns(["t1c1", "t1c2", "t1c3"]).set_batch_value(data).sql()
         assert sql_t == ("INSERT INTO t1 (`t1c1`, `t1c2`, `t1c3`) VALUES (?, ?, ?)", data)
 
     def test_function_batch_1x1_noparam(self) -> None:
         q = Insert(placeholder=False)
-        data = [["'v1'"]]
+        data = (["'v1'"],)
         sql = q.into_table("t1").columns("t1c1").set_batch_value(data).sql()
         assert sql == "INSERT INTO t1 (`t1c1`) VALUES ('v1')"
 
     def test_function_batch_3x1_noparam(self) -> None:
         q = Insert(placeholder=False)
-        data = [["'v1'"], ["'v2'"], ["NOW()"]]
+        data = (["'v1'"], ["'v2'"], ["NOW()"])
         sql = q.into_table("t1").columns("t1c1").set_batch_value(data).sql()
         assert sql == "INSERT INTO t1 (`t1c1`) VALUES ('v1'), ('v2'), (NOW())"
 
     def test_function_batch_3x3_noparam(self) -> None:
         q = Insert(placeholder=False)
-        data = [["'r1v1'", "'r1v2'", "NOW()"], ["'r2v1'", "'r2v2'", "NOW()"], ["'r3v1'", "'r3v2'", "NOW()"]]
+        data = (["'r1v1'", "'r1v2'", "NOW()"], ["'r2v1'", "'r2v2'", "NOW()"], ["'r3v1'", "'r3v2'", "NOW()"])
         sql = q.into_table("t1").columns(["t1c1", "t1c2", "t1c3"]).set_batch_value(data).sql()
         assert sql == "INSERT INTO t1 (`t1c1`, `t1c2`, `t1c3`) VALUES ('r1v1', 'r1v2', NOW()), ('r2v1', 'r2v2', NOW()), ('r3v1', 'r3v2', NOW())"
 
@@ -136,7 +136,7 @@ class TestInsert:
         q = Insert()
         values = {**OrderedDict([("t1c1", "äöü")])}
         sql_t = q.into_table("t1").set_value(values).sql()
-        assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (?)", ["äöü"])
+        assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (?)", ("äöü",))
 
     def test_dict_strings_utf_raw(self) -> None:
         q = Insert()
@@ -145,7 +145,7 @@ class TestInsert:
 
     def test_dict_strings_utf_batch(self) -> None:
         q = Insert()
-        data = [["äöü"]]
+        data = (["äöü"],)
         sql_t = q.into_table("t1").columns("t1c1").set_batch_value(data).sql()
         assert sql_t == ("INSERT INTO t1 (`t1c1`) VALUES (?)", data)
 
@@ -216,4 +216,4 @@ class TestInsert:
         q = Insert(select_allow_placeholders=True)
         qselect = Select("t2").columns(["t2c1"]).where_value("t2c1", "t2v1")
         sql_t = q.into_table("t1").columns(["t1c1"]).select(qselect).sql()
-        assert sql_t == ("INSERT INTO t1 (`t1c1`) SELECT `t2c1` FROM t2 WHERE `t2c1` = ?", ["t2v1"])
+        assert sql_t == ("INSERT INTO t1 (`t1c1`) SELECT `t2c1` FROM t2 WHERE `t2c1` = ?", ("t2v1",))

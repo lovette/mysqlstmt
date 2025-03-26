@@ -74,7 +74,7 @@ class TestSelect:
 
     def test_select_expr_with_param(self) -> None:
         q = Select()
-        data = ["mypw"]
+        data = ("mypw",)
         sql_t = q.column_expr("PASSWORD(?)", data).sql()
         assert sql_t == ("SELECT PASSWORD(?)", data)
 
@@ -254,7 +254,7 @@ class TestSelect:
     def test_where_values(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", 3).where_value("t1c2", "string").sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = 3 AND `t1c2` = ?)", ["string"])
+        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = 3 AND `t1c2` = ?)", ("string",))
 
     def test_where_value_or(self) -> None:
         q = Select()
@@ -335,7 +335,7 @@ class TestSelect:
 
         assert sql_t == (
             "SELECT `t1c1` FROM t1 WHERE (`t1c2` = ? AND NOT ((`t1c3` = ? AND `t1c4` = ?) OR (`t1c3` = ? AND `t1c4` IS NULL) OR `t1c3` = ? OR `t1c5` = ?))",  # noqa: E501
-            ["t1v1", "t1v3", "t1v4", "t1v5", "t1v2", "t1v6"],
+            ("t1v1", "t1v3", "t1v4", "t1v5", "t1v2", "t1v6"),
         )
 
     def test_where_value_not_or_intended(self) -> None:
@@ -365,13 +365,13 @@ class TestSelect:
 
         assert sql_t == (
             "SELECT `t1c1` FROM t1 WHERE (NOT ((`t1c3` = ? AND `t1c4` = ?) OR (`t1c3` = ? AND `t1c4` IS NULL) OR `t1c3` = ?) AND `t1c2` = ? AND `t1c5` = ?)",  # noqa: E501
-            ["t1v3", "t1v4", "t1v5", "t1v2", "t1v1", "t1v6"],
+            ("t1v3", "t1v4", "t1v5", "t1v2", "t1v1", "t1v6"),
         )
 
     def test_where_values_dict(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value(OrderedDict([("t1c1", 3), ("t1c2", "string")])).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = 3 AND `t1c2` = ?)", ["string"])
+        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = 3 AND `t1c2` = ?)", ("string",))
 
     def test_where_values_noparam(self) -> None:
         q = Select(placeholder=False)
@@ -401,7 +401,7 @@ class TestSelect:
     def test_where_raw_value_with_param(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_raw_value("t1c1", "PASSWORD(?)", value_params=("mypw",)).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = PASSWORD(?)", ["mypw"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = PASSWORD(?)", ("mypw",))
 
     def test_where_raw_values_with_param(self) -> None:
         q = Select()
@@ -411,13 +411,13 @@ class TestSelect:
             .where_raw_value("t1c2", "PASSWORD(?)", value_params=("mypw2",))
             .sql()
         )
-        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = PASSWORD(?) AND `t1c2` = PASSWORD(?))", ["mypw1", "mypw2"])
+        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = PASSWORD(?) AND `t1c2` = PASSWORD(?))", ("mypw1", "mypw2"))
 
     def test_where_raw_value_with_param_between(self) -> None:
         between_dates = (datetime.date(2014, 3, 2), datetime.date(2014, 3, 12))
         q = Select()
         sql_t = q.from_table("t1").where_raw_value("DATE(`t1c1`)", "? AND ?", "BETWEEN", between_dates).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE DATE(`t1c1`) BETWEEN ? AND ?", ["2014-03-02", "2014-03-12"])
+        assert sql_t == ("SELECT * FROM t1 WHERE DATE(`t1c1`) BETWEEN ? AND ?", ("2014-03-02", "2014-03-12"))
 
     def test_where_raw_value_func(self) -> None:
         q = Select()
@@ -437,22 +437,22 @@ class TestSelect:
     def test_where_value_datetime(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", datetime.datetime(2014, 3, 2, 12, 1, 2, tzinfo=datetime.timezone.utc)).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ["2014-03-02 12:01:02"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ("2014-03-02 12:01:02",))
 
     def test_where_value_date(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", datetime.date(2014, 3, 2)).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ["2014-03-02"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ("2014-03-02",))
 
     def test_where_value_time(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", datetime.time(12, 1, 2)).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ["12:01:02"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ("12:01:02",))
 
     def test_where_value_date_func(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("DATE(`t1c1`)", datetime.date(2014, 3, 2), ">").sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE DATE(`t1c1`) > ?", ["2014-03-02"])
+        assert sql_t == ("SELECT * FROM t1 WHERE DATE(`t1c1`) > ?", ("2014-03-02",))
 
     def test_where_value_object(self) -> None:
         class TestClass:
@@ -461,7 +461,7 @@ class TestSelect:
 
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", TestClass()).sql()  # pyright:ignore[reportArgumentType]
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ["object as a string"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ("object as a string",))
 
     def test_where_expr(self) -> None:
         q = Select()
@@ -476,7 +476,7 @@ class TestSelect:
     def test_where_expr_with_expr_param(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_expr("`t1c1` = PASSWORD(?)", ("mypw",)).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = PASSWORD(?)", ["mypw"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = PASSWORD(?)", ("mypw",))
 
     def test_where_value_null(self) -> None:
         q = Select()
@@ -521,12 +521,12 @@ class TestSelect:
     def test_where_value_like(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", "abc%", "LIKE").sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` LIKE ?", ["abc%"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` LIKE ?", ("abc%",))
 
     def test_where_value_notlike(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", "abc%", "NOT LIKE").sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` NOT LIKE ?", ["abc%"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` NOT LIKE ?", ("abc%",))
 
     def test_where_raw_value_between(self) -> None:
         q = Select()
@@ -536,7 +536,7 @@ class TestSelect:
     def test_where_raw_value_between_tuple_param(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_raw_value("t1c1", "? AND ?", "BETWEEN", value_params=("a", "b")).sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` BETWEEN ? AND ?", ["a", "b"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` BETWEEN ? AND ?", ("a", "b"))
 
     def test_where_select(self) -> None:
         q = Select("t1")
@@ -549,7 +549,7 @@ class TestSelect:
         q.where_value("t1c1", "äöü")
         q.where_select("t1c1", Select("t2").columns("t2c1"), "NOT IN")
         sql_t = q.sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = ? AND `t1c1` NOT IN (SELECT `t2c1` FROM t2))", ["äöü"])
+        assert sql_t == ("SELECT * FROM t1 WHERE (`t1c1` = ? AND `t1c1` NOT IN (SELECT `t2c1` FROM t2))", ("äöü",))
 
     def test_where_select_subparam(self) -> None:
         qt2 = Select("t2").columns("t2c1")
@@ -559,7 +559,7 @@ class TestSelect:
         qt1.where_select("t1c1", qt2, "NOT IN")
 
         sql_t = qt1.sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` NOT IN (SELECT `t2c1` FROM t2 WHERE `t2c1` = ?)", ["äöü"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` NOT IN (SELECT `t2c1` FROM t2 WHERE `t2c1` = ?)", ("äöü",))
 
     def test_where_select_param_subparam(self) -> None:
         qt2 = Select("t2").columns("t2c1")
@@ -573,7 +573,7 @@ class TestSelect:
         sql_t = qt1.sql()
         assert sql_t == (
             "SELECT * FROM t1 WHERE (`t1c1` = ? AND `t1c2` NOT IN (SELECT `t2c1` FROM t2 WHERE (`t2c2` = ? AND `t2c3` = ?)))",
-            ["t1v1", "t2v1", "t2v2"],
+            ("t1v1", "t2v1", "t2v2"),
         )
 
     def test_join_using_where_expr(self) -> None:
@@ -627,12 +627,12 @@ class TestSelect:
     def test_having_values(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").having_value("t1c1", 3).having_value("t1c2", "string").sql()
-        assert sql_t == ("SELECT * FROM t1 HAVING (`t1c1` = 3 AND `t1c2` = ?)", ["string"])
+        assert sql_t == ("SELECT * FROM t1 HAVING (`t1c1` = 3 AND `t1c2` = ?)", ("string",))
 
     def test_having_values_dict(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").having_value(OrderedDict([("t1c1", 3), ("t1c2", "string")])).sql()
-        assert sql_t == ("SELECT * FROM t1 HAVING (`t1c1` = 3 AND `t1c2` = ?)", ["string"])
+        assert sql_t == ("SELECT * FROM t1 HAVING (`t1c1` = 3 AND `t1c2` = ?)", ("string",))
 
     def test_having_raw_value(self) -> None:
         q = Select()
@@ -642,7 +642,7 @@ class TestSelect:
     def test_having_raw_value_with_param(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").having_raw_value("t1c1", "PASSWORD(?)", value_params=("mypw",)).sql()
-        assert sql_t == ("SELECT * FROM t1 HAVING `t1c1` = PASSWORD(?)", ["mypw"])
+        assert sql_t == ("SELECT * FROM t1 HAVING `t1c1` = PASSWORD(?)", ("mypw",))
 
     def test_having_expr(self) -> None:
         q = Select()
@@ -652,7 +652,7 @@ class TestSelect:
     def test_having_expr_with_expr_param(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").having_expr("`t1c1` = PASSWORD(?)", ("mypw",)).sql()
-        assert sql_t == ("SELECT * FROM t1 HAVING `t1c1` = PASSWORD(?)", ["mypw"])
+        assert sql_t == ("SELECT * FROM t1 HAVING `t1c1` = PASSWORD(?)", ("mypw",))
 
     def test_select_orderby(self) -> None:
         q = Select()
@@ -697,7 +697,7 @@ class TestSelect:
     def test_where_value_utf_param(self) -> None:
         q = Select()
         sql_t = q.from_table("t1").where_value("t1c1", "äöü").sql()
-        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ["äöü"])
+        assert sql_t == ("SELECT * FROM t1 WHERE `t1c1` = ?", ("äöü",))
 
     def test_where_value_utf_inline(self) -> None:
         q = Select()

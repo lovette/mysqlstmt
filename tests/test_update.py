@@ -42,18 +42,18 @@ class TestUpdate:
         q = Update()
         values = {**OrderedDict([("t1c1", "a"), ("t1c2", "b")])}
         sql_t = q.table("t1").set_value(values).sql()
-        assert sql_t == ("UPDATE t1 SET `t1c1`=?, `t1c2`=?", ["a", "b"])
+        assert sql_t == ("UPDATE t1 SET `t1c1`=?, `t1c2`=?", ("a", "b"))
 
     def test_null(self) -> None:
         q = Update()
         values = {**OrderedDict([("t1c1", "a"), ("t1c2", None)])}
         sql_t = q.table("t1").set_value(values).sql()
-        assert sql_t == ("UPDATE t1 SET `t1c1`=?, `t1c2`=NULL", ["a"])
+        assert sql_t == ("UPDATE t1 SET `t1c1`=?, `t1c2`=NULL", ("a",))
 
     def test_function_value(self) -> None:
         q = Update()
         sql_t = q.table("t1").set_value("t1c1", "NOW()").sql()
-        assert sql_t == ("UPDATE t1 SET `t1c1`=?", ["NOW()"])
+        assert sql_t == ("UPDATE t1 SET `t1c1`=?", ("NOW()",))
 
     def test_function_raw_value(self) -> None:
         q = Update()
@@ -68,12 +68,12 @@ class TestUpdate:
     def test_function_raw_value_with_valparams(self) -> None:
         q = Update()
         sql_t = q.table("t1").set_raw_value("t1c1", "PASSWORD(?)", value_params=("mypw",)).sql()
-        assert sql_t == ("UPDATE t1 SET `t1c1`=PASSWORD(?)", ["mypw"])
+        assert sql_t == ("UPDATE t1 SET `t1c1`=PASSWORD(?)", ("mypw",))
 
     def test_function_raw_value_dict_with_valparams(self) -> None:
         q = Update()
         sql_t = q.table("t1").set_raw_value({"t1c1": ("PASSWORD(?)", ("mypw",))}).sql()
-        assert sql_t == ("UPDATE t1 SET `t1c1`=PASSWORD(?)", ["mypw"])
+        assert sql_t == ("UPDATE t1 SET `t1c1`=PASSWORD(?)", ("mypw",))
 
     def test_order_by(self) -> None:
         q = Update()
@@ -118,7 +118,7 @@ class TestUpdate:
     def test_set_value_utf_param(self) -> None:
         q = Update()
         sql_t = q.table("t1").set_value("t1c1", "äöü").sql()
-        assert sql_t == ("UPDATE t1 SET `t1c1`=?", ["äöü"])
+        assert sql_t == ("UPDATE t1 SET `t1c1`=?", ("äöü",))
 
     def test_set_value_raw_utf(self) -> None:
         q = Update()
